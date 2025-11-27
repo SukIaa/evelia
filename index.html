@@ -39,6 +39,7 @@
     .button-row {
       display: flex;
       justify-content: center;
+      align-items: flex-start; /* <-- FIX HEIGHT STRETCH */
       gap: 20px;
       margin-top: 40px;
     }
@@ -78,12 +79,18 @@
   <p>❤️🍬</p>
 
   <!-- BUTTON ROW -->
-  <div class="button-row">
-    <button class="screamer-btn" onclick="toggleScreamer()">Presiona para un SCREAMER</button>
-    <button class="princess-btn" onclick="togglePrincess()">Presiona aquí PRINCESA</button>
-  </div>
+  <div style="display:flex; flex-direction:column; align-items:center;">
+    <div class="button-row">
+      <div style="display:flex; flex-direction:column; align-items:center;">
+        <button class="screamer-btn" onclick="toggleScreamer()">Presiona para un SCREAMER</button>
+        <p id="warningText" style="color: red; font-weight: bold; margin-top: 10px;">
+          WARNING: SCARY
+        </p>
+      </div>
 
-  <p style="color: red; font-weight: bold; margin-top: 20px;">WARNING: SCARY</p>
+      <button class="princess-btn" onclick="togglePrincess()">Evelia es una PRINCESA</button>
+    </div>
+  </div>
 
   <!-- SCREAMER CONTENT -->
   <div id="screamer">
@@ -113,11 +120,11 @@
       const screamDiv = document.getElementById('screamer');
       const princessDiv = document.getElementById('princessVideo');
 
-      // Hide princess video if visible
+      // Hide princess video
       princessDiv.style.display = 'none';
 
       // Toggle screamer visibility
-      if (screamDiv.style.display === 'none') {
+      if (screamDiv.style.display === 'none' || screamDiv.style.display === '') {
         screamDiv.style.display = 'block';
         screamDiv.scrollIntoView({ behavior: "smooth" });
       } else {
@@ -129,11 +136,11 @@
       const screamDiv = document.getElementById('screamer');
       const princessDiv = document.getElementById('princessVideo');
 
-      // Hide screamer if visible
+      // Hide screamer
       screamDiv.style.display = 'none';
 
       // Toggle princess video visibility
-      if (princessDiv.style.display === 'none') {
+      if (princessDiv.style.display === 'none' || princessDiv.style.display === '') {
         princessDiv.style.display = 'block';
         princessDiv.scrollIntoView({ behavior: "smooth" });
       } else {
