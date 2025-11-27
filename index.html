@@ -60,7 +60,7 @@
       padding: 15px 30px;
       font-size: 1.1em;
       border: none;
-      background-color: #dd2490; /* YOUR COLOR */
+      background-color: #dd2490;
       color: white;
       border-radius: 8px;
       cursor: pointer;
@@ -79,8 +79,8 @@
 
   <!-- BUTTON ROW -->
   <div class="button-row">
-    <button class="screamer-btn" onclick="activateScreamer()">Presiona para un SCREAMER</button>
-    <button class="princess-btn" onclick="showPrincess()">Evelia es una PRINCESA</button>
+    <button class="screamer-btn" onclick="toggleScreamer()">Presiona para un SCREAMER</button>
+    <button class="princess-btn" onclick="togglePrincess()">Presiona aquí PRINCESA</button>
   </div>
 
   <p style="color: red; font-weight: bold; margin-top: 20px;">WARNING: SCARY</p>
@@ -109,16 +109,36 @@
   </div>
 
   <script>
-    function activateScreamer() {
+    function toggleScreamer() {
       const screamDiv = document.getElementById('screamer');
-      screamDiv.style.display = 'block';
-      screamDiv.scrollIntoView({ behavior: "smooth" });
+      const princessDiv = document.getElementById('princessVideo');
+
+      // Hide princess video if visible
+      princessDiv.style.display = 'none';
+
+      // Toggle screamer visibility
+      if (screamDiv.style.display === 'none') {
+        screamDiv.style.display = 'block';
+        screamDiv.scrollIntoView({ behavior: "smooth" });
+      } else {
+        screamDiv.style.display = 'none';
+      }
     }
 
-    function showPrincess() {
-      const vidDiv = document.getElementById('princessVideo');
-      vidDiv.style.display = 'block';
-      vidDiv.scrollIntoView({ behavior: "smooth" });
+    function togglePrincess() {
+      const screamDiv = document.getElementById('screamer');
+      const princessDiv = document.getElementById('princessVideo');
+
+      // Hide screamer if visible
+      screamDiv.style.display = 'none';
+
+      // Toggle princess video visibility
+      if (princessDiv.style.display === 'none') {
+        princessDiv.style.display = 'block';
+        princessDiv.scrollIntoView({ behavior: "smooth" });
+      } else {
+        princessDiv.style.display = 'none';
+      }
     }
   </script>
 
