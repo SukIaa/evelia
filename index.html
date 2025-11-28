@@ -9,6 +9,7 @@
       font-family: 'Segoe UI', sans-serif;
       text-align: center;
       padding-top: 100px;
+      padding-bottom: 100px; /* extra space at bottom */
       color: #f7f7f7;
       margin: 0;
     }
@@ -19,9 +20,10 @@
     p {
       font-size: 1.3em;
       color: #ffffff;
+      margin: 0.25em 0;
     }
 
-    /* SCREAMER BLOCK */
+    /* ==== SCREAMER BLOCK ==== */
     #screamer {
       display: none;
       margin-top: 50px;
@@ -41,7 +43,7 @@
 
     /* Screamer pop animation */
     #screamer.active {
-      animation: screamerPop 0.35s ease-out;
+      animation: screamerPop 0.45s ease-out; /* slightly slower */
     }
     @keyframes screamerPop {
       0%   { transform: scale(0.85); opacity: 0; }
@@ -49,65 +51,136 @@
       100% { transform: scale(1.0); opacity: 1; }
     }
 
-    /* PRINCESS VIDEO BLOCK */
+    /* ==== PRINCESS VIDEO BLOCK ==== */
     #princessVideo {
       display: none;
       margin-top: 50px;
-      position: relative;
-      padding: 20px 0 10px;
     }
 
-    /* Soft fade animation on princess section */
     #princessVideo.active {
-      animation: princessFade 0.45s ease-out;
+      animation: princessFade 0.7s ease-out; /* slower fade */
     }
     @keyframes princessFade {
-      0%   { transform: translateY(15px); opacity: 0; }
+      0%   { transform: translateY(20px); opacity: 0; }
       100% { transform: translateY(0); opacity: 1; }
     }
 
-    /* Hearts fading around princess video */
-    #princessVideo::before,
-    #princessVideo::after {
-      content: "❤";
-      position: absolute;
-      font-size: 1.8rem;
-      color: #ff7abf;
-      opacity: 0.8;
-      pointer-events: none;
-    }
-    #princessVideo::before {
-      left: 15%;
-      top: -10px;
-      animation: floatHeart1 3.5s ease-in-out infinite;
-    }
-    #princessVideo::after {
-      right: 15%;
-      top: -10px;
-      animation: floatHeart2 4s ease-in-out infinite;
-    }
-    @keyframes floatHeart1 {
-      0%   { transform: translateY(0); opacity: 0.6; }
-      40%  { transform: translateY(-18px); opacity: 1; }
-      100% { transform: translateY(-30px); opacity: 0; }
-    }
-    @keyframes floatHeart2 {
-      0%   { transform: translateY(0); opacity: 0.6; }
-      40%  { transform: translateY(-14px); opacity: 1; }
-      100% { transform: translateY(-26px); opacity: 0; }
+    /* wrapper so hearts & sparkles sit around the video */
+    .video-wrapper {
+      position: relative;
+      display: inline-block;
+      margin-top: 10px;
     }
 
     iframe {
       border-radius: 12px;
       border: none;
       box-shadow: 0 12px 35px rgba(0,0,0,0.7);
+      display: block;
     }
 
-    /* BUTTONS */
+    /* ==== FLOATING HEARTS & SPARKLES ==== */
+
+    .floating-heart,
+    .floating-sparkle {
+      position: absolute;
+      pointer-events: none;
+      opacity: 0;
+    }
+
+    .floating-heart {
+      color: #ff7abf;
+      animation: heartFloat 6s ease-in-out infinite; /* slower */
+    }
+
+    .floating-sparkle {
+      color: #ffd6ff;
+      animation: sparkleDrift 6.5s ease-in-out infinite; /* slower */
+    }
+
+    /* LEFT HEARTS */
+    .heart-left-small {
+      left: -55px;   /* farther from video */
+      top: 25%;
+      font-size: 1.4rem;
+      animation-delay: 0s;
+    }
+    .heart-left-medium {
+      left: -70px;
+      top: 50%;
+      font-size: 1.9rem;
+      animation-delay: 1.2s;
+    }
+    .heart-left-big {
+      left: -85px;
+      top: 75%;
+      font-size: 2.3rem;
+      animation-delay: 2.4s;
+    }
+
+    /* RIGHT HEARTS */
+    .heart-right-small {
+      right: -55px;
+      top: 30%;
+      font-size: 1.5rem;
+      animation-delay: 0.8s;
+    }
+    .heart-right-medium {
+      right: -70px;
+      top: 55%;
+      font-size: 2rem;
+      animation-delay: 1.8s;
+    }
+    .heart-right-big {
+      right: -85px;
+      top: 78%;
+      font-size: 2.4rem;
+      animation-delay: 2.8s;
+    }
+
+    /* SPARKLES MIXED IN (further from edge too) */
+    .sparkle-top-left {
+      left: -65px;
+      top: 10%;
+      font-size: 1.2rem;
+      animation-delay: 1s;
+    }
+    .sparkle-top-right {
+      right: -65px;
+      top: 12%;
+      font-size: 1.4rem;
+      animation-delay: 1.6s;
+    }
+    .sparkle-bottom-left {
+      left: -60px;
+      top: 88%;
+      font-size: 1rem;
+      animation-delay: 2.3s;
+    }
+    .sparkle-bottom-right {
+      right: -60px;
+      top: 90%;
+      font-size: 1.1rem;
+      animation-delay: 3.1s;
+    }
+
+    @keyframes heartFloat {
+      0%   { transform: translateY(0) scale(1);   opacity: 0.2; }
+      40%  { transform: translateY(-12px) scale(1.15); opacity: 1; }
+      100% { transform: translateY(-30px) scale(0.9);  opacity: 0; }
+    }
+
+    @keyframes sparkleDrift {
+      0%   { transform: translateY(0) translateX(0) scale(1);   opacity: 0; }
+      40%  { transform: translateY(-10px) translateX(4px) scale(1.1); opacity: 1; }
+      100% { transform: translateY(-22px) translateX(8px) scale(0.9); opacity: 0; }
+    }
+
+    /* ==== BUTTONS ==== */
     .button-row {
       display: flex;
       justify-content: center;
-      align-items: flex-start; /* keep princess button normal height */
+      align-items: flex-start; /* keep princess button from stretching */
       gap: 20px;
       margin-top: 40px;
     }
@@ -122,7 +195,7 @@
       transition: transform 0.15s ease-out, background-color 0.15s ease-out;
     }
     button:active {
-      transform: scale(0.96) translateY(1px); /* button animation on click */
+      transform: scale(0.96) translateY(1px); /* small press animation */
     }
 
     .screamer-btn {
@@ -132,7 +205,6 @@
       background-color: #ff0000;
     }
 
-    /* PRINCESS BUTTON STYLE */
     .princess-btn {
       background-color: #ff44c7;
     }
@@ -184,13 +256,30 @@
   <div id="princessVideo">
     <h2 style="margin-bottom: 20px;">✨ Para ti princesa ✨</h2>
 
-    <iframe 
-      src="https://drive.google.com/file/d/10y6IiXBJbq-siwo9tvubGvCNdShtLkgD/preview?embedded=true"
-      width="640"
-      height="360"
-      allow="autoplay"
-      allowfullscreen>
-    </iframe>
+    <div class="video-wrapper">
+      <!-- multiple hearts & sparkles with different sizes / delays -->
+      <!-- left hearts -->
+      <div class="floating-heart heart-left-small">❤</div>
+      <div class="floating-heart heart-left-medium">❤</div>
+      <div class="floating-heart heart-left-big">❤</div>
+      <!-- right hearts -->
+      <div class="floating-heart heart-right-small">❤</div>
+      <div class="floating-heart heart-right-medium">❤</div>
+      <div class="floating-heart heart-right-big">❤</div>
+      <!-- sparkles -->
+      <div class="floating-sparkle sparkle-top-left">✨</div>
+      <div class="floating-sparkle sparkle-top-right">✨</div>
+      <div class="floating-sparkle sparkle-bottom-left">✦</div>
+      <div class="floating-sparkle sparkle-bottom-right">✧</div>
+
+      <iframe 
+        src="https://drive.google.com/file/d/10y6IiXBJbq-siwo9tvubGvCNdShtLkgD/preview?embedded=true"
+        width="640"
+        height="360"
+        allow="autoplay"
+        allowfullscreen>
+      </iframe>
+    </div>
   </div>
 
   <script>
@@ -198,15 +287,15 @@
       const screamDiv = document.getElementById('screamer');
       const princessDiv = document.getElementById('princessVideo');
 
-      // Hide princess video and its animation state
+      // Hide princess section and its animation state
       princessDiv.style.display = 'none';
       princessDiv.classList.remove('active');
 
       // Toggle screamer visibility + animation
       if (screamDiv.style.display === 'none' || screamDiv.style.display === '') {
         screamDiv.style.display = 'block';
-        screamDiv.classList.remove('active'); // reset
-        void screamDiv.offsetWidth;          // force reflow to retrigger animation
+        screamDiv.classList.remove('active'); // reset animation
+        void screamDiv.offsetWidth;          // force reflow
         screamDiv.classList.add('active');
         screamDiv.scrollIntoView({ behavior: "smooth" });
       } else {
@@ -226,7 +315,7 @@
       // Toggle princess video visibility + animation
       if (princessDiv.style.display === 'none' || princessDiv.style.display === '') {
         princessDiv.style.display = 'block';
-        princessDiv.classList.remove('active'); // reset
+        princessDiv.classList.remove('active'); // reset animation
         void princessDiv.offsetWidth;           // force reflow
         princessDiv.classList.add('active');
         princessDiv.scrollIntoView({ behavior: "smooth" });
@@ -235,6 +324,23 @@
         princessDiv.classList.remove('active');
       }
     }
+
+    /* 🔀 Small randomisation for X offsets of hearts/sparkles */
+    document.addEventListener('DOMContentLoaded', () => {
+      const elems = document.querySelectorAll('.floating-heart, .floating-sparkle');
+      elems.forEach(el => {
+        const style = window.getComputedStyle(el);
+        if (style.left !== 'auto') {
+          const base = parseFloat(style.left);
+          const delta = (Math.random() - 0.5) * 20; // -10px to +10px
+          el.style.left = (base + delta) + 'px';
+        } else if (style.right !== 'auto') {
+          const base = parseFloat(style.right);
+          const delta = (Math.random() - 0.5) * 20;
+          el.style.right = (base + delta) + 'px';
+        }
+      });
+    });
   </script>
 
 </body>
