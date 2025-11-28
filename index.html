@@ -5,14 +5,18 @@
   <title>Evelia Jordan</title>
   <style>
     html, body {
+      margin: 0;
+      padding: 0;
       background-color: #232323;
+      overflow-x: hidden; /* kill horizontal scroll everywhere */
+    }
+
+    body {
       font-family: 'Segoe UI', sans-serif;
       text-align: center;
       padding-top: 100px;
       padding-bottom: 100px; /* extra space at bottom */
       color: #f7f7f7;
-      margin: 0;
-      overflow-x: hidden; /* kill horizontal scroll */
     }
 
     h1 {
@@ -45,7 +49,7 @@
 
     /* Screamer pop animation */
     #screamer.active {
-      animation: screamerPop 0.45s ease-out;
+      animation: screamerPop 0.45s ease-out; /* slightly slower */
     }
     @keyframes screamerPop {
       0%   { transform: scale(0.85); opacity: 0; }
@@ -60,28 +64,33 @@
     }
 
     #princessVideo.active {
-      animation: princessFade 0.7s ease-out;
+      animation: princessFade 0.7s ease-out; /* slower fade */
     }
     @keyframes princessFade {
       0%   { transform: translateY(20px); opacity: 0; }
       100% { transform: translateY(0); opacity: 1; }
     }
 
+    /* wrapper so hearts & sparkles sit around the video */
     .video-wrapper {
       position: relative;
       display: inline-block;
       margin-top: 10px;
+      max-width: 90vw; /* never wider than viewport */
     }
 
     iframe {
+      width: 100%;               /* fully responsive */
+      aspect-ratio: 16 / 9;      /* keep 16:9 shape */
+      height: auto;
       border-radius: 12px;
       border: none;
       box-shadow: 0 12px 35px rgba(0,0,0,0.7);
       display: block;
-      max-width: 100%;
     }
 
     /* ==== FLOATING HEARTS & SPARKLES ==== */
+
     .floating-heart,
     .floating-sparkle {
       position: absolute;
@@ -91,15 +100,15 @@
 
     .floating-heart {
       color: #ff7abf;
-      animation: heartFloat 6s ease-in-out infinite;
+      animation: heartFloat 6s ease-in-out infinite; /* slower */
     }
 
     .floating-sparkle {
       color: #ffd6ff;
-      animation: sparkleDrift 6.5s ease-in-out infinite;
+      animation: sparkleDrift 6.5s ease-in-out infinite; /* slower */
     }
 
-    /* Keep everything INSIDE the wrapper now (no negative left/right) */
+    /* Keep everything INSIDE the wrapper (no negative left/right) */
 
     /* LEFT HEARTS (hug left edge of video) */
     .heart-left-small {
@@ -276,8 +285,6 @@
 
       <iframe 
         src="https://drive.google.com/file/d/10y6IiXBJbq-siwo9tvubGvCNdShtLkgD/preview?embedded=true"
-        width="640"
-        height="360"
         allow="autoplay"
         allowfullscreen>
       </iframe>
