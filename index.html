@@ -5,18 +5,14 @@
   <title>Evelia Jordan</title>
   <style>
     html, body {
-      margin: 0;
-      padding: 0;
       background-color: #232323;
-      overflow-x: hidden;
-    }
-
-    body {
       font-family: 'Segoe UI', sans-serif;
       text-align: center;
       padding-top: 100px;
-      padding-bottom: 120px;
+      padding-bottom: 100px; /* extra space at bottom */
       color: #f7f7f7;
+      margin: 0;
+      overflow-x: hidden; /* kill horizontal scroll */
     }
 
     h1 {
@@ -37,16 +33,17 @@
     #screamer img {
       width: 400px;
       max-width: 90%;
-      border-radius: 12px;
+      border-radius: 12px;              /* rounded corners on shark */
       box-shadow: 0 10px 30px rgba(0,0,0,0.6);
     }
     #screamer h2 {
       font-size: 4em;
       color: red;
       margin-top: 20px;
-      text-shadow: 0 0 12px rgba(255, 0, 0, 0.7);
+      text-shadow: 0 0 12px rgba(255, 0, 0, 0.7); /* glow on RAHHH */
     }
 
+    /* Screamer pop animation */
     #screamer.active {
       animation: screamerPop 0.45s ease-out;
     }
@@ -56,7 +53,7 @@
       100% { transform: scale(1.0); opacity: 1; }
     }
 
-    /* ========== PRINCESS VIDEO ========== */
+    /* ==== PRINCESS VIDEO BLOCK ==== */
     #princessVideo {
       display: none;
       margin-top: 50px;
@@ -74,22 +71,17 @@
       position: relative;
       display: inline-block;
       margin-top: 10px;
-      max-width: 90vw;
-      overflow: visible; /* REQUIRED so hearts can be outside */
     }
 
     iframe {
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      height: auto;
       border-radius: 12px;
       border: none;
       box-shadow: 0 12px 35px rgba(0,0,0,0.7);
       display: block;
+      max-width: 100%;
     }
 
-    /* ========== FLOATING DECORATIONS ========== */
-
+    /* ==== FLOATING HEARTS & SPARKLES ==== */
     .floating-heart,
     .floating-sparkle {
       position: absolute;
@@ -98,91 +90,91 @@
     }
 
     .floating-heart {
-      color: #ff8ecb;
+      color: #ff7abf;
       animation: heartFloat 6s ease-in-out infinite;
     }
 
     .floating-sparkle {
-      color: #ffdfff;
+      color: #ffd6ff;
       animation: sparkleDrift 6.5s ease-in-out infinite;
     }
 
-    /* ==== OUTSIDE VIDEO LEFT ==== */
+    /* LEFT HEARTS */
     .heart-left-small {
-      left: -50px;
-      top: 20%;
+      left: -55px;   /* farther from video */
+      top: 25%;
       font-size: 1.4rem;
       animation-delay: 0s;
     }
     .heart-left-medium {
-      left: -60px;
-      top: 48%;
+      left: -70px;
+      top: 50%;
       font-size: 1.9rem;
       animation-delay: 1.2s;
     }
     .heart-left-big {
-      left: -70px;
-      top: 78%;
+      left: -85px;
+      top: 75%;
       font-size: 2.3rem;
       animation-delay: 2.4s;
     }
 
-    /* ==== OUTSIDE VIDEO RIGHT ==== */
+    /* RIGHT HEARTS */
     .heart-right-small {
-      right: -50px;
-      top: 22%;
+      right: -55px;
+      top: 30%;
       font-size: 1.5rem;
       animation-delay: 0.8s;
     }
     .heart-right-medium {
-      right: -60px;
-      top: 50%;
+      right: -70px;
+      top: 55%;
       font-size: 2rem;
       animation-delay: 1.8s;
     }
     .heart-right-big {
-      right: -70px;
-      top: 80%;
+      right: -85px;
+      top: 78%;
       font-size: 2.4rem;
       animation-delay: 2.8s;
     }
 
-    /* ==== SPARKLES ==== */
+    /* SPARKLES MIXED IN (further from edge too) */
     .sparkle-top-left {
-      left: -30px;
+      left: -65px;
       top: 10%;
       font-size: 1.2rem;
       animation-delay: 1s;
     }
     .sparkle-top-right {
-      right: -30px;
+      right: -65px;
       top: 12%;
       font-size: 1.4rem;
       animation-delay: 1.6s;
     }
     .sparkle-bottom-left {
-      left: -30px;
+      left: -60px;
       top: 88%;
       font-size: 1rem;
       animation-delay: 2.3s;
     }
     .sparkle-bottom-right {
-      right: -30px;
+      right: -60px;
       top: 90%;
       font-size: 1.1rem;
       animation-delay: 3.1s;
     }
 
     @keyframes heartFloat {
-      0%   { transform: translateY(0) scale(1); opacity: 0.2; }
+      0%   { transform: translateY(0) scale(1);   opacity: 0.2; }
       40%  { transform: translateY(-12px) scale(1.15); opacity: 1; }
-      100% { transform: translateY(-28px) scale(0.9); opacity: 0; }
+      100% { transform: translateY(-30px) scale(0.9);  opacity: 0; }
     }
 
     @keyframes sparkleDrift {
-      0%   { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
-      40%  { transform: translateY(-10px) translateX(5px) scale(1.1); opacity: 1; }
-      100% { transform: translateY(-20px) translateX(10px) scale(0.9); opacity: 0; }
+      0%   { transform: translateY(0) translateX(0) scale(1);   opacity: 0; }
+      40%  { transform: translateY(-10px) translateX(4px) scale(1.1); opacity: 1; }
+      100% { transform: translateY(-22px) translateX(8px) scale(0.9); opacity: 0; }
     }
 
     /* ==== BUTTONS ==== */
@@ -207,22 +199,30 @@
       transform: scale(0.96) translateY(1px);
     }
 
-    .screamer-btn { background-color: #ff4444; }
-    .screamer-btn:hover { background-color: #ff0000; }
+    .screamer-btn {
+      background-color: #ff4444;
+    }
+    .screamer-btn:hover {
+      background-color: #ff0000;
+    }
 
-    .princess-btn { background-color: #ff44c7; }
-    .princess-btn:hover { background-color: #f53cbd; }
+    .princess-btn {
+      background-color: #ff44c7;
+    }
+    .princess-btn:hover {
+      background-color: #f53cbd;
+    }
 
+    /* WARNING glow */
     #warningText {
       color: red;
       font-weight: bold;
       margin-top: 10px;
-      font-size: 0.95em;
       text-shadow: 0 0 6px rgba(255, 0, 0, 0.7);
+      font-size: 0.95em;
     }
   </style>
 </head>
-
 <body>
   <h1>Evelia Jordan está más buena que el pan. 🇵🇪</h1>
   <p>❤️🍞</p>
@@ -230,19 +230,21 @@
   <b1>(Mä tukkann salmiakki tosi paljon).</b1>
   <p>❤️🍬</p>
 
-  <!-- BUTTONS -->
+  <!-- BUTTON ROW -->
   <div style="display:flex; flex-direction:column; align-items:center;">
     <div class="button-row">
       <div style="display:flex; flex-direction:column; align-items:center;">
         <button class="screamer-btn" onclick="toggleScreamer()">Presiona para un SCREAMER</button>
-        <p id="warningText">WARNING: SCARY</p>
+        <p id="warningText">
+          WARNING: SCARY
+        </p>
       </div>
 
       <button class="princess-btn" onclick="togglePrincess()">Evelia es una PRINCESA</button>
     </div>
   </div>
 
-  <!-- SCREAMER -->
+  <!-- SCREAMER CONTENT -->
   <div id="screamer">
     <img src="shark.jpg" alt="SCREAMER!">
     <h2>RAHHHH</h2>
@@ -256,15 +258,15 @@
     <h2 style="margin-bottom: 20px;">✨ Para ti princesa ✨</h2>
 
     <div class="video-wrapper">
-
+      <!-- left hearts/crowns -->
       <div class="floating-heart heart-left-small">❤</div>
       <div class="floating-heart heart-left-medium">👑</div>
       <div class="floating-heart heart-left-big">❤</div>
-
+      <!-- right hearts/crowns -->
       <div class="floating-heart heart-right-small">❤</div>
       <div class="floating-heart heart-right-medium">👑</div>
       <div class="floating-heart heart-right-big">❤</div>
-
+      <!-- sparkles -->
       <div class="floating-sparkle sparkle-top-left">✨</div>
       <div class="floating-sparkle sparkle-top-right">✨</div>
       <div class="floating-sparkle sparkle-bottom-left">✨</div>
@@ -272,6 +274,8 @@
 
       <iframe 
         src="https://drive.google.com/file/d/10y6IiXBJbq-siwo9tvubGvCNdShtLkgD/preview?embedded=true"
+        width="640"
+        height="360"
         allow="autoplay"
         allowfullscreen>
       </iframe>
@@ -280,38 +284,44 @@
 
   <script>
     function toggleScreamer() {
-      const scream = document.getElementById("screamer");
-      const princess = document.getElementById("princessVideo");
+      const screamDiv = document.getElementById('screamer');
+      const princessDiv = document.getElementById('princessVideo');
 
-      princess.style.display = "none";
-      princess.classList.remove("active");
+      // Hide princess section and its animation state
+      princessDiv.style.display = 'none';
+      princessDiv.classList.remove('active');
 
-      if (scream.style.display === "none" || scream.style.display === "") {
-        scream.style.display = "block";
-        void scream.offsetWidth;
-        scream.classList.add("active");
-        scream.scrollIntoView({ behavior: "smooth" });
+      // Toggle screamer visibility + animation
+      if (screamDiv.style.display === 'none' || screamDiv.style.display === '') {
+        screamDiv.style.display = 'block';
+        screamDiv.classList.remove('active'); // reset animation
+        void screamDiv.offsetWidth;          // force reflow
+        screamDiv.classList.add('active');
+        screamDiv.scrollIntoView({ behavior: "smooth" });
       } else {
-        scream.style.display = "none";
-        scream.classList.remove("active");
+        screamDiv.style.display = 'none';
+        screamDiv.classList.remove('active');
       }
     }
 
     function togglePrincess() {
-      const scream = document.getElementById("screamer");
-      const princess = document.getElementById("princessVideo");
+      const screamDiv = document.getElementById('screamer');
+      const princessDiv = document.getElementById('princessVideo');
 
-      scream.style.display = "none";
-      scream.classList.remove("active");
+      // Hide screamer and its animation state
+      screamDiv.style.display = 'none';
+      screamDiv.classList.remove('active');
 
-      if (princess.style.display === "none" || princess.style.display === "") {
-        princess.style.display = "block";
-        void princess.offsetWidth;
-        princess.classList.add("active");
-        princess.scrollIntoView({ behavior: "smooth" });
+      // Toggle princess video visibility + animation
+      if (princessDiv.style.display === 'none' || princessDiv.style.display === '') {
+        princessDiv.style.display = 'block';
+        princessDiv.classList.remove('active'); // reset animation
+        void princessDiv.offsetWidth;           // force reflow
+        princessDiv.classList.add('active');
+        princessDiv.scrollIntoView({ behavior: "smooth" });
       } else {
-        princess.style.display = "none";
-        princess.classList.remove("active");
+        princessDiv.style.display = 'none';
+        princessDiv.classList.remove('active');
       }
     }
   </script>
