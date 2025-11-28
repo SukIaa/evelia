@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Evelia Jordan</title>
   <style>
-    body {
+    html, body {
       background-color: #232323;
       font-family: 'Segoe UI', sans-serif;
       text-align: center;
@@ -12,8 +12,9 @@
       padding-bottom: 100px; /* extra space at bottom */
       color: #f7f7f7;
       margin: 0;
-      overflow-x: hidden; 
+      overflow-x: hidden; /* kill horizontal scroll */
     }
+
     h1 {
       font-size: 2.5em;
       margin-bottom: 0.5em;
@@ -44,7 +45,7 @@
 
     /* Screamer pop animation */
     #screamer.active {
-      animation: screamerPop 0.45s ease-out; /* slightly slower */
+      animation: screamerPop 0.45s ease-out;
     }
     @keyframes screamerPop {
       0%   { transform: scale(0.85); opacity: 0; }
@@ -59,14 +60,13 @@
     }
 
     #princessVideo.active {
-      animation: princessFade 0.7s ease-out; /* slower fade */
+      animation: princessFade 0.7s ease-out;
     }
     @keyframes princessFade {
       0%   { transform: translateY(20px); opacity: 0; }
       100% { transform: translateY(0); opacity: 1; }
     }
 
-    /* wrapper so hearts & sparkles sit around the video */
     .video-wrapper {
       position: relative;
       display: inline-block;
@@ -78,10 +78,10 @@
       border: none;
       box-shadow: 0 12px 35px rgba(0,0,0,0.7);
       display: block;
+      max-width: 100%;
     }
 
     /* ==== FLOATING HEARTS & SPARKLES ==== */
-
     .floating-heart,
     .floating-sparkle {
       position: absolute;
@@ -91,75 +91,77 @@
 
     .floating-heart {
       color: #ff7abf;
-      animation: heartFloat 6s ease-in-out infinite; /* slower */
+      animation: heartFloat 6s ease-in-out infinite;
     }
 
     .floating-sparkle {
       color: #ffd6ff;
-      animation: sparkleDrift 6.5s ease-in-out infinite; /* slower */
+      animation: sparkleDrift 6.5s ease-in-out infinite;
     }
 
-    /* LEFT HEARTS */
+    /* Keep everything INSIDE the wrapper now (no negative left/right) */
+
+    /* LEFT HEARTS (hug left edge of video) */
     .heart-left-small {
-      left: -55px;   /* farther from video */
+      left: 0;
       top: 25%;
       font-size: 1.4rem;
       animation-delay: 0s;
     }
     .heart-left-medium {
-      left: -70px;
+      left: 0;
       top: 50%;
       font-size: 1.9rem;
       animation-delay: 1.2s;
     }
     .heart-left-big {
-      left: -85px;
+      left: 0;
       top: 75%;
       font-size: 2.3rem;
       animation-delay: 2.4s;
     }
 
-    /* RIGHT HEARTS */
+    /* RIGHT HEARTS (hug right edge of video) */
     .heart-right-small {
-      right: -55px;
+      right: 0;
       top: 30%;
       font-size: 1.5rem;
       animation-delay: 0.8s;
     }
     .heart-right-medium {
-      right: -70px;
+      right: 0;
       top: 55%;
       font-size: 2rem;
       animation-delay: 1.8s;
     }
     .heart-right-big {
-      right: -85px;
+      right: 0;
       top: 78%;
       font-size: 2.4rem;
       animation-delay: 2.8s;
     }
 
-    /* SPARKLES MIXED IN (further from edge too) */
+    /* SPARKLES (just inside the edges too) */
     .sparkle-top-left {
-      left: -65px;
+      left: 5px;
       top: 10%;
       font-size: 1.2rem;
       animation-delay: 1s;
     }
     .sparkle-top-right {
-      right: -65px;
+      right: 5px;
       top: 12%;
       font-size: 1.4rem;
       animation-delay: 1.6s;
     }
     .sparkle-bottom-left {
-      left: -60px;
+      left: 8px;
       top: 88%;
       font-size: 1rem;
       animation-delay: 2.3s;
     }
     .sparkle-bottom-right {
-      right: -60px;
+      right: 8px;
       top: 90%;
       font-size: 1.1rem;
       animation-delay: 3.1s;
@@ -181,7 +183,7 @@
     .button-row {
       display: flex;
       justify-content: center;
-      align-items: flex-start; /* keep princess button from stretching */
+      align-items: flex-start;
       gap: 20px;
       margin-top: 40px;
     }
@@ -190,13 +192,13 @@
       padding: 15px 30px;
       font-size: 1.1em;
       border: none;
-      border-radius: 999px;  /* extra round */
+      border-radius: 999px;
       cursor: pointer;
       color: white;
       transition: transform 0.15s ease-out, background-color 0.15s ease-out;
     }
     button:active {
-      transform: scale(0.96) translateY(1px); /* small press animation */
+      transform: scale(0.96) translateY(1px);
     }
 
     .screamer-btn {
@@ -258,12 +260,11 @@
     <h2 style="margin-bottom: 20px;">✨ Para ti princesa ✨</h2>
 
     <div class="video-wrapper">
-      <!-- multiple hearts & sparkles with different sizes / delays -->
-      <!-- left hearts -->
+      <!-- left hearts/crowns -->
       <div class="floating-heart heart-left-small">❤</div>
       <div class="floating-heart heart-left-medium">👑</div>
       <div class="floating-heart heart-left-big">❤</div>
-      <!-- right hearts -->
+      <!-- right hearts/crowns -->
       <div class="floating-heart heart-right-small">❤</div>
       <div class="floating-heart heart-right-medium">👑</div>
       <div class="floating-heart heart-right-big">❤</div>
@@ -325,23 +326,6 @@
         princessDiv.classList.remove('active');
       }
     }
-
-    /* 🔀 Small randomisation for X offsets of hearts/sparkles */
-    document.addEventListener('DOMContentLoaded', () => {
-      const elems = document.querySelectorAll('.floating-heart, .floating-sparkle');
-      elems.forEach(el => {
-        const style = window.getComputedStyle(el);
-        if (style.left !== 'auto') {
-          const base = parseFloat(style.left);
-          const delta = (Math.random() - 0.5) * 20; // -10px to +10px
-          el.style.left = (base + delta) + 'px';
-        } else if (style.right !== 'auto') {
-          const base = parseFloat(style.right);
-          const delta = (Math.random() - 0.5) * 20;
-          el.style.right = (base + delta) + 'px';
-        }
-      });
-    });
   </script>
 
 </body>
