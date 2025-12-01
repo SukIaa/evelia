@@ -9,10 +9,10 @@
       font-family: 'Segoe UI', sans-serif;
       text-align: center;
       padding-top: 100px;
-      padding-bottom: 100px; /* extra space at bottom */
+      padding-bottom: 100px;
       color: #f7f7f7;
       margin: 0;
-      overflow-x: hidden; /* kill horizontal scroll */
+      overflow-x: hidden;
     }
 
     h1 {
@@ -33,17 +33,16 @@
     #screamer img {
       width: 400px;
       max-width: 90%;
-      border-radius: 12px;              /* rounded corners on shark */
+      border-radius: 12px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.6);
     }
     #screamer h2 {
       font-size: 4em;
       color: red;
       margin-top: 20px;
-      text-shadow: 0 0 12px rgba(255, 0, 0, 0.7); /* glow on RAHHH */
+      text-shadow: 0 0 12px rgba(255, 0, 0, 0.7);
     }
 
-    /* Screamer pop animation */
     #screamer.active {
       animation: screamerPop 0.45s ease-out;
     }
@@ -57,6 +56,7 @@
     #princessVideo {
       display: none;
       margin-top: 50px;
+      margin-bottom: 50px;
     }
 
     #princessVideo.active {
@@ -99,80 +99,27 @@
       animation: sparkleDrift 6.5s ease-in-out infinite;
     }
 
-    /* LEFT HEARTS */
-    .heart-left-small {
-      left: -55px;   /* farther from video */
-      top: 25%;
-      font-size: 1.4rem;
-      animation-delay: 0s;
-    }
-    .heart-left-medium {
-      left: -70px;
-      top: 50%;
-      font-size: 1.9rem;
-      animation-delay: 1.2s;
-    }
-    .heart-left-big {
-      left: -85px;
-      top: 75%;
-      font-size: 2.3rem;
-      animation-delay: 2.4s;
-    }
+    .heart-left-small  { left: -55px; top: 25%; font-size: 1.4rem; animation-delay: 0s; }
+    .heart-left-medium { left: -70px; top: 50%; font-size: 1.9rem; animation-delay: 1.2s; }
+    .heart-left-big    { left: -85px; top: 75%; font-size: 2.3rem; animation-delay: 2.4s; }
 
-    /* RIGHT HEARTS */
-    .heart-right-small {
-      right: -55px;
-      top: 30%;
-      font-size: 1.5rem;
-      animation-delay: 0.8s;
-    }
-    .heart-right-medium {
-      right: -70px;
-      top: 55%;
-      font-size: 2rem;
-      animation-delay: 1.8s;
-    }
-    .heart-right-big {
-      right: -85px;
-      top: 78%;
-      font-size: 2.4rem;
-      animation-delay: 2.8s;
-    }
+    .heart-right-small  { right: -55px; top: 30%; font-size: 1.5rem; animation-delay: 0.8s; }
+    .heart-right-medium { right: -70px; top: 55%; font-size: 2rem; animation-delay: 1.8s; }
+    .heart-right-big    { right: -85px; top: 78%; font-size: 2.4rem; animation-delay: 2.8s; }
 
-    /* SPARKLES MIXED IN (further from edge too) */
-    .sparkle-top-left {
-      left: -65px;
-      top: 10%;
-      font-size: 1.2rem;
-      animation-delay: 1s;
-    }
-    .sparkle-top-right {
-      right: -65px;
-      top: 12%;
-      font-size: 1.4rem;
-      animation-delay: 1.6s;
-    }
-    .sparkle-bottom-left {
-      left: -60px;
-      top: 88%;
-      font-size: 1rem;
-      animation-delay: 2.3s;
-    }
-    .sparkle-bottom-right {
-      right: -60px;
-      top: 90%;
-      font-size: 1.1rem;
-      animation-delay: 3.1s;
-    }
+    .sparkle-top-left     { left: -65px; top: 10%; font-size: 1.2rem; animation-delay: 1s; }
+    .sparkle-top-right    { right: -65px; top: 12%; font-size: 1.4rem; animation-delay: 1.6s; }
+    .sparkle-bottom-left  { left: -60px; top: 88%; font-size: 1rem; animation-delay: 2.3s; }
+    .sparkle-bottom-right { right: -60px; top: 90%; font-size: 1.1rem; animation-delay: 3.1s; }
 
     @keyframes heartFloat {
-      0%   { transform: translateY(0) scale(1);   opacity: 0.2; }
+      0%   { transform: translateY(0) scale(1); opacity: 0.2; }
       40%  { transform: translateY(-12px) scale(1.15); opacity: 1; }
-      100% { transform: translateY(-30px) scale(0.9);  opacity: 0; }
+      100% { transform: translateY(-30px) scale(0.9); opacity: 0; }
     }
 
     @keyframes sparkleDrift {
-      0%   { transform: translateY(0) translateX(0) scale(1);   opacity: 0; }
+      0%   { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
       40%  { transform: translateY(-10px) translateX(4px) scale(1.1); opacity: 1; }
       100% { transform: translateY(-22px) translateX(8px) scale(0.9); opacity: 0; }
     }
@@ -195,23 +142,13 @@
       color: white;
       transition: transform 0.15s ease-out, background-color 0.15s ease-out;
     }
-    button:active {
-      transform: scale(0.96) translateY(1px);
-    }
+    button:active { transform: scale(0.96) translateY(1px); }
 
-    .screamer-btn {
-      background-color: #ff4444;
-    }
-    .screamer-btn:hover {
-      background-color: #ff0000;
-    }
+    .screamer-btn { background-color: #ff4444; }
+    .screamer-btn:hover { background-color: #ff0000; }
 
-    .princess-btn {
-      background-color: #ff44c7;
-    }
-    .princess-btn:hover {
-      background-color: #f53cbd;
-    }
+    .princess-btn { background-color: #ff44c7; }
+    .princess-btn:hover { background-color: #f53cbd; }
 
     /* WARNING glow */
     #warningText {
@@ -221,30 +158,42 @@
       text-shadow: 0 0 6px rgba(255, 0, 0, 0.7);
       font-size: 0.95em;
     }
+
+    /* ==== RAPUNZEL PNG (bottom-right) ==== */
+    #rapunzelArt {
+      position: fixed;
+      bottom: 0px;
+      right: 150px;
+      width: 300px;
+      max-width: 40vw;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.6s ease;
+      z-index: 9999;
+    }
+    #rapunzelArt.visible {
+      opacity: 1;
+    }
   </style>
 </head>
 <body>
+
   <h1>Evelia Jordan está más buena que el pan. 🇵🇪</h1>
   <p>❤️🍞</p>
   <h1>Evelia Jordan on herkullisempi kuin salmiakki. 🇫🇮</h1>
   <b1>(Mä tukkann salmiakki tosi paljon).</b1>
   <p>❤️🍬</p>
 
-  <!-- BUTTON ROW -->
   <div style="display:flex; flex-direction:column; align-items:center;">
     <div class="button-row">
       <div style="display:flex; flex-direction:column; align-items:center;">
         <button class="screamer-btn" onclick="toggleScreamer()">Presiona para un SCREAMER</button>
-        <p id="warningText">
-          WARNING: SCARY
-        </p>
+        <p id="warningText">WARNING: SCARY</p>
       </div>
-
       <button class="princess-btn" onclick="togglePrincess()">Evelia es una PRINCESA</button>
     </div>
   </div>
 
-  <!-- SCREAMER CONTENT -->
   <div id="screamer">
     <img src="shark.jpg" alt="SCREAMER!">
     <h2>RAHHHH</h2>
@@ -258,15 +207,14 @@
     <h2 style="margin-bottom: 20px;">✨ Para ti princesa ✨</h2>
 
     <div class="video-wrapper">
-      <!-- left hearts/crowns -->
       <div class="floating-heart heart-left-small">❤</div>
       <div class="floating-heart heart-left-medium">👑</div>
       <div class="floating-heart heart-left-big">❤</div>
-      <!-- right hearts/crowns -->
+
       <div class="floating-heart heart-right-small">❤</div>
       <div class="floating-heart heart-right-medium">👑</div>
       <div class="floating-heart heart-right-big">❤</div>
-      <!-- sparkles -->
+
       <div class="floating-sparkle sparkle-top-left">✨</div>
       <div class="floating-sparkle sparkle-top-right">✨</div>
       <div class="floating-sparkle sparkle-bottom-left">✨</div>
@@ -282,20 +230,22 @@
     </div>
   </div>
 
+  <!-- RAPUNZEL PNG -->
+  <img id="rapunzelArt" src="rapunzel.png" alt="Rapunzel">
+
   <script>
     function toggleScreamer() {
       const screamDiv = document.getElementById('screamer');
       const princessDiv = document.getElementById('princessVideo');
+      const art = document.getElementById('rapunzelArt');
 
-      // Hide princess section and its animation state
       princessDiv.style.display = 'none';
       princessDiv.classList.remove('active');
+      art.classList.remove('visible');
 
-      // Toggle screamer visibility + animation
       if (screamDiv.style.display === 'none' || screamDiv.style.display === '') {
         screamDiv.style.display = 'block';
-        screamDiv.classList.remove('active'); // reset animation
-        void screamDiv.offsetWidth;          // force reflow
+        void screamDiv.offsetWidth;
         screamDiv.classList.add('active');
         screamDiv.scrollIntoView({ behavior: "smooth" });
       } else {
@@ -307,21 +257,21 @@
     function togglePrincess() {
       const screamDiv = document.getElementById('screamer');
       const princessDiv = document.getElementById('princessVideo');
+      const art = document.getElementById('rapunzelArt');
 
-      // Hide screamer and its animation state
       screamDiv.style.display = 'none';
       screamDiv.classList.remove('active');
 
-      // Toggle princess video visibility + animation
       if (princessDiv.style.display === 'none' || princessDiv.style.display === '') {
         princessDiv.style.display = 'block';
-        princessDiv.classList.remove('active'); // reset animation
-        void princessDiv.offsetWidth;           // force reflow
+        void princessDiv.offsetWidth;
         princessDiv.classList.add('active');
         princessDiv.scrollIntoView({ behavior: "smooth" });
+        art.classList.add('visible');
       } else {
         princessDiv.style.display = 'none';
         princessDiv.classList.remove('active');
+        art.classList.remove('visible');
       }
     }
   </script>
