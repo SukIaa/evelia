@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Christmas Surprise</title>
+  <title>Hyva Joulua Guapa</title>
 
   <style>
     html, body {
@@ -162,9 +162,7 @@
     #giftBtn:active{transform:scale(.96);}
 
     /* ===== GIFT RATTLE (occasional) ===== */
-    #giftBtn.rattle{
-      animation: rattle .55s ease-in-out;
-    }
+    #giftBtn.rattle{ animation: rattle .55s ease-in-out; }
     @keyframes rattle{
       0%   { transform: rotate(0deg) scale(1); }
       12%  { transform: rotate(-6deg) scale(1.02); }
@@ -175,9 +173,6 @@
       72%  { transform: rotate(3deg)  scale(1.01); }
       100% { transform: rotate(0deg) scale(1); }
     }
-
-    /* finale hide (no gap) */
-    .finale-hide{display:none !important;}
 
     /* ===== DRAMATIC GIFT REVEAL (INLINE, NO POPUP) ===== */
     #giftReveal{
@@ -406,7 +401,6 @@
 
     /* ===== PASSWORD PARSING: triggers >= 100% easter egg ===== */
     function parsePercentInput(str) {
-      // Accept: "100%", "101%", " 10000% ", "100", "100.5%", etc.
       const cleaned = (str || "").trim().replace(",", ".");
       const match = cleaned.match(/-?\d+(\.\d+)?/);
       if (!match) return null;
@@ -425,14 +419,12 @@
       error.textContent = "";
       hideSpecialMsg();
 
-      // Easter egg for >= 100
       const p = parsePercentInput(inputRaw);
       if (p !== null && p >= 100) {
         runEasterEgg();
         return;
       }
 
-      // Normal unlock only for exact 99%
       if (inputRaw === PASSWORD_NORMAL) {
         gate.style.display = "none";
         content.style.display = "block";
@@ -479,8 +471,7 @@
       function scheduleNext() {
         if (giftRevealed) return;
 
-        // random between 1.6s and 4.2s
-        const delay = 1600 + Math.random() * 2600;
+        const delay = 1600 + Math.random() * 2600; // 1.6s–4.2s
         giftRattleTimer = setTimeout(() => {
           if (giftRevealed) return;
           giftBtn.classList.remove("rattle");
@@ -505,6 +496,7 @@
 
     function showFinale() {
       dayTitle.textContent = `Joulukalenteri: Dia 20`;
+      dayTitle.style.display = "block";
       dayTitle.classList.remove("pop");
       requestAnimationFrame(() => dayTitle.classList.add("pop"));
       setTimeout(() => dayTitle.classList.remove("pop"), 240);
@@ -531,12 +523,16 @@
       captionText.style.display = "block";
       finaleSection.style.display = "none";
       stopGiftRattle();
+
+      // if you go back from finale, show title again
+      dayTitle.style.display = "block";
     }
 
     function renderDay(isFirst = false) {
       const d = daysData[currentIndex];
 
       dayTitle.textContent = `Joulukalenteri: Dia ${d.day}`;
+      dayTitle.style.display = "block";
       dayTitle.classList.remove("pop");
       requestAnimationFrame(() => dayTitle.classList.add("pop"));
       setTimeout(() => dayTitle.classList.remove("pop"), 240);
@@ -690,6 +686,9 @@
     function revealGiftDramatic() {
       giftRevealed = true;
       stopGiftRattle();
+
+      // ✅ hide the Joulukalenteri title too
+      dayTitle.style.display = "none";
 
       finaleText.style.display = "none";
       giftBtnWrap.style.display = "none";
