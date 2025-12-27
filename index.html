@@ -5,12 +5,12 @@
   <title>Evelia Jordan</title>
 
   <style>
-    html, body {
+    body {
       background-color: #232323;
       font-family: 'Segoe UI', sans-serif;
       text-align: center;
       padding-top: 100px;
-      padding-bottom: 100px;
+      padding-bottom: 120px;
       color: #f7f7f7;
       margin: 0;
       overflow-x: hidden;
@@ -27,7 +27,7 @@
       margin: 0.25em 0;
     }
 
-    /* ==== BUTTONS ==== */
+    /* ===== BUTTONS ===== */
     .button-row {
       display: flex;
       justify-content: center;
@@ -64,7 +64,7 @@
       font-size: 0.95em;
     }
 
-    /* ==== SCREAMER ==== */
+    /* ===== SCREAMER ===== */
     #screamer {
       display: none;
       margin-top: 50px;
@@ -84,22 +84,26 @@
       text-shadow: 0 0 12px rgba(255, 0, 0, 0.7);
     }
 
-    #screamer.active { animation: screamerPop 0.45s ease-out; }
+    #screamer.active {
+      animation: screamerPop 0.45s ease-out;
+    }
 
     @keyframes screamerPop {
       0%   { transform: scale(0.85); opacity: 0; }
       50%  { transform: scale(1.05); opacity: 1; }
-      100% { transform: scale(1.0); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
     }
 
-    /* ==== PRINCESS VIDEO ==== */
+    /* ===== PRINCESS VIDEO ===== */
     #princessVideo {
       display: none;
       margin-top: 50px;
       margin-bottom: 100px;
     }
 
-    #princessVideo.active { animation: princessFade 0.7s ease-out; }
+    #princessVideo.active {
+      animation: princessFade 0.7s ease-out;
+    }
 
     @keyframes princessFade {
       0%   { transform: translateY(20px); opacity: 0; }
@@ -120,50 +124,33 @@
       max-width: 100%;
     }
 
-    /* ==== FLOATING HEARTS & SPARKLES ==== */
-    .floating-heart,
-    .floating-sparkle {
-      position: absolute;
-      pointer-events: none;
-      opacity: 0;
+    /* ===== CHRISTMAS TREE BUTTON ===== */
+    #christmasBtn {
+      margin-top: 70px;
+      transition: opacity 0.4s ease, transform 0.4s ease;
     }
 
-    .floating-heart {
-      color: #ff7abf;
-      animation: heartFloat 6s ease-in-out infinite;
+    #christmasBtn.hidden {
+      display: none;
     }
 
-    .floating-sparkle {
-      color: #ffd6ff;
-      animation: sparkleDrift 6.5s ease-in-out infinite;
+    .christmas-tree {
+      width: 120px;
+      max-width: 35vw;
+      cursor: pointer;
+      transition: transform 0.25s ease, filter 0.25s ease;
     }
 
-    .heart-left-small  { left: -55px; top: 25%; font-size: 1.4rem; animation-delay: 0s; }
-    .heart-left-medium { left: -70px; top: 50%; font-size: 1.9rem; animation-delay: 1.2s; }
-    .heart-left-big    { left: -85px; top: 75%; font-size: 2.3rem; animation-delay: 2.4s; }
-
-    .heart-right-small  { right: -55px; top: 30%; font-size: 1.5rem; animation-delay: 0.8s; }
-    .heart-right-medium { right: -70px; top: 55%; font-size: 2rem; animation-delay: 1.8s; }
-    .heart-right-big    { right: -85px; top: 78%; font-size: 2.4rem; animation-delay: 2.8s; }
-
-    .sparkle-top-left     { left: -65px; top: 10%; font-size: 1.2rem; animation-delay: 1s; }
-    .sparkle-top-right    { right: -65px; top: 12%; font-size: 1.4rem; animation-delay: 1.6s; }
-    .sparkle-bottom-left  { left: -60px; top: 88%; font-size: 1rem; animation-delay: 2.3s; }
-    .sparkle-bottom-right { right: -60px; top: 90%; font-size: 1.1rem; animation-delay: 3.1s; }
-
-    @keyframes heartFloat {
-      0%   { transform: translateY(0) scale(1); opacity: 0.2; }
-      40%  { transform: translateY(-12px) scale(1.15); opacity: 1; }
-      100% { transform: translateY(-30px) scale(0.9); opacity: 0; }
+    .christmas-tree:hover {
+      transform: scale(1.08);
+      filter: drop-shadow(0 0 12px rgba(102, 201, 83, 0.7));
     }
 
-    @keyframes sparkleDrift {
-      0%   { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
-      40%  { transform: translateY(-10px) translateX(4px) scale(1.1); opacity: 1; }
-      100% { transform: translateY(-22px) translateX(8px) scale(0.9); opacity: 0; }
+    .christmas-tree:active {
+      transform: scale(0.95);
     }
 
-    /* ==== RAPUNZEL PNG (bottom-right) ==== */
+    /* ===== RAPUNZEL PNG (bottom-right) ===== */
     #rapunzelArt {
       position: fixed;
       bottom: 0px;
@@ -173,7 +160,7 @@
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.2s ease, transform 0.2s ease;
-      z-index: 999999; /* super above */
+      z-index: 999999;
       transform: translateY(8px);
     }
 
@@ -182,7 +169,6 @@
       transform: translateY(0);
     }
 
-    /* phone safety: keep it visible and not too huge */
     @media (max-width: 700px) {
       #rapunzelArt {
         right: 12px;
@@ -194,7 +180,6 @@
 </head>
 
 <body>
-
   <h1>Evelia Jordan está más buena que el pan. 🇵🇪</h1>
   <p>❤️🍞</p>
 
@@ -202,6 +187,7 @@
   <b1>(Mä tukkann salmiakki tosi paljon).</b1>
   <p>❤️🍬</p>
 
+  <!-- BUTTON ROW -->
   <div style="display:flex; flex-direction:column; align-items:center;">
     <div class="button-row">
       <div style="display:flex; flex-direction:column; align-items:center;">
@@ -213,6 +199,14 @@
     </div>
   </div>
 
+  <!-- 🎄 CHRISTMAS TREE BUTTON -->
+  <div id="christmasBtn">
+    <a href="christmas.html" aria-label="Christmas Surprise">
+      <img src="christmas-tree.png" alt="Christmas consideration" class="christmas-tree">
+    </a>
+  </div>
+
+  <!-- SCREAMER -->
   <div id="screamer">
     <img src="shark.jpg" alt="SCREAMER!">
     <h2>RAHHHH</h2>
@@ -221,23 +215,11 @@
     <b1>Yaaa no??? Tambien se vale hablarme... solo digo</b1>
   </div>
 
+  <!-- PRINCESS VIDEO -->
   <div id="princessVideo">
     <h2 style="margin-bottom: 20px;">✨ Para ti princesa ✨</h2>
 
     <div class="video-wrapper">
-      <div class="floating-heart heart-left-small">❤</div>
-      <div class="floating-heart heart-left-medium">👑</div>
-      <div class="floating-heart heart-left-big">❤</div>
-
-      <div class="floating-heart heart-right-small">❤</div>
-      <div class="floating-heart heart-right-medium">👑</div>
-      <div class="floating-heart heart-right-big">❤</div>
-
-      <div class="floating-sparkle sparkle-top-left">✨</div>
-      <div class="floating-sparkle sparkle-top-right">✨</div>
-      <div class="floating-sparkle sparkle-bottom-left">✨</div>
-      <div class="floating-sparkle sparkle-bottom-right">✨</div>
-
       <iframe
         src="https://drive.google.com/file/d/10y6IiXBJbq-siwo9tvubGvCNdShtLkgD/preview?embedded=true"
         width="640"
@@ -249,56 +231,64 @@
   </div>
 
   <!-- RAPUNZEL PNG -->
-  <!-- IMPORTANT: GitHub Pages is case-sensitive. Make sure filename is EXACTLY rapunzel.png -->
   <img id="rapunzelArt" src="rapunzel.png" alt="Rapunzel" loading="eager">
 
   <script>
-    const rapunzelArt = document.getElementById("rapunzelArt");
+    const christmasBtn = document.getElementById('christmasBtn');
+    const rapunzelArt = document.getElementById('rapunzelArt');
 
-    // quick debug: tells you if file path is wrong
+    // Debug for GitHub Pages (case-sensitive paths)
     rapunzelArt.addEventListener("error", () => {
-      console.error("rapunzel.png failed to load. Check file name + folder path (case-sensitive on GitHub Pages).");
+      console.error("rapunzel.png failed to load. Check exact filename/path (case-sensitive on GitHub Pages).");
     });
 
     function toggleScreamer() {
-      const screamDiv = document.getElementById('screamer');
-      const princessDiv = document.getElementById('princessVideo');
+      const screamer = document.getElementById('screamer');
+      const princess = document.getElementById('princessVideo');
 
-      princessDiv.style.display = 'none';
-      princessDiv.classList.remove('active');
+      princess.style.display = 'none';
+      princess.classList.remove('active');
       rapunzelArt.classList.remove('visible');
 
-      if (screamDiv.style.display === 'none' || screamDiv.style.display === '') {
-        screamDiv.style.display = 'block';
-        void screamDiv.offsetWidth;
-        screamDiv.classList.add('active');
-        screamDiv.scrollIntoView({ behavior: "smooth" });
+      if (screamer.style.display === 'none' || screamer.style.display === '') {
+        screamer.style.display = 'block';
+        void screamer.offsetWidth;
+        screamer.classList.add('active');
+
+        christmasBtn.classList.add('hidden');
+        screamer.scrollIntoView({ behavior: "smooth" });
       } else {
-        screamDiv.style.display = 'none';
-        screamDiv.classList.remove('active');
+        screamer.style.display = 'none';
+        screamer.classList.remove('active');
+
+        christmasBtn.classList.remove('hidden');
       }
     }
 
     function togglePrincess() {
-      const screamDiv = document.getElementById('screamer');
-      const princessDiv = document.getElementById('princessVideo');
+      const screamer = document.getElementById('screamer');
+      const princess = document.getElementById('princessVideo');
 
-      screamDiv.style.display = 'none';
-      screamDiv.classList.remove('active');
+      screamer.style.display = 'none';
+      screamer.classList.remove('active');
 
-      if (princessDiv.style.display === 'none' || princessDiv.style.display === '') {
-        princessDiv.style.display = 'block';
-        void princessDiv.offsetWidth;
-        princessDiv.classList.add('active');
-        princessDiv.scrollIntoView({ behavior: "smooth" });
+      if (princess.style.display === 'none' || princess.style.display === '') {
+        princess.style.display = 'block';
+        void princess.offsetWidth;
+        princess.classList.add('active');
+
+        christmasBtn.classList.add('hidden');
         rapunzelArt.classList.add('visible');
+
+        princess.scrollIntoView({ behavior: "smooth" });
       } else {
-        princessDiv.style.display = 'none';
-        princessDiv.classList.remove('active');
+        princess.style.display = 'none';
+        princess.classList.remove('active');
+
+        christmasBtn.classList.remove('hidden');
         rapunzelArt.classList.remove('visible');
       }
     }
   </script>
-
 </body>
 </html>
