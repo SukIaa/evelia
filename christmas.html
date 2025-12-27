@@ -144,24 +144,40 @@
       font-size:1.75em;line-height:1.35;max-width:900px;margin:0 auto;opacity:.98;
       transition:opacity .22s ease, transform .22s ease, filter .22s ease;
     }
+
     #giftBtnWrap{
       margin-top:26px;
       position:relative;
       z-index:2;
       transition:opacity .22s ease, transform .22s ease, filter .22s ease;
     }
+
     #giftBtn{
       width:170px;max-width:50vw;cursor:pointer;user-select:none;
       transition:transform .14s ease, filter .14s ease;
       filter:drop-shadow(0 0 18px rgba(255,68,68,.22));
+      transform-origin: 50% 70%;
     }
     #giftBtn:hover{transform:scale(1.06);}
     #giftBtn:active{transform:scale(.96);}
 
-    /* finale hide (no gap) */
-    .finale-hide{
-      display:none !important; /* <-- removes gap */
+    /* ===== GIFT RATTLE (occasional) ===== */
+    #giftBtn.rattle{
+      animation: rattle .55s ease-in-out;
     }
+    @keyframes rattle{
+      0%   { transform: rotate(0deg) scale(1); }
+      12%  { transform: rotate(-6deg) scale(1.02); }
+      24%  { transform: rotate(6deg)  scale(1.02); }
+      36%  { transform: rotate(-5deg) scale(1.02); }
+      48%  { transform: rotate(5deg)  scale(1.02); }
+      60%  { transform: rotate(-3deg) scale(1.01); }
+      72%  { transform: rotate(3deg)  scale(1.01); }
+      100% { transform: rotate(0deg) scale(1); }
+    }
+
+    /* finale hide (no gap) */
+    .finale-hide{display:none !important;}
 
     /* ===== DRAMATIC GIFT REVEAL (INLINE, NO POPUP) ===== */
     #giftReveal{
@@ -242,7 +258,7 @@
 
     @media (prefers-reduced-motion: reduce) {
       .snowflake, .heart, .pic-card img, .caption, .pic-card.bump, .heart-burst.pop,
-      .boom-heart, #giftContentInline.reveal {
+      .boom-heart, #giftContentInline.reveal, #giftBtn.rattle {
         animation: none !important;
         transition: none !important;
       }
@@ -331,7 +347,6 @@
 
   <script>
     const PASSWORD_NORMAL = "99%";
-    const PASSWORD_SPECIAL = "100%";
 
     // Days 3 -> 19
     const daysData = Array.from({ length: 17 }, (_, i) => {
@@ -351,6 +366,9 @@
     let heartRainRunning = false;
     let isAnimating = false;
     let lastNavTime = 0;
+
+    let giftRattleTimer = null;
+    let giftRevealed = false;
 
     /* ===== CONSTANT SNOW ===== */
     const MAX_SNOWFLAKES = 70;
@@ -386,21 +404,40 @@
     setInterval(spawnSnowflake, 180);
     for (let i = 0; i < 18; i++) setTimeout(spawnSnowflake, i * 120);
 
+    /* ===== PASSWORD PARSING: triggers >= 100% easter egg ===== */
+    function parsePercentInput(str) {
+      // Accept: "100%", "101%", " 10000% ", "100", "100.5%", etc.
+      const cleaned = (str || "").trim().replace(",", ".");
+      const match = cleaned.match(/-?\d+(\.\d+)?/);
+      if (!match) return null;
+      return parseFloat(match[0]);
+    }
+
+    function runEasterEgg() {
+      startHeartRain();
+      showSpecialMsgSequence();
+      password.value = "";
+    }
+
     /* ===== GATE ===== */
     function unlock() {
-      const input = password.value.trim();
+      const inputRaw = password.value.trim();
       error.textContent = "";
       hideSpecialMsg();
 
-      if (input === PASSWORD_NORMAL) {
+      // Easter egg for >= 100
+      const p = parsePercentInput(inputRaw);
+      if (p !== null && p >= 100) {
+        runEasterEgg();
+        return;
+      }
+
+      // Normal unlock only for exact 99%
+      if (inputRaw === PASSWORD_NORMAL) {
         gate.style.display = "none";
         content.style.display = "block";
         topTreeLink.style.display = "block";
         renderCurrent(true);
-      } else if (input === PASSWORD_SPECIAL) {
-        startHeartRain();
-        showSpecialMsgSequence();
-        password.value = "";
       } else {
         error.textContent = "Hint: Que tanto eres mia? 😤";
       }
@@ -435,6 +472,37 @@
       nextBtn.disabled = false;
     }
 
+    function startGiftRattle() {
+      stopGiftRattle();
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+      function scheduleNext() {
+        if (giftRevealed) return;
+
+        // random between 1.6s and 4.2s
+        const delay = 1600 + Math.random() * 2600;
+        giftRattleTimer = setTimeout(() => {
+          if (giftRevealed) return;
+          giftBtn.classList.remove("rattle");
+          void giftBtn.offsetWidth;
+          giftBtn.classList.add("rattle");
+          scheduleNext();
+        }, delay);
+      }
+
+      scheduleNext();
+    }
+
+    function stopGiftRattle() {
+      if (giftRattleTimer) {
+        clearTimeout(giftRattleTimer);
+        giftRattleTimer = null;
+      }
+      if (typeof giftBtn !== "undefined" && giftBtn) {
+        giftBtn.classList.remove("rattle");
+      }
+    }
+
     function showFinale() {
       dayTitle.textContent = `Joulukalenteri: Dia 20`;
       dayTitle.classList.remove("pop");
@@ -452,6 +520,9 @@
       finaleText.style.display = "block";
       giftBtnWrap.style.display = "block";
 
+      giftRevealed = false;
+      startGiftRattle();
+
       updateNavState();
     }
 
@@ -459,6 +530,7 @@
       picsWrap.style.display = "flex";
       captionText.style.display = "block";
       finaleSection.style.display = "none";
+      stopGiftRattle();
     }
 
     function renderDay(isFirst = false) {
@@ -487,7 +559,6 @@
       meImg.classList.add("swap-out");
       captionText.classList.add("swap-out");
 
-      // briefly disable but allow faster presses overall
       prevBtn.disabled = true;
       nextBtn.disabled = true;
 
@@ -513,7 +584,6 @@
             herCard.classList.add("bump");
             meCard.classList.add("bump");
 
-            // rotate into each other
             herImg.classList.add("meet");
             meImg.classList.add("meet");
 
@@ -525,7 +595,6 @@
               herImg.classList.remove("meet");
               meImg.classList.remove("meet");
 
-              // re-enable quicker
               updateNavState();
               isAnimating = false;
             }, 280);
@@ -544,7 +613,7 @@
     // ===== NAV (faster presses) =====
     function canNavNow() {
       const now = Date.now();
-      if (now - lastNavTime < 120) return false; // small anti-spam only
+      if (now - lastNavTime < 120) return false;
       lastNavTime = now;
       return true;
     }
@@ -614,28 +683,26 @@
         h.style.setProperty("--dur", dur.toFixed(2) + "s");
 
         heartExplosion.appendChild(h);
-
         setTimeout(() => h.remove(), (dur + delay) * 1000 + 80);
       }
     }
 
     function revealGiftDramatic() {
-      // remove gap: actually hide these blocks
+      giftRevealed = true;
+      stopGiftRattle();
+
       finaleText.style.display = "none";
       giftBtnWrap.style.display = "none";
 
       giftReveal.style.display = "block";
 
-      // longer explosion
       heartExplosionBurst(52);
 
-      // pop image
       giftContentInline.classList.remove("reveal");
       void giftContentInline.offsetWidth;
       giftContentInline.classList.add("reveal");
 
-      // mix in some heart rain
-      startHeartRainFor(4500); // ~4.5s
+      startHeartRainFor(4500);
 
       setTimeout(() => {
         giftReveal.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -644,7 +711,7 @@
 
     giftBtn.addEventListener("click", revealGiftDramatic);
 
-    // ===== SPECIAL 100% =====
+    // ===== SPECIAL >= 100% =====
     function showSpecialMsgSequence() {
       specialMsg.style.display = "block";
       line1.textContent = "";
