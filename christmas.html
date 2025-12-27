@@ -132,6 +132,7 @@
     .caption{
       margin-top:28px;font-size:1.55em;line-height:1.35;padding:0 18px;opacity:.98;
       transition:opacity .22s ease, transform .22s ease;min-height:1.4em;
+      white-space: pre-line; /* ✅ THIS makes \n show as a new line */  
     }
     .caption.swap-out{opacity:0;transform:translateY(8px);}
     .caption.swap-in {opacity:0;transform:translateY(-8px);}
@@ -266,7 +267,7 @@
 
   <!-- PASSWORD GATE -->
   <div id="gate">
-    <h1>🎄✨ Entrada secreta 🎄✨</h1>
+    <h1>✨🎄 Entrada secreta 🎄✨</h1>
     <p>Introduce la contraseña</p>
 
     <input id="password" type="text" placeholder="Password" autocomplete="off" />
@@ -292,10 +293,10 @@
     </div>
 
     <h1>Feliz navidad Evelia 🇵🇪</h1>
-    <p>❤️</p>
+    <p>❤️🎄🎁❄️❤️</p>
 
     <h1>Hyvää joulua 🇫🇮</h1>
-    <p>❤️</p>
+    <p>❤️🎄🎁❤️</p>
 
     <div class="day-title" id="dayTitle"></div>
 
@@ -325,7 +326,7 @@
     <!-- FINAL SCREEN -->
     <div id="finaleSection">
       <div id="finaleText">
-        Alguien perdio el celular... Me diste un infarto tonta, lista para abrir tu regalo?
+        Alguien perdió el celular... Me diste un infarto tonta, lista para abrir tu regalo?
       </div>
 
       <div id="giftBtnWrap">
@@ -343,18 +344,63 @@
   <script>
     const PASSWORD_NORMAL = "99%";
 
-    // Days 3 -> 19
-    const daysData = Array.from({ length: 17 }, (_, i) => {
-      const day = i + 3;
+    // ✅ You asked to lower the amount to 17 total slides.
+    // We'll make this: Day 3 -> 18 (16 slides) + FINAL (1) = 17 total.
+
+    // ===== EDIT CUTE TEXTS HERE (per day) =====
+    // Just change the strings. If a day is missing here, it falls back to default.
+    const DAY_TEXT = {
+      3: "No sabes cómo adoro esta fotooo tuya 😍😍😍",
+      4: "Messi Fan 👍",
+      5: "Ojalá mis brazos fueran largos\n para abrazarte cuando tus días sean amargos",
+      6: "Más bonito que ver a Messi campeón, es ver tu sonrisa para mí.\n Por eso subirme en un avión, es lo que me haría tan feliz",
+      7: "Si tan solo hubiera entendido que el premio de aquella feria, era tu compañía...\n te habría abrazado más fuerte aquel día \n \n Hay un peluche con tu nombre en mi maleta, te lo doy a cambio de una cita",
+      8: "7 besos tuyos llenarían de dulzura este amor más que ningún alfajor jamás podría",
+      9: "Los dos olvidamos foto 🥲🥲",
+      10: "Ya que no me dejas agarrar tu mano en el cine, dejame entrelazar nuestros pies cómo cuellos de cisne 👣🦢👣",
+      11: "Pieeees 👣", 
+      12: "Mi princesa favorita eres tú, ojos de esmeralda y cabello de oro \n Mi cuento empieza y termina, cuando sonríes de ese modo",
+      13: "Hay calles tan bonitas en málaga... \n pero ninguna como ese tramo, que caminamos a ciegas de la mano",
+      14: "🎵🎶Era Peter un reno, que tenía una nariz... Roja cómo una grana...🎶🎵",
+      15: "Te juro que los que te prepare a tí por las mañanas serán mas lindos :(",
+      16: "Tú y yo deberiamos jugar minecraft, de niñito dije a mi amigo que me queria casar con una chica que juegue maincraf",
+      17: "No son mejores que las flores que te llevé en nuestra primera cita verdad?",
+      18: "Re tonta la foto, lo sé, pero es dificil encontrar algo interesante, \n aún así, no hay nada más dificil que todo el día no pensarte."
+    };
+
+    // ✅ Forget placeholders:
+    const I_FORGET_DAYS = [9,12];
+    const SHE_FORGET_DAYS = [11,13,14,15,16,17,18];
+    const WE_BOTH_FORGET_DAYS = [9];
+
+    function getDayPaths(day) {
+      // both forget has priority
+      if (WE_BOTH_FORGET_DAYS.includes(day)) {
+        return { her: "days/we-forget1.png", me: "days/we-forget2.png" };
+      }
+      const herPath = SHE_FORGET_DAYS.includes(day) ? "days/her-forget.png" : `days/her-${day}.png`;
+      const mePath  = I_FORGET_DAYS.includes(day)   ? "days/me-forget.png"  : `days/mine-${day}.png`;
+      return { her: herPath, me: mePath };
+    }
+
+    // Days 3 -> 18 (inclusive) = 16 days
+    const START_DAY = 3;
+    const END_DAY = 18;
+    const DAYS_COUNT = (END_DAY - START_DAY) + 1; // 16
+
+    const daysData = Array.from({ length: DAYS_COUNT }, (_, i) => {
+      const day = START_DAY + i; // starts at 3
+      const paths = getDayPaths(day);
+
       return {
         day,
-        her: `days/her-day-${day}.jpg`,
-        me: `days/me-day-${day}.jpg`,
-        text: `some cute text for day ${day}`
+        her: paths.her,
+        me: paths.me,
+        text: DAY_TEXT[day] ?? `some cute text for day ${day}`
       };
     });
 
-    // Add 1 extra "final" slide after day 19
+    // FINAL slide
     const TOTAL_SLIDES = daysData.length + 1;
 
     let currentIndex = 0;
@@ -414,26 +460,59 @@
     }
 
     /* ===== GATE ===== */
-    function unlock() {
-      const inputRaw = password.value.trim();
-      error.textContent = "";
-      hideSpecialMsg();
+   function unlock() {
+  const inputRaw = password.value.trim();
+  const inputLower = inputRaw.toLowerCase();
 
-      const p = parsePercentInput(inputRaw);
-      if (p !== null && p >= 100) {
-        runEasterEgg();
-        return;
-      }
+  error.textContent = "";
+  hideSpecialMsg();
 
-      if (inputRaw === PASSWORD_NORMAL) {
-        gate.style.display = "none";
-        content.style.display = "block";
-        topTreeLink.style.display = "block";
-        renderCurrent(true);
-      } else {
-        error.textContent = "Hint: Que tanto eres mia? 😤";
-      }
-    }
+  // ===== NEW WORD EASTER EGGS =====
+  if (inputLower === "monton") {
+    error.textContent = "No mi amor, a mí me gustas un montón, pero es un porcentaje % lo que te pido.";
+    return;
+  }
+  if (inputLower === "mucho") {
+    error.textContent = "No mi amor, mucho es lo que te extraño, es un porcentaje % lo que te pido.";
+    return;
+  }
+  if (inputLower === "toda") {
+    error.textContent = "No mi amor, cuando te tenga en frente te voy a hacer toda mía, ahora es un porcentaje % lo que te pido.";
+    return;
+  }
+  if (inputLower === "evelia") {
+    error.textContent = "La dueña de mi corazón";
+    return;
+  }
+  if (inputLower === "11/06/25") {
+    error.textContent = "El día que llegaste a mi vida";
+    return;
+  }
+
+
+  // "0 %", "0%", "0   %" etc.
+  if (/^0\s*%$/.test(inputLower)) {
+    error.textContent = "Me pregunto de quién eres ahora, pero en realidad, ya lo sé.";
+    return;
+  }
+  // ==============================
+
+  const p = parsePercentInput(inputRaw);
+  if (p !== null && p >= 100) {
+    runEasterEgg();
+    return;
+  }
+
+  if (inputRaw === PASSWORD_NORMAL) {
+    gate.style.display = "none";
+    content.style.display = "block";
+    topTreeLink.style.display = "block";
+    renderCurrent(true);
+  } else {
+    error.textContent = "Hint: Que tanto eres mia? 😤";
+  }
+}
+
 
     /* ===== PRELOAD ===== */
     function preloadIndex(idx) {
@@ -443,7 +522,17 @@
       new Image().src = d.me;
     }
 
-    function popBurstHeart() {
+    // ===== (1) BUMP ICON SWITCH =====
+    function getBumpEmojiForDay(dayNumber) {
+      // thumbs up ONLY for picture day 4
+      if (dayNumber === 4) return "👍";
+      return "❤️";
+    }
+
+    function popBurstHeart(dayNumber) {
+      // set emoji before animating
+      burstHeart.textContent = getBumpEmojiForDay(dayNumber);
+
       burstHeart.classList.remove("pop");
       void burstHeart.offsetWidth;
       burstHeart.classList.add("pop");
@@ -495,7 +584,7 @@
     }
 
     function showFinale() {
-      dayTitle.textContent = `Joulukalenteri: Dia 20`;
+      dayTitle.textContent = `Joulupäivää`;
       dayTitle.style.display = "block";
       dayTitle.classList.remove("pop");
       requestAnimationFrame(() => dayTitle.classList.add("pop"));
@@ -505,7 +594,6 @@
       captionText.style.display = "none";
       finaleSection.style.display = "block";
 
-      // reset reveal
       giftReveal.style.display = "none";
       giftContentInline.classList.remove("reveal");
       heartExplosion.innerHTML = "";
@@ -523,8 +611,6 @@
       captionText.style.display = "block";
       finaleSection.style.display = "none";
       stopGiftRattle();
-
-      // if you go back from finale, show title again
       dayTitle.style.display = "block";
     }
 
@@ -583,7 +669,8 @@
             herImg.classList.add("meet");
             meImg.classList.add("meet");
 
-            popBurstHeart();
+            // ✅ this now shows 👍 only on day 4
+            popBurstHeart(d.day);
 
             setTimeout(() => {
               herCard.classList.remove("bump");
@@ -687,7 +774,7 @@
       giftRevealed = true;
       stopGiftRattle();
 
-      // ✅ hide the Joulukalenteri title too
+      // hide the Joulukalenteri title too
       dayTitle.style.display = "none";
 
       finaleText.style.display = "none";
