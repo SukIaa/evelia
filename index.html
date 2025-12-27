@@ -5,7 +5,8 @@
   <title>Evelia Jordan</title>
 
   <style>
-    body {
+    /* ===== GLOBAL LOCK (prevents scrollbar flash) ===== */
+    html, body {
       background-color: #232323;
       font-family: 'Segoe UI', sans-serif;
       text-align: center;
@@ -13,7 +14,8 @@
       padding-bottom: 120px;
       color: #f7f7f7;
       margin: 0;
-      overflow-x: hidden;
+      width: 100%;
+      overflow-x: hidden;   /* CRITICAL */
     }
 
     h1 {
@@ -150,10 +152,10 @@
       transform: scale(0.95);
     }
 
-    /* ===== RAPUNZEL PNG (bottom-right) ===== */
+    /* ===== RAPUNZEL PNG ===== */
     #rapunzelArt {
       position: fixed;
-      bottom: 0px;
+      bottom: 0;
       right: 50px;
       width: 300px;
       max-width: 40vw;
@@ -180,6 +182,7 @@
 </head>
 
 <body>
+
   <h1>Evelia Jordan está más buena que el pan. 🇵🇪</h1>
   <p>❤️🍞</p>
 
@@ -187,7 +190,6 @@
   <b1>(Mä tukkann salmiakki tosi paljon).</b1>
   <p>❤️🍬</p>
 
-  <!-- BUTTON ROW -->
   <div style="display:flex; flex-direction:column; align-items:center;">
     <div class="button-row">
       <div style="display:flex; flex-direction:column; align-items:center;">
@@ -199,48 +201,41 @@
     </div>
   </div>
 
-  <!-- 🎄 CHRISTMAS TREE BUTTON -->
+  <!-- 🎄 TREE -->
   <div id="christmasBtn">
-    <a href="christmas.html" aria-label="Christmas Surprise">
-      <img src="christmas-tree.png" alt="Christmas consideration" class="christmas-tree">
+    <a href="christmas.html">
+      <img src="christmas-tree.png" class="christmas-tree">
     </a>
   </div>
 
-  <!-- SCREAMER -->
   <div id="screamer">
-    <img src="shark.jpg" alt="SCREAMER!">
+    <img src="shark.jpg">
     <h2>RAHHHH</h2>
-    <b1>Euuu, que haces mirando esto de nuevo??? Si, tu, te pille. Guapa. En fin, te quiero ver.</b1>
-    <p></p>
-    <b1>Yaaa no??? Tambien se vale hablarme... solo digo</b1>
   </div>
 
-  <!-- PRINCESS VIDEO -->
   <div id="princessVideo">
-    <h2 style="margin-bottom: 20px;">✨ Para ti princesa ✨</h2>
-
+    <h2>✨ Para ti princesa ✨</h2>
     <div class="video-wrapper">
       <iframe
-        src="https://drive.google.com/file/d/10y6IiXBJbq-siwo9tvubGvCNdShtLkgD/preview?embedded=true"
+        src="https://drive.google.com/file/d/10y6IiXBJbq-siwo9tvubGvCNdShtLkgD/preview"
         width="640"
         height="360"
-        allow="autoplay"
         allowfullscreen>
       </iframe>
     </div>
   </div>
 
-  <!-- RAPUNZEL PNG -->
-  <img id="rapunzelArt" src="rapunzel.png" alt="Rapunzel" loading="eager">
+  <img id="rapunzelArt" src="rapunzel.png" alt="Rapunzel">
 
   <script>
     const christmasBtn = document.getElementById('christmasBtn');
     const rapunzelArt = document.getElementById('rapunzelArt');
 
-    // Debug for GitHub Pages (case-sensitive paths)
-    rapunzelArt.addEventListener("error", () => {
-      console.error("rapunzel.png failed to load. Check exact filename/path (case-sensitive on GitHub Pages).");
-    });
+    /* Mobile-safe scroll */
+    function scrollNice(el) {
+      const isMobile = window.matchMedia("(max-width: 900px)").matches;
+      el.scrollIntoView({ behavior: isMobile ? "auto" : "smooth", block: "start" });
+    }
 
     function toggleScreamer() {
       const screamer = document.getElementById('screamer');
@@ -252,15 +247,12 @@
 
       if (screamer.style.display === 'none' || screamer.style.display === '') {
         screamer.style.display = 'block';
-        void screamer.offsetWidth;
         screamer.classList.add('active');
-
         christmasBtn.classList.add('hidden');
-        screamer.scrollIntoView({ behavior: "smooth" });
+        scrollNice(screamer);
       } else {
         screamer.style.display = 'none';
         screamer.classList.remove('active');
-
         christmasBtn.classList.remove('hidden');
       }
     }
@@ -274,17 +266,13 @@
 
       if (princess.style.display === 'none' || princess.style.display === '') {
         princess.style.display = 'block';
-        void princess.offsetWidth;
         princess.classList.add('active');
-
         christmasBtn.classList.add('hidden');
         rapunzelArt.classList.add('visible');
-
-        princess.scrollIntoView({ behavior: "smooth" });
+        scrollNice(princess);
       } else {
         princess.style.display = 'none';
         princess.classList.remove('active');
-
         christmasBtn.classList.remove('hidden');
         rapunzelArt.classList.remove('visible');
       }
