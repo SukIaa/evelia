@@ -132,7 +132,7 @@
     .caption{
       margin-top:28px;font-size:1.55em;line-height:1.35;padding:0 18px;opacity:.98;
       transition:opacity .22s ease, transform .22s ease;min-height:1.4em;
-      white-space: pre-line; /* ✅ THIS makes \n show as a new line */  
+      white-space: pre-line; /* ✅ THIS makes \n show as a new line */
     }
     .caption.swap-out{opacity:0;transform:translateY(8px);}
     .caption.swap-in {opacity:0;transform:translateY(-8px);}
@@ -337,6 +337,8 @@
       <div id="giftReveal">
         <div id="heartExplosion"></div>
         <img id="giftContentInline" src="days/princesa.png" alt="Mi Princesa Evelia">
+        <!-- ✅ NEW: caption under the final image (same style as day captions) -->
+        <div class="caption" id="giftCaption"></div>
       </div>
     </div>
   </div>
@@ -358,7 +360,7 @@
       8: "7 besos tuyos llenarían de dulzura este amor más que ningún alfajor jamás podría",
       9: "Los dos olvidamos foto 🥲🥲",
       10: "Ya que no me dejas agarrar tu mano en el cine, dejame entrelazar nuestros pies cómo cuellos de cisne 👣🦢👣",
-      11: "Pieeees 👣", 
+      11: "Pieeees 👣",
       12: "Mi princesa favorita eres tú, ojos de esmeralda y cabello de oro \n Mi cuento empieza y termina, cuando sonríes de ese modo",
       13: "Hay calles tan bonitas en málaga... \n pero ninguna como ese tramo, que caminamos a ciegas de la mano",
       14: "🎵🎶Era Peter un reno, que tenía una nariz... Roja cómo una grana...🎶🎵",
@@ -367,6 +369,9 @@
       17: "No son mejores que las flores que te llevé en nuestra primera cita verdad?",
       18: "Re tonta la foto, lo sé, pero es dificil encontrar algo interesante, \n aún así, no hay nada más dificil que todo el día no pensarte."
     };
+
+    // ✅ NEW: final gift caption text (same style, supports \n)
+    const GIFT_CAPTION_TEXT = "Feliz Navidad mi princesa 🎄❤️\nTe adoro un montón.\n \n \n Aquí tenía la segunda parte del regalo, un poema y buenas noticias, pero me pareció mejor borrarlo, no creo que lo quieras todavía, el dibujo sí... Me demoré tanto en aprender a dibujar solo para este regalo que quería que lo vieras. \n \n En cambio quería aprovechar el espacio para desearte lo mejor, eres una chica increíble, mereces el mundo entero. No te guardo ningún tipo de rencor, sé que a distancia ese tipo de cosas suelen pasar, \n \n \n Pero bueno, mentiría si te diría que parte de mí no hubiera querido que yo te guste a ti de la misma manera en la que tú me gustaste a mí. \n \n Te mando un abrazo re fuerte, realmente me hubiera gustado verte aunque sea una vez más, ahora que te conozco tanto y sé que lo que siento por ti es real. Siempre te recordaré con buenos ojos, ojos verdes jaja, espero te acuerdes de lo bueno. \n \n \n En fin gracias Evelia por estos 6 increíbles meses, quizá en otra vida no te perdía tan pronto. ";
 
     // ✅ Forget placeholders:
     const I_FORGET_DAYS = [9,12];
@@ -460,59 +465,57 @@
     }
 
     /* ===== GATE ===== */
-   function unlock() {
-  const inputRaw = password.value.trim();
-  const inputLower = inputRaw.toLowerCase();
+    function unlock() {
+      const inputRaw = password.value.trim();
+      const inputLower = inputRaw.toLowerCase();
 
-  error.textContent = "";
-  hideSpecialMsg();
+      error.textContent = "";
+      hideSpecialMsg();
 
-  // ===== NEW WORD EASTER EGGS =====
-  if (inputLower === "monton") {
-    error.textContent = "No mi amor, a mí me gustas un montón, pero es un porcentaje % lo que te pido.";
-    return;
-  }
-  if (inputLower === "mucho") {
-    error.textContent = "No mi amor, mucho es lo que te extraño, es un porcentaje % lo que te pido.";
-    return;
-  }
-  if (inputLower === "toda") {
-    error.textContent = "No mi amor, cuando te tenga en frente te voy a hacer toda mía, ahora es un porcentaje % lo que te pido.";
-    return;
-  }
-  if (inputLower === "evelia") {
-    error.textContent = "La dueña de mi corazón";
-    return;
-  }
-  if (inputLower === "11/06/25") {
-    error.textContent = "El día que llegaste a mi vida";
-    return;
-  }
+      // ===== NEW WORD EASTER EGGS =====
+      if (inputLower === "monton") {
+        error.textContent = "No mi amor, a mí me gustas un montón, pero es un porcentaje % lo que te pido.";
+        return;
+      }
+      if (inputLower === "mucho") {
+        error.textContent = "No mi amor, mucho es lo que te extraño, es un porcentaje % lo que te pido.";
+        return;
+      }
+      if (inputLower === "toda") {
+        error.textContent = "No mi amor, cuando te tenga en frente te voy a hacer toda mía, ahora es un porcentaje % lo que te pido.";
+        return;
+      }
+      if (inputLower === "evelia") {
+        error.textContent = "La dueña de mi corazón";
+        return;
+      }
+      if (inputLower === "11/06/25") {
+        error.textContent = "El día que llegaste a mi vida";
+        return;
+      }
 
+      // "0 %", "0%", "0   %" etc.
+      if (/^0\s*%$/.test(inputLower)) {
+        error.textContent = "Me pregunto de quién eres ahora, pero en realidad, ya lo sé.";
+        return;
+      }
+      // ==============================
 
-  // "0 %", "0%", "0   %" etc.
-  if (/^0\s*%$/.test(inputLower)) {
-    error.textContent = "Me pregunto de quién eres ahora, pero en realidad, ya lo sé.";
-    return;
-  }
-  // ==============================
+      const p = parsePercentInput(inputRaw);
+      if (p !== null && p >= 100) {
+        runEasterEgg();
+        return;
+      }
 
-  const p = parsePercentInput(inputRaw);
-  if (p !== null && p >= 100) {
-    runEasterEgg();
-    return;
-  }
-
-  if (inputRaw === PASSWORD_NORMAL) {
-    gate.style.display = "none";
-    content.style.display = "block";
-    topTreeLink.style.display = "block";
-    renderCurrent(true);
-  } else {
-    error.textContent = "Hint: Que tanto eres mia? 😤";
-  }
-}
-
+      if (inputRaw === PASSWORD_NORMAL) {
+        gate.style.display = "none";
+        content.style.display = "block";
+        topTreeLink.style.display = "block";
+        renderCurrent(true);
+      } else {
+        error.textContent = "Hint: Que tanto % eres mia? 😤";
+      }
+    }
 
     /* ===== PRELOAD ===== */
     function preloadIndex(idx) {
@@ -599,6 +602,10 @@
       heartExplosion.innerHTML = "";
       finaleText.style.display = "block";
       giftBtnWrap.style.display = "block";
+
+      // ✅ NEW: reset final caption
+      giftCaption.textContent = "";
+      giftCaption.style.display = "none";
 
       giftRevealed = false;
       startGiftRattle();
@@ -781,6 +788,10 @@
       giftBtnWrap.style.display = "none";
 
       giftReveal.style.display = "block";
+
+      // ✅ NEW: set and show final caption
+      giftCaption.textContent = GIFT_CAPTION_TEXT;
+      giftCaption.style.display = "block";
 
       heartExplosionBurst(52);
 
