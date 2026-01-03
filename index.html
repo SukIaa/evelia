@@ -152,6 +152,29 @@
       transform: scale(0.95);
     }
 
+    /* ===== GIFT CAPTION TEXT ===== */
+    #giftCaption {
+      max-width: 820px;
+      margin: 35px auto 0;
+      padding: 0 20px;
+      white-space: pre-line; /* respects line breaks */
+      font-size: 1.12em;
+      line-height: 1.65;
+      color: #f0f0f0;
+      opacity: 1;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    #giftCaption.hidden {
+      opacity: 0;
+      transform: translateY(6px);
+      pointer-events: none;
+      height: 0;
+      margin: 0 auto;
+      padding: 0 20px;
+      overflow: hidden;
+    }
+
     /* ===== RAPUNZEL PNG ===== */
     #rapunzelArt {
       position: fixed;
@@ -187,7 +210,7 @@
   <p>❤️🍞</p>
 
   <h1>Evelia Jordan on herkullisempi kuin salmiakki. 🇫🇮</h1>
-  <b1>(Mä tukkann salmiakki tosi paljon).</b1>
+  <b1>(Mä tykkään salmiakista tosi paljon).</b1>
   <p>❤️🍬</p>
 
   <div style="display:flex; flex-direction:column; align-items:center;">
@@ -204,12 +227,43 @@
   <!-- 🎄 TREE -->
   <div id="christmasBtn">
     <a href="christmas.html">
-      <img src="christmas-tree.png" class="christmas-tree">
+      <img src="christmas-tree.png" class="christmas-tree" alt="Christmas Tree">
     </a>
   </div>
 
+  <!-- 📝 TEXT UNDER TREE -->
+  <div id="giftCaption">
+🎶✨
+
+I can still recall our last summer 
+I still see it all 
+Walks along the center, laughing in the rain ☔  
+Our last summer, memories that remain 
+
+We made our way along the river  
+And we sat down in the grass by the Tampere tower   
+I was so happy we had met 
+It was the time of no regret, oh, yes  
+
+But underneath, we had a fear of flying 
+Of getting lost, a fear of slowly lying  
+We took the chance like we were dancing our last dance 
+
+I can still recall our last summer  
+I still see it all  
+In the movie hall, ’round the train we go  
+Our last summer walking hand in hand
+
+We were living for the day, worries far away  
+Our last summer  
+Memories that will fade
+
+🎶✨
+
+  </div>
+
   <div id="screamer">
-    <img src="shark.jpg">
+    <img src="shark.jpg" alt="Shark">
     <h2>RAHHHH</h2>
   </div>
 
@@ -230,6 +284,7 @@
   <script>
     const christmasBtn = document.getElementById('christmasBtn');
     const rapunzelArt = document.getElementById('rapunzelArt');
+    const giftCaption = document.getElementById('giftCaption');
 
     /* Mobile-safe scroll */
     function scrollNice(el) {
@@ -249,11 +304,13 @@
         screamer.style.display = 'block';
         screamer.classList.add('active');
         christmasBtn.classList.add('hidden');
+        giftCaption.classList.add('hidden');
         scrollNice(screamer);
       } else {
         screamer.style.display = 'none';
         screamer.classList.remove('active');
         christmasBtn.classList.remove('hidden');
+        giftCaption.classList.remove('hidden');
       }
     }
 
@@ -268,12 +325,14 @@
         princess.style.display = 'block';
         princess.classList.add('active');
         christmasBtn.classList.add('hidden');
+        giftCaption.classList.add('hidden');
         rapunzelArt.classList.add('visible');
         scrollNice(princess);
       } else {
         princess.style.display = 'none';
         princess.classList.remove('active');
         christmasBtn.classList.remove('hidden');
+        giftCaption.classList.remove('hidden');
         rapunzelArt.classList.remove('visible');
       }
     }
