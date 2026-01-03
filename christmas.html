@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Hyva Joulua Guapa</title>
 
   <style>
@@ -57,92 +57,23 @@
     #specialMsg{margin-top:26px;display:none;animation:fadeIn .6s ease-out;}
     #specialMsg p{font-size:1.55em;margin:.45em 0;color:#fff;}
 
-    /* ===== UNLOCKED CONTENT ===== */
+    /* ===== UNLOCKED CONTENT (ONLY FINAL GIFT) ===== */
     #content{display:none;animation:fadeIn .8s ease-out;position:relative;z-index:2;}
-
-    /* spacing above title (change this) */
-    .day-title{
-      margin-top:140px;font-size:3.2em;font-weight:800;letter-spacing:.02em;
-      transition:transform .28s cubic-bezier(.2,.9,.2,1), opacity .28s ease;
-    }
-    .day-title.pop{transform:scale(1.06);opacity:1;}
-
-    .carousel-row{
-      margin-top:54px;display:flex;align-items:center;justify-content:center;gap:18px;padding:0 18px;position:relative;
-    }
-
-    /* ===== NAV BUTTONS ===== */
-    .nav-btn{
-      width:70px;height:70px;border-radius:999px;border:none;cursor:pointer;background:#ff4444;color:#fff;
-      display:grid;place-items:center;padding:0;box-shadow:0 12px 30px rgba(0,0,0,.55);
-      transition:transform .10s ease-out, filter .10s ease-out, opacity .10s ease-out;
-      user-select:none;
-    }
-    .nav-btn:hover{filter:brightness(1.06);}
-    .nav-btn:active{transform:scale(.95);}
-    .nav-btn:disabled{opacity:.35;cursor:not-allowed;filter:none;}
-    .arrow{font-size:34px;line-height:1;font-weight:900;transform:translateY(-1px);}
-
-    .pics{display:flex;gap:18px;align-items:center;justify-content:center;flex-wrap:wrap;position:relative;}
-
-    /* Heart overlay ON TOP of images (carousel bump) */
-    .heart-burst{
-      position:absolute;left:50%;top:50%;transform:translate(-50%,-55%) scale(.6);
-      opacity:0;z-index:9999;pointer-events:none;font-size:56px;
-      filter:drop-shadow(0 0 16px rgba(255,68,68,.35));
-    }
-    .heart-burst.pop{animation:heartPop .70s cubic-bezier(.2,.9,.2,1);}
-    @keyframes heartPop{
-      0%{opacity:0;transform:translate(-50%,-55%) scale(.6)}
-      30%{opacity:1;transform:translate(-50%,-58%) scale(1.25)}
-      55%{opacity:1;transform:translate(-50%,-55%) scale(1.05)}
-      100%{opacity:0;transform:translate(-50%,-50%) scale(1.45)}
-    }
-
-    /* image containers */
-    .pic-card{
-      width:300px;max-width:38vw;min-width:210px;aspect-ratio:3/4;
-      background:transparent;border:none;box-shadow:none;overflow:visible;display:grid;place-items:center;
-      position:relative;z-index:1;
-    }
-    .pic-card img{
-      width:100%;height:100%;object-fit:cover;display:block;border-radius:18px;
-      box-shadow:0 18px 45px rgba(0,0,0,.60);
-      opacity:1;
-      transform:translateX(0) rotate(0deg) scale(1);
-      transition:opacity .30s ease, transform .30s cubic-bezier(.2,.9,.2,1);
-      will-change:transform,opacity;
-      background:transparent;
-    }
-
-    /* simple slide animation */
-    #herImg.swap-out{opacity:0;transform:translateX(-40px) rotate(-2deg) scale(.98);}
-    #meImg.swap-out {opacity:0;transform:translateX(40px)  rotate(2deg)  scale(.98);}
-    #herImg.swap-in {opacity:0;transform:translateX(-40px) rotate(-2deg) scale(.98);}
-    #meImg.swap-in  {opacity:0;transform:translateX(40px)  rotate(2deg)  scale(.98);}
-
-    /* meet + rotate on bump */
-    #herImg.meet { transform: translateX(16px) rotate(2.2deg) scale(1.02); }
-    #meImg.meet  { transform: translateX(-16px) rotate(-2.2deg) scale(1.02); }
-
-    /* bump scale */
-    .pic-card.bump{animation:bump .30s ease-out;}
-    @keyframes bump{0%{transform:scale(1)}55%{transform:scale(1.03)}100%{transform:scale(1)}}
-
-    .caption{
-      margin-top:28px;font-size:1.55em;line-height:1.35;padding:0 18px;opacity:.98;
-      transition:opacity .22s ease, transform .22s ease;min-height:1.4em;
-      white-space: pre-line; /* ✅ THIS makes \n show as a new line */
-    }
-    .caption.swap-out{opacity:0;transform:translateY(8px);}
-    .caption.swap-in {opacity:0;transform:translateY(-8px);}
 
     /* ===== FINAL SCREEN ===== */
     #finaleSection{
-      display:none;margin-top:42px;padding:0 18px;animation:fadeIn .7s ease-out;position:relative;
+      display:none;
+      margin-top:42px;
+      padding:0 18px;
+      animation:fadeIn .7s ease-out;
+      position:relative;
     }
     #finaleText{
-      font-size:1.75em;line-height:1.35;max-width:900px;margin:0 auto;opacity:.98;
+      font-size:1.75em;
+      line-height:1.35;
+      max-width:900px;
+      margin:0 auto;
+      opacity:.98;
       transition:opacity .22s ease, transform .22s ease, filter .22s ease;
     }
 
@@ -240,6 +171,17 @@
       100% { opacity:1; transform:scale(1) translateY(0); }
     }
 
+    /* caption under the final image */
+    .caption{
+      margin-top:28px;
+      font-size:1.55em;
+      line-height:1.35;
+      padding:0 18px;
+      opacity:.98;
+      min-height:1.4em;
+      white-space: pre-line; /* ✅ \n shows as new lines */
+    }
+
     /* ===== HEART RAIN ===== */
     .heart{
       position:fixed;top:-60px;pointer-events:none;animation:fall linear forwards;z-index:9999;opacity:.95;
@@ -253,8 +195,7 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .snowflake, .heart, .pic-card img, .caption, .pic-card.bump, .heart-burst.pop,
-      .boom-heart, #giftContentInline.reveal, #giftBtn.rattle {
+      .snowflake, .heart, .boom-heart, #giftContentInline.reveal, #giftBtn.rattle {
         animation: none !important;
         transition: none !important;
       }
@@ -298,32 +239,7 @@
     <h1>Hyvää joulua 🇫🇮</h1>
     <p>❤️🎄🎁❤️</p>
 
-    <div class="day-title" id="dayTitle"></div>
-
-    <div class="carousel-row" id="carouselRow">
-      <button class="nav-btn" id="prevBtn" aria-label="Previous day">
-        <span class="arrow">❮</span>
-      </button>
-
-      <div class="pics" id="picsWrap">
-        <div class="heart-burst" id="burstHeart">❤️</div>
-
-        <div class="pic-card" id="herCard">
-          <img id="herImg" src="" alt="Her pic">
-        </div>
-        <div class="pic-card" id="meCard">
-          <img id="meImg" src="" alt="My pic">
-        </div>
-      </div>
-
-      <button class="nav-btn" id="nextBtn" aria-label="Next day">
-        <span class="arrow">❯</span>
-      </button>
-    </div>
-
-    <div class="caption" id="captionText"></div>
-
-    <!-- FINAL SCREEN -->
+    <!-- FINAL SCREEN ONLY -->
     <div id="finaleSection">
       <div id="finaleText">
         Alguien perdió el celular... Me diste un infarto tonta, lista para abrir tu regalo?
@@ -336,8 +252,8 @@
       <!-- DRAMATIC INLINE REVEAL -->
       <div id="giftReveal">
         <div id="heartExplosion"></div>
+        <!-- keep your final image -->
         <img id="giftContentInline" src="days/princesa.png" alt="Mi Princesa Evelia">
-        <!-- ✅ NEW: caption under the final image (same style as day captions) -->
         <div class="caption" id="giftCaption"></div>
       </div>
     </div>
@@ -346,73 +262,23 @@
   <script>
     const PASSWORD_NORMAL = "99%";
 
-    // ✅ You asked to lower the amount to 17 total slides.
-    // We'll make this: Day 3 -> 18 (16 slides) + FINAL (1) = 17 total.
+    // ✅ final gift caption text (supports \n)
+    const GIFT_CAPTION_TEXT =
+      "Feliz Navidad mi princesa 🎄❤️\n" +
+      "Te adoro un montón.\n" +
+      "\n" +
+      "\n" +
+      "Si realmente me querias allí, todo lo que tenias que decir era 'Ven' \n" +
+      "\n" +
+      "Sé feliz, realmente lo mereces, solo, deja de mentirte y deja de mentir, mientes muy mal, valehtelija.\n" +
+      "\n" +
+      "La verdad siempre sale tarde o temprano, no era dificil decir 'René conocí a alguien más porque tú no estas aquí'.\n"+
+      "\n" +
+      "Eres miles de cosas increibles Evelia, pero honesta no es una de ellas.\n"+
+      "\n" +
+      "— Te quise un universo, René";
 
-    // ===== EDIT CUTE TEXTS HERE (per day) =====
-    // Just change the strings. If a day is missing here, it falls back to default.
-    const DAY_TEXT = {
-      3: "No sabes cómo adoro esta fotooo tuya 😍😍😍",
-      4: "Messi Fan 👍",
-      5: "Ojalá mis brazos fueran muy... muy... largos\n para abrazarte desde aquí, cuando tus días sean amargos",
-      6: "Más bonito que ver a Messi campeón, es ver tu sonrisa para mí.\n Por eso subirme en un avión, es lo que me haría tan feliz",
-      7: "Si tan solo hubiera entendido que el premio de aquella feria, era tu compañía...\n te habría abrazado más fuerte aquel día \n \n Hay un peluche con tu nombre en mi maleta, te lo doy a cambio de una cita",
-      8: "7 besos tuyos llenarían de dulzura este amor más que ningún alfajor jamás podría",
-      9: "Los dos olvidamos foto 🥲🥲",
-      10: "Ya que no me dejas agarrar tu mano en el cine, dejame entrelazar nuestros pies cómo cuellos de cisne 👣🦢👣",
-      11: "Pieeees 👣",
-      12: "Mi princesa favorita eres tú, ojos de esmeralda y cabello de oro \n Mi cuento empieza y termina, cuando sonríes de ese modo",
-      13: "Hay calles tan bonitas en málaga... \n pero ninguna como ese tramo, que caminamos a ciegas de la mano",
-      14: "🎵🎶Era Peter un reno, que tenía una nariz... Roja cómo una grana...🎶🎵",
-      15: "Te juro que los que te prepare a tí por las mañanas serán mas lindos :(",
-      16: "Tú y yo deberiamos jugar minecraft, de niñito dije a mi amigo que me queria casar con una chica que juegue maincraf",
-      17: "No son mejores que las flores que te llevé en nuestra primera cita verdad?",
-      18: "Re tonta la foto, lo sé, pero es dificil encontrar algo interesante, \n aún así, no hay nada más dificil que todo el día no pensarte."
-    };
-
-    // ✅ NEW: final gift caption text (same style, supports \n)
-    const GIFT_CAPTION_TEXT = "Feliz Navidad mi princesa 🎄❤️\nTe adoro un montón.\n \n \n - Esta parte a sido borrada hasta nuevo aviso - ";
-
-    // ✅ Forget placeholders:
-    const I_FORGET_DAYS = [9,12];
-    const SHE_FORGET_DAYS = [11,13,14,15,16,17,18];
-    const WE_BOTH_FORGET_DAYS = [9];
-
-    function getDayPaths(day) {
-      // both forget has priority
-      if (WE_BOTH_FORGET_DAYS.includes(day)) {
-        return { her: "days/we-forget1.png", me: "days/we-forget2.png" };
-      }
-      const herPath = SHE_FORGET_DAYS.includes(day) ? "days/her-forget.png" : `days/her-${day}.png`;
-      const mePath  = I_FORGET_DAYS.includes(day)   ? "days/me-forget.png"  : `days/mine-${day}.png`;
-      return { her: herPath, me: mePath };
-    }
-
-    // Days 3 -> 18 (inclusive) = 16 days
-    const START_DAY = 3;
-    const END_DAY = 18;
-    const DAYS_COUNT = (END_DAY - START_DAY) + 1; // 16
-
-    const daysData = Array.from({ length: DAYS_COUNT }, (_, i) => {
-      const day = START_DAY + i; // starts at 3
-      const paths = getDayPaths(day);
-
-      return {
-        day,
-        her: paths.her,
-        me: paths.me,
-        text: DAY_TEXT[day] ?? `some cute text for day ${day}`
-      };
-    });
-
-    // FINAL slide
-    const TOTAL_SLIDES = daysData.length + 1;
-
-    let currentIndex = 0;
     let heartRainRunning = false;
-    let isAnimating = false;
-    let lastNavTime = 0;
-
     let giftRattleTimer = null;
     let giftRevealed = false;
 
@@ -472,7 +338,7 @@
       error.textContent = "";
       hideSpecialMsg();
 
-      // ===== NEW WORD EASTER EGGS =====
+      // ===== WORD EASTER EGGS =====
       if (inputLower === "monton") {
         error.textContent = "No mi amor, a mí me gustas un montón, pero es un porcentaje % lo que te pido.";
         return;
@@ -511,51 +377,19 @@
         gate.style.display = "none";
         content.style.display = "block";
         topTreeLink.style.display = "block";
-        renderCurrent(true);
+
+        // ✅ jump straight to final gift screen
+        showFinale();
       } else {
         error.textContent = "Hint: Que tanto % eres mia? 😤";
       }
     }
 
-    /* ===== PRELOAD ===== */
-    function preloadIndex(idx) {
-      if (idx < 0 || idx >= daysData.length) return;
-      const d = daysData[idx];
-      new Image().src = d.her;
-      new Image().src = d.me;
-    }
+    password.addEventListener("keydown", e => {
+      if (e.key === "Enter") unlock();
+    });
 
-    // ===== (1) BUMP ICON SWITCH =====
-    function getBumpEmojiForDay(dayNumber) {
-      // thumbs up ONLY for picture day 4
-      if (dayNumber === 4) return "👍";
-      return "❤️";
-    }
-
-    function popBurstHeart(dayNumber) {
-      // set emoji before animating
-      burstHeart.textContent = getBumpEmojiForDay(dayNumber);
-
-      burstHeart.classList.remove("pop");
-      void burstHeart.offsetWidth;
-      burstHeart.classList.add("pop");
-    }
-
-    function updateNavState() {
-      const isFinal = currentIndex === TOTAL_SLIDES - 1;
-
-      if (isFinal) {
-        prevBtn.style.display = "none";
-        nextBtn.style.display = "none";
-        return;
-      }
-
-      prevBtn.style.display = "grid";
-      nextBtn.style.display = "grid";
-      prevBtn.disabled = currentIndex === 0;
-      nextBtn.disabled = false;
-    }
-
+    /* ===== FINAL SCREEN ===== */
     function startGiftRattle() {
       stopGiftRattle();
       if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -587,14 +421,6 @@
     }
 
     function showFinale() {
-      dayTitle.textContent = `Joulupäivää`;
-      dayTitle.style.display = "block";
-      dayTitle.classList.remove("pop");
-      requestAnimationFrame(() => dayTitle.classList.add("pop"));
-      setTimeout(() => dayTitle.classList.remove("pop"), 240);
-
-      picsWrap.style.display = "none";
-      captionText.style.display = "none";
       finaleSection.style.display = "block";
 
       giftReveal.style.display = "none";
@@ -603,147 +429,16 @@
       finaleText.style.display = "block";
       giftBtnWrap.style.display = "block";
 
-      // ✅ NEW: reset final caption
       giftCaption.textContent = "";
       giftCaption.style.display = "none";
 
       giftRevealed = false;
       startGiftRattle();
-
-      updateNavState();
     }
 
-    function hideFinale() {
-      picsWrap.style.display = "flex";
-      captionText.style.display = "block";
-      finaleSection.style.display = "none";
-      stopGiftRattle();
-      dayTitle.style.display = "block";
-    }
-
-    function renderDay(isFirst = false) {
-      const d = daysData[currentIndex];
-
-      dayTitle.textContent = `Joulukalenteri: Dia ${d.day}`;
-      dayTitle.style.display = "block";
-      dayTitle.classList.remove("pop");
-      requestAnimationFrame(() => dayTitle.classList.add("pop"));
-      setTimeout(() => dayTitle.classList.remove("pop"), 240);
-
-      updateNavState();
-      preloadIndex(currentIndex + 1);
-      preloadIndex(currentIndex - 1);
-
-      if (isFirst) {
-        herImg.src = d.her;
-        meImg.src = d.me;
-        captionText.textContent = d.text || "";
-        return;
-      }
-
-      if (isAnimating) return;
-      isAnimating = true;
-
-      herImg.classList.add("swap-out");
-      meImg.classList.add("swap-out");
-      captionText.classList.add("swap-out");
-
-      prevBtn.disabled = true;
-      nextBtn.disabled = true;
-
-      setTimeout(() => {
-        herImg.classList.remove("swap-out");
-        meImg.classList.remove("swap-out");
-        captionText.classList.remove("swap-out");
-
-        herImg.classList.add("swap-in");
-        meImg.classList.add("swap-in");
-        captionText.classList.add("swap-in");
-
-        herImg.src = d.her;
-        meImg.src = d.me;
-        captionText.textContent = d.text || "";
-
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            herImg.classList.remove("swap-in");
-            meImg.classList.remove("swap-in");
-            captionText.classList.remove("swap-in");
-
-            herCard.classList.add("bump");
-            meCard.classList.add("bump");
-
-            herImg.classList.add("meet");
-            meImg.classList.add("meet");
-
-            // ✅ this now shows 👍 only on day 4
-            popBurstHeart(d.day);
-
-            setTimeout(() => {
-              herCard.classList.remove("bump");
-              meCard.classList.remove("bump");
-              herImg.classList.remove("meet");
-              meImg.classList.remove("meet");
-
-              updateNavState();
-              isAnimating = false;
-            }, 280);
-          });
-        });
-      }, 170);
-    }
-
-    function renderCurrent(isFirst = false) {
-      const isFinal = currentIndex === TOTAL_SLIDES - 1;
-      if (isFinal) { showFinale(); return; }
-      hideFinale();
-      renderDay(isFirst);
-    }
-
-    // ===== NAV (faster presses) =====
-    function canNavNow() {
-      const now = Date.now();
-      if (now - lastNavTime < 120) return false;
-      lastNavTime = now;
-      return true;
-    }
-
-    prevBtn.addEventListener("click", () => {
-      if (!canNavNow()) return;
-      if (isAnimating) return;
-      if (currentIndex > 0) {
-        currentIndex--;
-        renderCurrent();
-      }
-    });
-
-    nextBtn.addEventListener("click", () => {
-      if (!canNavNow()) return;
-      if (isAnimating) return;
-      if (currentIndex < TOTAL_SLIDES - 1) {
-        currentIndex++;
-        renderCurrent();
-      }
-    });
-
-    document.addEventListener("keydown", (e) => {
-      if (content.style.display !== "block") return;
-      if (isAnimating) return;
-
-      if (e.key === "ArrowLeft" && currentIndex > 0) {
-        currentIndex--;
-        renderCurrent();
-      }
-      if (e.key === "ArrowRight" && currentIndex < TOTAL_SLIDES - 1) {
-        currentIndex++;
-        renderCurrent();
-      }
-    });
-
-    // ===== FINAL: DRAMATIC REVEAL + HEART RAIN MIX =====
     function preloadGiftAssets() {
-      new Image().src = "days/gift-content.png";
       new Image().src = "days/gift-button.png";
+      new Image().src = "days/princesa.png";
     }
     preloadGiftAssets();
 
@@ -781,20 +476,15 @@
       giftRevealed = true;
       stopGiftRattle();
 
-      // hide the Joulukalenteri title too
-      dayTitle.style.display = "none";
-
       finaleText.style.display = "none";
       giftBtnWrap.style.display = "none";
 
       giftReveal.style.display = "block";
 
-      // ✅ NEW: set and show final caption
       giftCaption.textContent = GIFT_CAPTION_TEXT;
       giftCaption.style.display = "block";
 
       heartExplosionBurst(52);
-
       giftContentInline.classList.remove("reveal");
       void giftContentInline.offsetWidth;
       giftContentInline.classList.add("reveal");
@@ -808,7 +498,7 @@
 
     giftBtn.addEventListener("click", revealGiftDramatic);
 
-    // ===== SPECIAL >= 100% =====
+    /* ===== SPECIAL >= 100% ===== */
     function showSpecialMsgSequence() {
       specialMsg.style.display = "block";
       line1.textContent = "";
@@ -827,7 +517,7 @@
       line3.textContent = "";
     }
 
-    // ===== HEART RAIN (shared) =====
+    /* ===== HEART RAIN (shared) ===== */
     function startHeartRain() {
       if (heartRainRunning) { burstHearts(50); return; }
       heartRainRunning = true;
@@ -862,10 +552,6 @@
         setTimeout(() => heart.remove(), (duration + delay) * 1000);
       }
     }
-
-    password.addEventListener("keydown", e => {
-      if (e.key === "Enter") unlock();
-    });
   </script>
 
 </body>
