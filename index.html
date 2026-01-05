@@ -415,20 +415,27 @@
     };
 
     const send = async (payload) => {
-      const body = JSON.stringify(payload);
+    const body = JSON.stringify(payload);
 
-      if (navigator.sendBeacon) {
-        const ok = navigator.sendBeacon(WEBHOOK_URL, new Blob([body], { type: "application/json" }));
-        if (ok) return;
-      }
+    // 1) Best: sendBeacon (usually works even when navigating away)
+    if (navigator.sendBeacon) {
+      const ok = navigator.sendBeacon(
+        WEBHOOK_URL,
+        new Blob([body], { type: "text/plain" })  // text/plain avoids headaches
+      );
+      if (ok) return;
+    }
 
-      await fetch(WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body,
-        keepalive: true
-      });
-    };
+    // 2) Fallback: fetch in no-cors mode (fire-and-forget)
+    await fetch(WEBHOOK_URL, {
+      method: "POST",
+      mode: "no-cors",
+      credentials: "omit",
+      body,
+      keepalive: true
+    });
+};
+
 
     // Expose a global function so your existing script can log events
     window.LogEvent = (eventName, extra = {}) => {
