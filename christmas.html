@@ -242,7 +242,7 @@
     <!-- FINAL SCREEN ONLY -->
     <div id="finaleSection">
       <div id="finaleText">
-        Te pillé! Qúe haces viendo esto de nuevo?? Eh? (Aquí te diría que me escribas, pero no)
+        Te pillé! Qúe haces viendo esto de nuevo?? Eh?
       </div>
 
       <div id="giftBtnWrap">
@@ -263,28 +263,64 @@
     const PASSWORD_NORMAL = "99%";
 
     // ✅ final gift caption text (supports \n)
-    const GIFT_CAPTION_TEXT =
-      "Feliz Navidad mi princesa 🎄❤️\n" +
-      "Te adoro un montón.\n" +
+    const GIFT_CAPTION_PART1 =
+      "Evelia\n" +
+      "\n" +
+      "Intento no escribirte,\n" +
+      "Ni pedirte, ni angustiarte,\n" +
+      "Por más que llegue a extrañarte.\n" +
+      "Porque dejarte ir\n" +
+      "es la única forma que me queda\n" +
+      "de todavía quererte.\n" +
+      "\n" +
+      "Porque si mis palabras te lastimaran,\n"+
+      "aunque fuera un poquito,\n"+
+      "sabría callar para cuidarte,\n"+
+      "incluso cuando escribirte,\n"+
+      "sea mí sueño favorito.\n"+
+      "y Dios lo deseo.\n"+
+      "\n" +
+      "Porque a veces un rayo de sol,\n" +
+      "tibio y tardío,\n" +
+      "se cuela por la ventana\n" +
+      "de mi cuarto vacío.\n" +
+      "\n" +
+      "Y me trae tu cabello dorado,\n" +
+      "su brillo encendido,\n" +
+      "directo a la memoria\n" +
+      "donde aún estás conmigo.\n" +
+      "\n" +
+      "Ese mismo sol despierta\n" +
+      "flores que el tiempo no borra,\n" +
+      "verdes como aquellos ojos\n" +
+      "que mi recuerdo atesora.\n" +
+      "\n" +
+      "Y vuelvo a perderme en ellos,\n" +
+      "sin saber cómo ni cuándo...\n" +
+      "en ese color que una vez fue mío,\n" +
+      "es que hoy te sigo anhelando.\n" +
+      "\n" +
+      "— René\n";
+
+    const GIFT_CAPTION_PART2 =
       "\n" +
       "\n" +
-      "Si realmente me querias allí, todo lo que tenias que decir era 'Ven' \n" +
       "\n" +
-      "Sé feliz, realmente lo mereces, solo, deja de mentirte y deja de mentir, que mientes muy mal tontita, valehtelija.\n" +
       "\n" +
-      "Perdón por escribirle a Miguel, no debería haberme metido, pero quería saber la verdad. Epero, y lo digo de verdad, \n que puedan encontrar lo que la supuesta distancia nos quitó a nosotros.\n"+
+      "Pero si la honestidad un día me gana, te diría que dejes a ese que pretende robarte de mí\n" +
+      "Que vuelvas aquí, a los brazos de este loco en los que tú bien sabes que perteneces\n" +
       "\n" +
-      "Parte de mí piensa que si tan solo hubiera ido el día 12 de diciembre cuando podía... \n Pero ya no tiene sentido pensar así verdad? Sí tan solo hubieras querido, todavía lo tendriamos todo\n A lo mejor en otra vida te volveré a encontrar y decirte 'Mañana voy'\n"+
+      "Y sí hoy te encuentras aquí, y te acuerdas de mí, entonces te lo digo\n" +
+      "Que sí queda un porciento de tí en el que todavía eres mía, que vengas Evelia\n" +
       "\n" +
-      "Te deseo lo mejor Evelia, me hiciste tan pero tan feliz, así que, sé feliz\n"+
-      "Te lo pido, pero más te pido, que si me extrañas que vengas a mis brazos\n"+
-      "\n" +
-      "— Un tonto que te quiso un universo, \n"+
-      "René";
+      "Ven \n";
 
     let heartRainRunning = false;
     let giftRattleTimer = null;
     let giftRevealed = false;
+
+    // ✅ NEW: timer for delayed caption reveal
+    let captionRevealTimer = null;
 
     /* ===== CONSTANT SNOW ===== */
     const MAX_SNOWFLAKES = 70;
@@ -481,6 +517,13 @@
       giftCaption.style.display = "none";
 
       giftRevealed = false;
+
+      // ✅ NEW: reset delayed caption reveal timer
+      if (captionRevealTimer) {
+        clearTimeout(captionRevealTimer);
+        captionRevealTimer = null;
+      }
+
       startGiftRattle();
     }
 
@@ -529,8 +572,15 @@
 
       giftReveal.style.display = "block";
 
-      giftCaption.textContent = GIFT_CAPTION_TEXT;
+      // ✅ show PART 1 immediately
+      giftCaption.textContent = GIFT_CAPTION_PART1;
       giftCaption.style.display = "block";
+
+      // ✅ reveal PART 2 after 10 seconds
+      if (captionRevealTimer) clearTimeout(captionRevealTimer);
+      captionRevealTimer = setTimeout(() => {
+        giftCaption.textContent += GIFT_CAPTION_PART2;
+      }, 24000);
 
       heartExplosionBurst(52);
       giftContentInline.classList.remove("reveal");
