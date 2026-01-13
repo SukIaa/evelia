@@ -263,58 +263,92 @@
     const PASSWORD_NORMAL = "99%";
 
     // ✅ final gift caption text (supports \n)
-    const GIFT_CAPTION_PART1 =
-      "Evelia\n" +
-      "\n" +
-      "Intento no escribirte,\n" +
-      "Ni pedirte, ni angustiarte,\n" +
-      "Por más que llegue a extrañarte.\n" +
-      "Porque dejarte ir\n" +
-      "es la única forma que me queda\n" +
-      "de todavía quererte.\n" +
-      "\n" +
-      "Porque si mis palabras te lastimaran,\n"+
-      "aunque fuera un poquito,\n"+
-      "sabría callar para cuidarte,\n"+
-      "incluso cuando escribirte,\n"+
-      "sea mí sueño favorito.\n"+
-      "y Dios lo deseo.\n"+
-      "\n" +
-      "Porque a veces un rayo de sol,\n" +
-      "tibio y tardío,\n" +
-      "se cuela por la ventana\n" +
-      "de mi cuarto vacío.\n" +
-      "\n" +
-      "Y me trae tu cabello dorado,\n" +
-      "su brillo encendido,\n" +
-      "directo a la memoria\n" +
-      "donde aún estás conmigo.\n" +
-      "\n" +
-      "Ese mismo sol despierta\n" +
-      "flores que el tiempo no borra,\n" +
-      "verdes como aquellos ojos\n" +
-      "que mi recuerdo atesora.\n" +
-      "\n" +
-      "Y vuelvo a perderme en ellos,\n" +
-      "sin saber cómo ni cuándo...\n" +
-      "en ese color que una vez fue mío,\n" +
-      "es que hoy te sigo anhelando.\n" +
-      "\n" +
-      "— René\n";
+    const GIFT_CAPTION_PART1 = `Poema para Evelia,
 
-    const GIFT_CAPTION_PART2 =
-      "\n" +
-      "\n" +
-      "\n" +  
-      "\n" +
-      "Pero si la honestidad un día me gana, te diría que dejes a ese tonto que pretende robarte de mí\n" +
-      "Que vuelvas aquí, a los brazos de este loco en los que tú bien sabes que eres feliz.\n" +
-      "\n" +
-      "Y sí hoy te encuentras aquí, y te acuerdas de mí, entonces te lo digo\n" +
-      "Que sí queda un porciento de tí en el que todavía eres mía, que vengas Evelia\n" +
-      "\n" +
-      "Ven princesa\n" +
-      "Ven y vuelve a ser mía \n";
+    Debajo de los parpados del alma, 
+    de este loco enamorado... 
+    en tinta verde, 
+    dejaste tus ojos tatuados. 
+
+    Para que pueda verte, 
+    aún en el sueño más profundo, 
+    a tí, 
+    la chica que más adoro en este mundo. 
+
+    Ahora, 
+    Soy náufrago en el mar de tu mirada esmeralda, 
+    y solo el dulce aroma de coco y vainilla, 
+    guiarían a este loco de vuelta a la orilla 
+    de tu piel. 
+
+    Me siento todos los días frente al mar, 
+    cómo si el oleaje y la brisa,
+    podrían traerme de vuelta el paisaje perfecto,
+    de tu sonrisa 
+
+    Observando el amanecer,
+    Porque entre los hilos de sol,
+    Que atraviesan mis pupilas,
+    Nuevamente puedo verte
+
+    Y todavía no he olvidado,
+    El calor de tenerte a mi lado,
+    De cómo apoyabas tu cabeza en el cine,
+    Rogándole al tiempo que no termine, 
+
+    Tus abrazos eran la caricia más pura,
+    Y tus besos me robaban la cordura,
+    Por eso cada noche, te pedía más de uno,
+    Y ahora me quedé con ninguno. 
+
+    Compartimos un vino aquella tarde,
+    bajo un árbol deseando besarte,
+    cómo quisiera hoy tenerte en mis brazos
+    y susurrarte: 
+    "Mi amor nunca voy a soltarte." 
+
+    Tu cariño fue más dulce
+    que el verano más perfecto,
+    porque ese sol, ese cielo,
+    ya los viví contigo. 
+
+    Ahora,
+    Vuelve a mí, 
+    Mi sonrisa divina, 
+    La alegría de mi día, 
+    Dueña de mi noche, 
+    Mi flaca, 
+    Mi obra de arte, 
+    ni el lienzo más perfecto, 
+    podría capturarte.
+
+    Porque entre tantos idiomas hablados,
+    ninguno supo pronunciar
+    lo único que importaba decir:
+    “No te vayas… ven a mí.”
+
+    — René`;
+
+    const GIFT_CAPTION_PART2 = `
+
+
+    No es que no haya intentado soltarte, 
+    Más de una vez te deje flotar 
+    a merced del tiempo, 
+    
+    Pero como la marea del mar, 
+    y la brisa del viento 
+    
+    Tu recuerdo siempre a vuelto...
+    Entre cada aliento, 
+    de las palabras que quedaron por decir, 
+    de cada latido que quedaron sin latir... 
+    
+    Es así, 
+    que sin buscarte, 
+    vuelvo a recordarte
+    
+    `;
 
     let heartRainRunning = false;
     let giftRattleTimer = null;
@@ -581,9 +615,9 @@
       if (captionRevealTimer) clearTimeout(captionRevealTimer);
       captionRevealTimer = setTimeout(() => {
         giftCaption.textContent += GIFT_CAPTION_PART2;
-      }, 34000);
+      }, 30000);
 
-      heartExplosionBurst(52);
+      //heartExplosionBurst(52);
       giftContentInline.classList.remove("reveal");
       void giftContentInline.offsetWidth;
       giftContentInline.classList.add("reveal");
