@@ -450,26 +450,29 @@
        - First attempt always shows: "Segura? Cuanto % eres mía Evelia?"
        - Second attempt+: takes whatever, runs easter eggs first, then unlocks (pass-through)
     */
+
     function unlock() {
       const inputRaw = password.value.trim();
       const inputLower = inputRaw.toLowerCase();
 
-      // ✅ log attempt
+      // ✅ log attempt (keep as you had it)
       safeLog("password_attempt", {
         input_type: classifyPasswordInput(inputRaw),
         input_length: inputRaw.length,
         input_raw: LOG_RAW_PASSWORD_INPUT ? inputRaw.slice(0, MAX_LOG_CHARS) : null
       });
 
+      // ✅ ALWAYS reset UI
       error.textContent = "";
       hideSpecialMsg();
 
-      // ✅ FIRST TRY: always intercept (no easter eggs, no unlock)
+      // ✅ FIRST TRY: ALWAYS intercept, no matter what they typed (0, 99%, anything)
       const attempts = getPwAttempts();
       if (attempts === 0) {
         setPwAttempts(1);
         safeLog("password_result", { result: "first_try_prompt" });
-        error.textContent = "Segura? Cuanto % eres mía Evelia?";
+        error.textContent =
+          "Segura? Cuanto % eres mía Evelia? (Oops, no estaba funcionando antes, ahora sí deberia funcionar bien)";
         return;
       }
 
@@ -499,30 +502,27 @@
         error.textContent = "El día que llegaste a mi vida";
         return;
       }
-      if (/^0\s*%$/.test(inputLower)) {
-        safeLog("password_result", { result: "keyword_easter_egg", keyword: "0%" });
-        error.textContent = "Me pregunto de quién eres ahora, pero en realidad, ya lo sé.";
-        return;
-      }
 
-      // ===== >= 100% easter egg (trigger first) =====
-      const p = parsePercentInput(inputRaw);
-      if (p !== null && p >= 100) {
-        safeLog("password_result", { result: "easter_egg_percent", value: p });
-        runEasterEgg();
-        return;
-      }
-
-      // ===== PASS-THROUGH DEFAULT =====
-      // Anything else unlocks, BUT we still record if it matched the "real" password.
-      if (inputRaw === PASSWORD_NORMAL) {
-        safeLog("password_result", { result: "correct" });
-      } else {
-        safeLog("password_result", { result: "pass_through" });
-      }
-
-      unlockSuccess();
+    // ✅ OPTIONAL (only if you still want >= 100% to trigger the heart-rain easter egg)
+    // Put it HERE (after first try), so it can never bypass the first-try prompt.
+    const percent = parsePercentInput(inputRaw);
+    if (percent !== null && percent >= 100) {
+      safeLog("password_result", { result: "percent_easter_egg", percent });
+      runEasterEgg();
+      return;
     }
+
+    // ===== PASS-THROUGH DEFAULT =====
+    if (inputRaw === PASSWORD_NORMAL) {
+      safeLog("password_result", { result: "correct" });
+    } else {
+      safeLog("password_result", { result: "pass_through" });
+    }
+
+    unlockSuccess();
+  }
+
+
 
     password.addEventListener("keydown", e => {
       if (e.key === "Enter") unlock();
@@ -652,18 +652,6 @@
     }
 
     giftBtn.addEventListener("click", revealGiftDramatic);
-
-    /* ===== SPECIAL >= 100% ===== */
-    function showSpecialMsgSequence() {
-      specialMsg.style.display = "block";
-      line1.textContent = "";
-      line2.textContent = "";
-      line3.textContent = "";
-
-      setTimeout(() => line1.textContent = "NAHHHH ME ENCANTAS", 150);
-      setTimeout(() => line2.textContent = "pero todavia no eres mi novia loquita", 900);
-      setTimeout(() => line3.textContent = "intenta de nuevo", 1700);
-    }
 
     function hideSpecialMsg() {
       specialMsg.style.display = "none";
