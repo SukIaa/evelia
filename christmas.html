@@ -505,12 +505,6 @@
 
     // ✅ OPTIONAL (only if you still want >= 100% to trigger the heart-rain easter egg)
     // Put it HERE (after first try), so it can never bypass the first-try prompt.
-    const percent = parsePercentInput(inputRaw);
-    if (percent !== null && percent >= 100) {
-      safeLog("password_result", { result: "percent_easter_egg", percent });
-      runEasterEgg();
-      return;
-    }
 
     // ===== PASS-THROUGH DEFAULT =====
     if (inputRaw === PASSWORD_NORMAL) {
