@@ -128,7 +128,7 @@
 
     /* ===== CHRISTMAS TREE BUTTON ===== */
     #christmasBtn {
-      margin-top: 70px;
+      margin-top: 0;
       transition: opacity 0.4s ease, transform 0.4s ease;
     }
 
@@ -141,6 +141,7 @@
       max-width: 35vw;
       cursor: pointer;
       transition: transform 0.25s ease, filter 0.25s ease;
+      display: block;
     }
 
     .christmas-tree:hover {
@@ -201,6 +202,50 @@
         max-width: 55vw;
       }
     }
+
+    /* ============================= */
+    /* ✅ TREE + CARD (TRULY CENTERED) */
+    /* ============================= */
+    .tree-area {
+      margin-top: 70px;
+      display: inline-flex;          /* ✅ this is the key */
+      align-items: flex-start;       /* same top level */
+      justify-content: center;
+      gap: 18px;                     /* spacing between tree and card */
+    }
+
+    #cardBtn.hidden {
+      display: none;
+    }
+
+    .card-img {
+      height: 120px;                 /* fallback, JS will override to exact tree height */
+      width: auto;
+      display: block;
+      cursor: pointer;
+      transition: transform 0.25s ease, filter 0.25s ease;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .card-img:hover {
+      transform: scale(1.08);
+      /* ✅ white glow for the card */
+      filter: drop-shadow(0 0 14px rgba(255, 255, 255, 0.75));
+    }
+
+    .card-img:active {
+      transform: scale(0.95);
+    }
+
+    /* Mobile: stack tree over card, still centered */
+    @media (max-width: 700px) {
+      .tree-area {
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+      }
+    }
   </style>
 </head>
 
@@ -224,11 +269,19 @@
     </div>
   </div>
 
-  <!-- 🎄 TREE -->
-  <div id="christmasBtn">
-    <a id="christmasLink" href="christmas.html">
-      <img src="christmas-tree.png" class="christmas-tree" alt="Christmas Tree">
-    </a>
+  <!-- 🎄 TREE + 🃏 CARD (centered as a pair) -->
+  <div class="tree-area">
+    <div id="christmasBtn">
+      <a id="christmasLink" href="christmas.html">
+        <img id="treeImg" src="christmas-tree.png" class="christmas-tree" alt="Christmas Tree">
+      </a>
+    </div>
+
+    <div id="cardBtn">
+      <a id="cardLink" href="card.html" aria-label="Open card">
+        <img id="cardImg" src="card.png" class="card-img" alt="Card">
+      </a>
+    </div>
   </div>
 
   <!-- 📝 TEXT UNDER TREE -->
@@ -321,6 +374,18 @@
     const rapunzelArt = document.getElementById('rapunzelArt');
     const giftCaption = document.getElementById('giftCaption');
 
+    function syncCardHeightToTree() {
+      const treeImg = document.getElementById("treeImg") || document.querySelector(".christmas-tree");
+      const cardImg = document.getElementById("cardImg");
+      if (!treeImg || !cardImg) return;
+
+      const treeH = treeImg.getBoundingClientRect().height;
+      if (treeH > 0) cardImg.style.height = treeH + "px";
+    }
+
+    window.addEventListener("load", syncCardHeightToTree);
+    window.addEventListener("resize", syncCardHeightToTree);
+
     /* Mobile-safe scroll */
     function scrollNice(el) {
       const isMobile = window.matchMedia("(max-width: 900px)").matches;
@@ -330,6 +395,7 @@
     function toggleScreamer() {
       const screamer = document.getElementById('screamer');
       const princess = document.getElementById('princessVideo');
+      const cardBtn = document.getElementById('cardBtn');
 
       princess.style.display = 'none';
       princess.classList.remove('active');
@@ -340,9 +406,9 @@
         screamer.classList.add('active');
         christmasBtn.classList.add('hidden');
         giftCaption.classList.add('hidden');
+        cardBtn.classList.add('hidden');
         scrollNice(screamer);
 
-        // ✅ log: screamer opened
         LogEvent("open_screamer", { state: "opened" });
 
       } else {
@@ -350,8 +416,8 @@
         screamer.classList.remove('active');
         christmasBtn.classList.remove('hidden');
         giftCaption.classList.remove('hidden');
+        cardBtn.classList.remove('hidden');
 
-        // ✅ log: screamer closed
         LogEvent("close_screamer", { state: "closed" });
       }
     }
@@ -359,6 +425,7 @@
     function togglePrincess() {
       const screamer = document.getElementById('screamer');
       const princess = document.getElementById('princessVideo');
+      const cardBtn = document.getElementById('cardBtn');
 
       screamer.style.display = 'none';
       screamer.classList.remove('active');
@@ -368,10 +435,10 @@
         princess.classList.add('active');
         christmasBtn.classList.add('hidden');
         giftCaption.classList.add('hidden');
+        cardBtn.classList.add('hidden');
         rapunzelArt.classList.add('visible');
         scrollNice(princess);
 
-        // ✅ log: princess opened
         LogEvent("open_princess", { state: "opened" });
 
       } else {
@@ -379,9 +446,9 @@
         princess.classList.remove('active');
         christmasBtn.classList.remove('hidden');
         giftCaption.classList.remove('hidden');
+        cardBtn.classList.remove('hidden');
         rapunzelArt.classList.remove('visible');
 
-        // ✅ log: princess closed
         LogEvent("close_princess", { state: "closed" });
       }
     }
@@ -425,7 +492,6 @@
         ts_iso: new Date().toISOString(),
         ts_ms: Date.now(),
 
-        // page
         url: location.href,
         origin: location.origin,
         path: location.pathname,
@@ -433,11 +499,9 @@
         referrer: document.referrer || null,
         query: queryParams,
 
-        // anonymous identity
         visitor_id: getVisitorId(),
         session_id: getSessionId(),
 
-        // browser/device signals
         user_agent: nav.userAgent,
         language: nav.language || null,
         languages: safe(() => nav.languages, null),
@@ -446,7 +510,6 @@
         cookie_enabled: nav.cookieEnabled ?? null,
         do_not_track: nav.doNotTrack ?? null,
 
-        // screen/viewport
         screen_w: scr?.width ?? null,
         screen_h: scr?.height ?? null,
         screen_avail_w: scr?.availWidth ?? null,
@@ -455,46 +518,39 @@
         viewport_w: window.innerWidth ?? null,
         viewport_h: window.innerHeight ?? null,
 
-        // hardware hints
         device_memory_gb: nav.deviceMemory ?? null,
         cpu_cores: nav.hardwareConcurrency ?? null,
 
-        // network hints
         connection_type: conn?.effectiveType ?? null,
         connection_rtt: conn?.rtt ?? null,
         connection_downlink: conn?.downlink ?? null,
         connection_save_data: conn?.saveData ?? null,
 
-        // user prefs
         prefers_dark: safe(() => window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches, null),
         reduced_motion: safe(() => window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches, null),
       };
     };
 
     const send = async (payload) => {
-    const body = JSON.stringify(payload);
+      const body = JSON.stringify(payload);
 
-    // 1) Best: sendBeacon (usually works even when navigating away)
-    if (navigator.sendBeacon) {
-      const ok = navigator.sendBeacon(
-        WEBHOOK_URL,
-        new Blob([body], { type: "text/plain" })  // text/plain avoids headaches
-      );
-      if (ok) return;
-    }
+      if (navigator.sendBeacon) {
+        const ok = navigator.sendBeacon(
+          WEBHOOK_URL,
+          new Blob([body], { type: "text/plain" })
+        );
+        if (ok) return;
+      }
 
-    // 2) Fallback: fetch in no-cors mode (fire-and-forget)
-    await fetch(WEBHOOK_URL, {
-      method: "POST",
-      mode: "no-cors",
-      credentials: "omit",
-      body,
-      keepalive: true
-    });
-};
+      await fetch(WEBHOOK_URL, {
+        method: "POST",
+        mode: "no-cors",
+        credentials: "omit",
+        body,
+        keepalive: true
+      });
+    };
 
-
-    // Expose a global function so your existing script can log events
     window.LogEvent = (eventName, extra = {}) => {
       const payload = {
         event: eventName,
@@ -504,17 +560,19 @@
       send(payload).catch(() => {});
     };
 
-    // ✅ 1) Log page view
     window.LogEvent("page_view");
 
-    // ✅ 2) Log Christmas tree clicks (and still navigate)
     const link = document.getElementById("christmasLink");
     if (link) {
-      link.addEventListener("click", (e) => {
-        // Log first
+      link.addEventListener("click", () => {
         window.LogEvent("click_christmas_tree", { to: link.getAttribute("href") });
+      });
+    }
 
-        // Let navigation proceed normally (beacon should go through)
+    const cardLink = document.getElementById("cardLink");
+    if (cardLink) {
+      cardLink.addEventListener("click", () => {
+        window.LogEvent("click_card", { to: cardLink.getAttribute("href") });
       });
     }
   })();
