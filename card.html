@@ -6,6 +6,7 @@
   <title>Card</title>
 
   <style>
+    
     html, body {
       background-color: #232323;
       font-family: 'Segoe UI', sans-serif;
@@ -88,7 +89,6 @@
       border: 2px solid rgba(255,255,255,0.14);
       background: rgba(0,0,0,0.10);
 
-      aspect-ratio: 5 / 7;     /* ✅ 5:7 */
       overflow: hidden;         /* keeps crop clean */
     }
 
@@ -189,6 +189,26 @@
       background-color: #c95b53; /* ✅ CHANGED COLOR HERE */
       min-width: 160px;
     }
+
+        /* ===== MOBILE TYPOGRAPHY FIX ===== */
+    @media (max-width: 600px) {
+
+      .gallery-title {
+        font-size: 1rem;     /* was huge */
+        line-height: 1.45;
+        padding: 0 12px;
+        
+      }
+
+      .question-wrap {
+        font-size: 0.7rem;
+        line-height: 1.4;
+        margin-top: 2rem;
+        margin-bottom: 4rem;
+      }
+
+    }
+
   </style>
 </head>
 
@@ -229,6 +249,7 @@ en aquel verano.
   <div class="gallery-title">
 No sé qué tan lejos o cerca estoy de ti,  
 pero si me ves por ahí, que sepas qué por más que te quiera ver...
+
 Respeto tu decisión de dejarnos ir
   </div>
 
