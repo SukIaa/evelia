@@ -210,7 +210,7 @@
     }
 
     /* ================================
-       ✅ NEW: TePáTi modal (added only)
+       ✅ TePáTi modal
        ================================ */
     .plan-modal-overlay{
       position: fixed;
@@ -320,6 +320,29 @@
       text-align: center;
     }
 
+    /* ================================
+       ✅ NEW: HEART RAIN (from christmas.html)
+       ================================ */
+    .heart{
+      position:fixed;
+      top:-60px;
+      pointer-events:none;
+      animation:fall linear forwards;
+      z-index: 99999999;
+      opacity:.95;
+      filter:drop-shadow(0 0 10px rgba(255,105,180,.5));
+    }
+    @keyframes fall{
+      to{
+        transform:translateY(120vh) rotate(360deg);
+        opacity:.25;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .heart { animation: none !important; }
+    }
+
   </style>
 </head>
 
@@ -426,7 +449,7 @@ Y tomaremos un tapioka pearl bubble con brown milk tea.
 
   <div id="imgOverlay"><img id="overlayImg"></div>
 
-  <!-- ✅ NEW: Modal HTML (added only, does not delete anything) -->
+  <!-- ✅ TePáTi Modal -->
   <div class="plan-modal-overlay" id="planOverlay">
     <div class="plan-modal" role="dialog" aria-modal="true" aria-labelledby="planTitle">
       <h3 id="planTitle">TePáTi… ¿cuándo? 💛</h3>
@@ -497,7 +520,36 @@ Y tomaremos un tapioka pearl bubble con brown milk tea.
       if (window.LogEvent) window.LogEvent("answer_no", { choice: "no" });
     };
 
-    /* ✅ NEW: Modal wiring (added without deleting your logic) */
+    /* ✅ Heart rain (from christmas.html) */
+    function startHeartRainFor(ms) {
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      burstHearts(90);
+      const interval = setInterval(() => burstHearts(18), 420);
+      setTimeout(() => clearInterval(interval), ms);
+    }
+
+    function burstHearts(count) {
+      const hearts = ["❤️", "💖", "💕", "💗", "💘"];
+      for (let i = 0; i < count; i++) {
+        const heart = document.createElement("div");
+        heart.className = "heart";
+        heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+
+        const size = Math.random() * 30 + 20;
+        heart.style.fontSize = size + "px";
+        heart.style.left = Math.random() * 100 + "vw";
+
+        const duration = Math.random() * 3 + 3.5;
+        const delay = Math.random() * 0.8;
+        heart.style.animationDuration = duration + "s";
+        heart.style.animationDelay = delay + "s";
+
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), (duration + delay) * 1000);
+      }
+    }
+
+    /* ✅ Modal wiring */
     const planOverlay = document.getElementById("planOverlay");
     const planDate = document.getElementById("planDate");
     const planTime = document.getElementById("planTime");
@@ -521,9 +573,7 @@ Y tomaremos un tapioka pearl bubble con brown milk tea.
     const noFollowBtn = document.getElementById("noFollowBtn");
     if (noFollowBtn) {
       noFollowBtn.addEventListener("click", () => {
-        // keep your existing log
         if (window.LogEvent) window.LogEvent("click_no_follow_btn", { label: "TePáTi?" });
-        // open modal
         OpenPlanModal();
       });
     }
@@ -561,7 +611,11 @@ Y tomaremos un tapioka pearl bubble con brown milk tea.
           window.LogEvent("confirm_plan", { date, time, option });
         }
 
+        // ✅ Close modal first, then hearts
         ClosePlanModal("confirm");
+
+        // ✅ Heart shower like christmas.html
+        startHeartRainFor(4500);
       });
     }
 
