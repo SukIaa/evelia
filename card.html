@@ -209,6 +209,117 @@
 
     }
 
+    /* ================================
+       ✅ NEW: TePáTi modal (added only)
+       ================================ */
+    .plan-modal-overlay{
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.72);
+      z-index: 9999999;
+      padding: 14px;
+    }
+    .plan-modal-overlay.open{ display: flex; }
+
+    .plan-modal{
+      background: #2a2a2a;
+      color: #fff;
+      width: 92%;
+      max-width: 380px;
+      border-radius: 16px;
+      padding: 20px 18px 18px;
+      box-shadow: 0 0 28px rgba(255,255,255,0.14);
+      text-align: left;
+    }
+
+    .plan-modal h3{
+      margin: 0 0 14px;
+      text-align: center;
+      font-size: 1.15em;
+      letter-spacing: 0.2px;
+    }
+
+    .plan-modal label{
+      display: block;
+      font-size: 0.95em;
+      margin-top: 10px;
+    }
+
+    .plan-modal input[type="date"],
+    .plan-modal input[type="time"]{
+      width: 100%;
+      margin-top: 6px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      background: rgba(255,255,255,0.95);
+      color: #111;
+      font-size: 1em;
+      box-sizing: border-box;
+    }
+
+    .plan-options{
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+    }
+
+    .plan-options .opt{
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 8px 0;
+      font-size: 1.0em;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .plan-options input[type="radio"]{
+      transform: scale(1.1);
+      cursor: pointer;
+    }
+
+    .plan-modal-actions{
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .plan-modal-actions button{
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-size: 1em;
+      min-width: 0;
+    }
+
+    .plan-cancel{
+      background: #606060;
+      color: #fff;
+    }
+
+    .plan-confirm{
+      background: #c95b53;
+      color: #fff;
+      font-weight: 650;
+    }
+
+    .plan-hint{
+      margin-top: 10px;
+      font-size: 0.9em;
+      color: rgba(255,255,255,0.72);
+      line-height: 1.35;
+      text-align: center;
+    }
+
   </style>
 </head>
 
@@ -303,7 +414,7 @@ Léalo cuando lo leas. Si le das al botón, te buscaré de nuevo.
 Y tomaremos un tapioka pearl bubble con brown milk tea.
   </div>
 
-  <button class="no-follow-btn" id="noFollowBtn">
+    <button class="no-follow-btn" id="noFollowBtn">
     TePáTi?
   </button>
 
@@ -314,6 +425,34 @@ Y tomaremos un tapioka pearl bubble con brown milk tea.
 
 
   <div id="imgOverlay"><img id="overlayImg"></div>
+
+  <!-- ✅ NEW: Modal HTML (added only, does not delete anything) -->
+  <div class="plan-modal-overlay" id="planOverlay">
+    <div class="plan-modal" role="dialog" aria-modal="true" aria-labelledby="planTitle">
+      <h3 id="planTitle">TePáTi… ¿cuándo? 💛</h3>
+
+      <label for="planDate">Fecha</label>
+      <input type="date" id="planDate" />
+
+      <label for="planTime">Hora</label>
+      <input type="time" id="planTime" />
+
+      <div class="plan-options" aria-label="Opciones">
+        <label class="opt"><input type="radio" name="planFood" value="Te"> Te ☕</label>
+        <label class="opt"><input type="radio" name="planFood" value="Alitas"> Alitas 🍗</label>
+        <label class="opt"><input type="radio" name="planFood" value="Ceviche"> Ceviche 🐟</label>
+      </div>
+
+      <div class="plan-modal-actions">
+        <button class="plan-cancel" id="planCancel" type="button">Cancelar</button>
+        <button class="plan-confirm" id="planConfirm" type="button">Confirmar</button>
+      </div>
+
+      <div class="plan-hint">
+        (Ahora sí… esto manda señal 😤)
+      </div>
+    </div>
+  </div>
 
   <script>
     const overlay = document.getElementById("imgOverlay");
@@ -358,10 +497,71 @@ Y tomaremos un tapioka pearl bubble con brown milk tea.
       if (window.LogEvent) window.LogEvent("answer_no", { choice: "no" });
     };
 
+    /* ✅ NEW: Modal wiring (added without deleting your logic) */
+    const planOverlay = document.getElementById("planOverlay");
+    const planDate = document.getElementById("planDate");
+    const planTime = document.getElementById("planTime");
+    const planCancel = document.getElementById("planCancel");
+    const planConfirm = document.getElementById("planConfirm");
+
+    const OpenPlanModal = () => {
+      if (!planOverlay) return;
+      planOverlay.classList.add("open");
+      document.body.style.overflow = "hidden";
+      if (window.LogEvent) window.LogEvent("open_plan_modal", { from: "noFollowBtn" });
+    };
+
+    const ClosePlanModal = (reason = "close") => {
+      if (!planOverlay) return;
+      planOverlay.classList.remove("open");
+      document.body.style.overflow = "";
+      if (window.LogEvent) window.LogEvent("close_plan_modal", { reason });
+    };
+
     const noFollowBtn = document.getElementById("noFollowBtn");
     if (noFollowBtn) {
       noFollowBtn.addEventListener("click", () => {
+        // keep your existing log
         if (window.LogEvent) window.LogEvent("click_no_follow_btn", { label: "TePáTi?" });
+        // open modal
+        OpenPlanModal();
+      });
+    }
+
+    if (planCancel) {
+      planCancel.addEventListener("click", () => {
+        ClosePlanModal("cancel_btn");
+        if (window.LogEvent) window.LogEvent("cancel_plan_modal");
+      });
+    }
+
+    if (planOverlay) {
+      planOverlay.addEventListener("click", (e) => {
+        if (e.target === planOverlay) {
+          ClosePlanModal("backdrop");
+          if (window.LogEvent) window.LogEvent("close_plan_modal_backdrop");
+        }
+      });
+    }
+
+    if (planConfirm) {
+      planConfirm.addEventListener("click", () => {
+        const date = planDate?.value || "";
+        const time = planTime?.value || "";
+        const foodEl = document.querySelector('input[name="planFood"]:checked');
+        const option = foodEl ? foodEl.value : "";
+
+        if (!date || !time || !option) {
+          alert("Completa fecha, hora, y elige una opción 💛");
+          if (window.LogEvent) window.LogEvent("confirm_plan_missing_fields", { date_ok: !!date, time_ok: !!time, option_ok: !!option });
+          return;
+        }
+
+        if (window.LogEvent) {
+          window.LogEvent("confirm_plan", { date, time, option });
+        }
+
+        ClosePlanModal("confirm");
       });
     }
 
