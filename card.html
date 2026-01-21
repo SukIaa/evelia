@@ -607,9 +607,22 @@ Y tomaremos un tapioka pearl bubble con brown milk tea.
           return;
         }
 
-        if (window.LogEvent) {
-          window.LogEvent("confirm_plan", { date, time, option });
-        }
+              if (window.LogEvent) {
+        const packed = `${date} ${time} | ${option}`;
+
+        window.LogEvent("confirm_plan", {
+          // ✅ put data into EXISTING sheet fields
+          input_raw: packed,
+          input_length: packed.length,
+          input_type: "plan_confirm",
+          result: "confirm",
+          keyword: option,
+          value: `${date} ${time}`,
+
+          // (optional) keep these too if you want, but not needed
+          // date, time, option
+        });
+      }
 
         // ✅ Close modal first, then hearts
         ClosePlanModal("confirm");
