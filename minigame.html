@@ -27,195 +27,81 @@
       overflow:hidden;
     }
 
-    /* ===== Layout ===== */
-    .wrap{
-      height:100%;
-      display:flex;
-      flex-direction:column;
-    }
+    .wrap{ height:100%; display:flex; flex-direction:column; }
 
     .hud{
-      position:fixed;
-      left:0; right:0; top:0;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:14px 18px;
-      pointer-events:none;
-      z-index:50;
+      position:fixed; left:0; right:0; top:0;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 18px; pointer-events:none; z-index:50;
     }
     .hud .box{
-      pointer-events:none;
-      display:flex;
-      gap:12px;
-      align-items:center;
-      padding:10px 12px;
-      background:rgba(0,0,0,0.18);
-      border:1px solid var(--border);
-      border-radius:14px;
+      pointer-events:none; display:flex; gap:12px; align-items:center;
+      padding:10px 12px; background:rgba(0,0,0,0.18);
+      border:1px solid var(--border); border-radius:14px;
       backdrop-filter: blur(6px);
     }
-    .label{
-      font-size:0.95rem;
-      color:var(--muted);
-      letter-spacing:0.2px;
-    }
-    .value{
-      font-size:1.05rem;
-      color:var(--fg);
-      font-weight:600;
-    }
+    .label{ font-size:0.95rem; color:var(--muted); letter-spacing:0.2px; }
+    .value{ font-size:1.05rem; color:var(--fg); font-weight:600; }
 
     #hearts{
-      font-size:1.15rem;
-      letter-spacing:2px;
-      transform: translateY(-1px);
-      display:flex;
-      gap:6px;
+      font-size:1.15rem; letter-spacing:2px; transform: translateY(-1px);
+      display:flex; gap:6px;
     }
     .heart{
-      display:inline-block;
-      transform-origin:center;
+      display:inline-block; transform-origin:center;
       filter: drop-shadow(0 0 0 rgba(0,0,0,0));
     }
-    .heart.pop{
-      animation: pop 420ms ease forwards;
-    }
+    .heart.pop{ animation: pop 420ms ease forwards; }
     @keyframes pop{
       0%{ transform:scale(1); opacity:1; }
       40%{ transform:scale(1.35) rotate(-10deg); opacity:1; }
       100%{ transform:scale(0.2) rotate(18deg); opacity:0; }
     }
 
-    /* ===== Game Area ===== */
-    #game{
-      position:relative;
-      height:100%;
-      width:100%;
-    }
+    #game{ position:relative; height:100%; width:100%; }
+    canvas{ display:block; width:100%; height:100%; }
 
-    canvas{
-      display:block;
-      width:100%;
-      height:100%;
-    }
-
-    /* ===== Hint ===== */
     .hint{
-      position:fixed;
-      bottom:22px;
-      left:50%;
-      transform:translateX(-50%);
-      font-size:0.95rem;
-      color:rgba(255,255,255,0.55);
-      z-index:40;
-      user-select:none;
-      pointer-events:none;
-      transition: all 0.4s ease;
+      position:fixed; bottom:22px; left:50%; transform:translateX(-50%);
+      font-size:0.95rem; color:rgba(255,255,255,0.55); z-index:40;
+      user-select:none; pointer-events:none; transition: all 0.4s ease;
     }
 
-    /* ===== Overlays ===== */
     .overlay{
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,0.55);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:18px;
-      z-index:100;
+      position:fixed; inset:0; background:rgba(0,0,0,0.55);
+      display:flex; align-items:center; justify-content:center; padding:18px; z-index:100;
     }
     .card{
-      width:min(720px, 100%);
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:18px;
-      padding:22px;
+      width:min(720px, 100%); background:var(--card);
+      border:1px solid var(--border); border-radius:18px; padding:22px;
       box-shadow:0 18px 60px rgba(0,0,0,0.45);
     }
-    h1{
-      margin:0 0 10px;
-      font-size:1.6rem;
-      font-weight:700;
-    }
-    p{
-      margin:8px 0;
-      font-size:1.05rem;
-      line-height:1.5;
-      color:var(--fg);
-    }
-    .muted{
-      color:var(--muted);
-    }
-    .divider{
-      height:1px;
-      background:var(--border);
-      margin:14px 0;
-    }
-    .btnrow{
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      margin-top:16px;
-      justify-content: center;
-    }
+    h1{ margin:0 0 10px; font-size:1.6rem; font-weight:700; }
+    p{ margin:8px 0; font-size:1.05rem; line-height:1.5; color:var(--fg); }
+    .muted{ color:var(--muted); }
+    .divider{ height:1px; background:var(--border); margin:14px 0; }
+    .btnrow{ display:flex; gap:12px; flex-wrap:wrap; margin-top:16px; justify-content:center; }
 
-    /* ===== Buttons ===== */
     button, a.btn{
-      appearance:none;
-      border:none;
-      color:white;
-      padding:12px 24px;
-      border-radius:999px;
-      cursor:pointer;
-      font-weight:700;
-      font-size:1.05rem;
-      text-decoration:none;
-      transition: all 0.18s ease;
-      min-width:140px;
-      text-align:center;
+      appearance:none; border:none; color:white; padding:12px 24px;
+      border-radius:999px; cursor:pointer; font-weight:700; font-size:1.05rem;
+      text-decoration:none; transition: all 0.18s ease; min-width:140px; text-align:center;
     }
-
     button:hover, a.btn:hover{
-      transform: translateY(-1px);
-      box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+      transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,0,0,0.35);
     }
 
-    #startBtn{
-      background: var(--peacock-green);
-    }
-    #startBtn:hover{
-      background: var(--peacock-green-hover);
-    }
-
-    #retryBtn{
-      background: var(--peacock-green);
-    }
-    #retryBtn:hover{
-      background: var(--peacock-green-hover);
-    }
-
-    #backBtn{
-      background: var(--peacock-blue);
-    }
-    #backBtn:hover{
-      background: var(--peacock-blue-hover);
-    }
+    #startBtn, #retryBtn{ background: var(--peacock-green); }
+    #startBtn:hover, #retryBtn:hover{ background: var(--peacock-green-hover); }
+    #backBtn{ background: var(--peacock-blue); }
+    #backBtn:hover{ background: var(--peacock-blue-hover); }
 
     .pill{
-      display:inline-flex;
-      gap:8px;
-      align-items:center;
-      padding:8px 10px;
-      border-radius:999px;
-      border:1px solid var(--border);
-      background:rgba(0,0,0,0.18);
-      color:var(--muted);
-      font-size:0.92rem;
-      margin-top:10px;
+      display:inline-flex; gap:8px; align-items:center; padding:8px 10px;
+      border-radius:999px; border:1px solid var(--border);
+      background:rgba(0,0,0,0.18); color:var(--muted); font-size:0.92rem; margin-top:10px;
     }
 
-    /* Mobile tweaks */
     @media (max-width:520px){
       h1{ font-size:1.35rem; }
       p{ font-size:1.0rem; }
@@ -230,13 +116,13 @@
   <div class="wrap">
     <div class="hud">
       <div class="box">
-        <span class="label">Plumas</span>
-        <span class="value"><span id="caught">0</span>/<span id="total">50</span></span>
+        <span class="label" id="hudLabel">Plumas</span>
+        <span class="value"><span id="caught">0</span><span id="goal">/50</span></span>
         <span class="pill" id="stagePill">Dificultad: 1</span>
       </div>
 
       <div class="box">
-       <span id="hearts" aria-label="vidas">
+        <span id="hearts" aria-label="vidas">
           <span class="heart" id="h1">💛</span>
           <span class="heart" id="h2">💚</span>
           <span class="heart" id="h3">🩵</span>
@@ -250,14 +136,14 @@
     </div>
   </div>
 
-  <!-- Intro Overlay -->
+  <!-- Intro -->
   <div class="overlay" id="intro">
     <div class="card">
       <h1>Quieres cambiar el plan? Dale... Pero primero tienes que ganar este juego.</h1>
       <div class="divider"></div>
       <p class="muted"><strong>Reglas:</strong></p>
       <p>Tienes que atrapar todas las plumas que caen... tienes 3 vidas, si se te escapan 3... <strong>PIERDES!</strong></p>
-      <p>Si logras atrapar todas... ganas y puedes cambiar el plan :)</p>
+      <p>Si logras atrapar todas... ganas y puedes entrar al MODO INFINITO 😈</p>
 
       <div class="btnrow">
         <button id="startBtn">Empezar</button>
@@ -268,7 +154,7 @@
     </div>
   </div>
 
-  <!-- End Overlay -->
+  <!-- End overlay -->
   <div class="overlay" id="end" style="display:none;">
     <div class="card">
       <h1 id="endTitle">—</h1>
@@ -281,23 +167,23 @@
   </div>
 
   <script>
-    // ===== Config =====
+    // Config
     const FAKE_GOAL = 50;
     const REAL_GOAL = 100;
+    const HEART_EMOJIS = ['💛','💚','🩵'];
 
-    // Difficulty thresholds (still works fine up to 100+)
     const STAGES = [
-      { name: 1, minCaught: 0,  spawnEveryMs: 700, speedMin: 120, speedMax: 190 },
-      { name: 2, minCaught: 10, spawnEveryMs: 520, speedMin: 160, speedMax: 240 },
-      { name: 3, minCaught: 25, spawnEveryMs: 400, speedMin: 200, speedMax: 300 },
-      { name: 4, minCaught: 40, spawnEveryMs: 310, speedMin: 260, speedMax: 380 },
+      { name:1, minCaught:0,   spawnEveryMs:700, speedMin:120, speedMax:190 },
+      { name:2, minCaught:10,  spawnEveryMs:520, speedMin:160, speedMax:240 },
+      { name:3, minCaught:25,  spawnEveryMs:400, speedMin:200, speedMax:300 },
+      { name:4, minCaught:40,  spawnEveryMs:350, speedMin:220, speedMax:330 },
     ];
 
-    const FEATHER_IMAGES = ['top.png', 'middle.png', 'bottom.png'];
+    const FEATHER_IMAGES = ['top.png','middle.png','bottom.png'];
     const FEATHER_MIN = 22;
     const FEATHER_MAX = 34;
 
-    // ===== DOM =====
+    // DOM
     const canvas = document.getElementById('c');
     const ctx = canvas.getContext('2d');
 
@@ -306,14 +192,13 @@
     const endTitle = document.getElementById('endTitle');
     const endText = document.getElementById('endText');
     const continueBtn = document.getElementById('continueBtn');
-
-    const startBtn = document.getElementById('startBtn');
     const retryBtn = document.getElementById('retryBtn');
 
-    const caughtEl = document.getElementById('caught');
-    const totalEl = document.getElementById('total');
-    const stagePill = document.getElementById('stagePill');
-    const hintEl = document.getElementById('hintText');
+    const caughtEl   = document.getElementById('caught');
+    const goalEl     = document.getElementById('goal');
+    const hudLabel   = document.getElementById('hudLabel');
+    const stagePill  = document.getElementById('stagePill');
+    const hintEl     = document.getElementById('hintText');
 
     const heartEls = [
       document.getElementById('h1'),
@@ -321,130 +206,156 @@
       document.getElementById('h3')
     ];
 
-    // ===== State =====
-    let W = 0, H = 0, DPR = 1;
+    // State
+    let W=0, H=0, DPR=1;
     let running = false;
     let lastTime = 0;
     let lastSpawn = 0;
 
     let feathers = [];
+    let healingHearts = [];
     let caught = 0;
     let lives = 3;
     let trolled = false;
+    let inInfinite = false;
+    let highscore = 0;
 
     const featherImgs = [];
     let imagesReady = false;
 
-    // ===== Helpers =====
+    // Helpers
     function resize(){
       DPR = Math.min(window.devicePixelRatio || 1, 2);
       W = Math.floor(window.innerWidth);
       H = Math.floor(window.innerHeight);
-      canvas.width = Math.floor(W * DPR);
+      canvas.width  = Math.floor(W * DPR);
       canvas.height = Math.floor(H * DPR);
-      canvas.style.width = W + 'px';
+      canvas.style.width  = W + 'px';
       canvas.style.height = H + 'px';
-      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      ctx.setTransform(DPR,0,0,DPR,0,0);
     }
 
-    function rand(min, max){ return Math.random() * (max - min) + min; }
+    function rand(min,max){ return Math.random()*(max-min)+min; }
 
     function getStage(){
       let s = STAGES[0];
-      for(const st of STAGES){
-        if(caught >= st.minCaught) s = st;
-      }
+      for(const st of STAGES) if(caught >= st.minCaught) s = st;
       return s;
     }
 
-    function setHUD(){
+    function updateHUD(){
       caughtEl.textContent = caught;
+
+      if(inInfinite){
+        hudLabel.textContent = 'Highscore';
+        goalEl.textContent = '';
+        highscore = Math.max(highscore, caught);
+      } else {
+        hudLabel.textContent = 'Plumas';
+        goalEl.textContent = '/' + (trolled ? REAL_GOAL : FAKE_GOAL);
+      }
+
       stagePill.textContent = `Dificultad: ${getStage().name}`;
     }
 
-    function reset(){
+    function resetGame(){
       feathers = [];
+      healingHearts = [];
       caught = 0;
       lives = 3;
       trolled = false;
 
-      heartEls.forEach(h => {
+      heartEls.forEach((h,i) => {
         h.classList.remove('pop');
         h.style.opacity = '1';
         h.style.transform = '';
+        h.textContent = HEART_EMOJIS[i];
       });
-      heartEls[0].textContent = '💛';
-      heartEls[1].textContent = '💚';
-      heartEls[2].textContent = '🩵';
 
       hintEl.textContent = 'Evelia es guapa';
-      totalEl.textContent = FAKE_GOAL;
+      updateHUD();
 
-      setHUD();
       continueBtn.style.display = 'none';
       endOverlay.style.display = 'none';
 
-      lastTime = 0;
-      lastSpawn = 0;
+      lastTime = lastSpawn = 0;
     }
 
-    function endGame(win){
+    function showEnd(win){
       running = false;
       endOverlay.style.display = 'flex';
 
       if(win){
         endTitle.textContent = 'Ganaste 😲';
-        endText.textContent = 'No pensé que era posible... Se suponia que no';
+        endText.textContent = 'No pensé que era posible... Se suponía que no';
         continueBtn.style.display = 'inline-flex';
-      }else{
+        retryBtn.textContent = 'MODO INFINITO';
+      } else {
         endTitle.textContent = 'Perdiste jeje';
-        endText.textContent = 'Se te escaparon 3… inténtalo otra vez!';
+        endText.innerHTML = `Lograste capturar:<br><strong>${caught}</strong> plumas`;
         continueBtn.style.display = 'none';
+        retryBtn.textContent = 'Intentar de nuevo modo infinito';
       }
     }
 
     function loadImages(){
       if(imagesReady) return Promise.resolve();
-      const promises = FEATHER_IMAGES.map(src => new Promise((resolve, reject) => {
-        const img = new Image();
-        img.onload = () => resolve(img);
-        img.onerror = () => reject(new Error('No se pudo cargar: ' + src));
-        img.src = src;
-      }));
-      return Promise.all(promises).then(imgs => {
+      return Promise.all(
+        FEATHER_IMAGES.map(src => new Promise((res,rej)=>{
+          const img = new Image();
+          img.onload = ()=>res(img);
+          img.onerror = ()=>rej('No se pudo cargar '+src);
+          img.src = src;
+        }))
+      ).then(imgs=>{
         featherImgs.push(...imgs);
         imagesReady = true;
       });
     }
 
-    // ===== Feather objects =====
+    // Spawners
     function spawnFeather(){
       const stage = getStage();
       const size = rand(FEATHER_MIN, FEATHER_MAX);
-      const img = featherImgs[Math.floor(Math.random() * featherImgs.length)];
+      const img = featherImgs[Math.floor(Math.random()*featherImgs.length)];
 
       feathers.push({
-        x: rand(10, W - 10),
+        x: rand(10, W-10),
         y: -30,
-        size,
-        img,
+        size, img,
         ratio: img.naturalWidth / img.naturalHeight,
         vy: rand(stage.speedMin, stage.speedMax),
-        drift: rand(-40, 40),
-        wobble: rand(0.8, 1.4),
-        t: rand(0, Math.PI * 2),
-        rot: rand(-0.6, 0.6),
-        rotSpeed: rand(-1.2, 1.2),
+        drift: rand(-40,40),
+        wobble: rand(0.8,1.4),
+        t: rand(0, Math.PI*2),
+        rot: rand(-0.6,0.6),
+        rotSpeed: rand(-1.2,1.2),
         dead: false
       });
     }
 
-    // ===== Drawing =====
+    function spawnHealingHeart(){
+      if(lives >= 3) return;
+      const missingIdx = lives;           // 2→cyan, 1→green, 0→yellow
+      healingHearts.push({
+        x: rand(20, W-20),
+        y: -50,
+        emoji: HEART_EMOJIS[missingIdx],
+        vy: rand(480, 620),               // fast!
+        size: 38,
+        drift: rand(-45,45),
+        wobble: rand(1.8, 2.8),
+        t: rand(0, Math.PI*2),
+        dead: false
+      });
+    }
+
+    // Draw
     function drawBackground(){
       ctx.clearRect(0,0,W,H);
-      const g = ctx.createLinearGradient(0, 0, 0, H);
-      g.addColorStop(0, '#232323');
-      g.addColorStop(1, '#1f1f1f');
+      const g = ctx.createLinearGradient(0,0,0,H);
+      g.addColorStop(0,'#232323');
+      g.addColorStop(1,'#1f1f1f');
       ctx.fillStyle = g;
       ctx.fillRect(0,0,W,H);
     }
@@ -452,140 +363,189 @@
     function drawFeather(f){
       ctx.save();
       ctx.translate(f.x, f.y);
-      const wob = Math.sin(f.t) * 0.18;
-      ctx.rotate(f.rot + wob);
+      ctx.rotate(f.rot + Math.sin(f.t)*0.18);
       ctx.globalAlpha = 0.95;
-      const h = f.size;
-      const w = h * f.ratio;
+      const h = f.size, w = h * f.ratio;
       ctx.drawImage(f.img, -w/2, -h/2, w, h);
       ctx.restore();
     }
 
-    function hitFeather(f, px, py){
-      const dx = px - f.x;
-      const dy = py - f.y;
-      const radius = (f.size * 0.70) + 14;
-      return (dx*dx + dy*dy) <= (radius * radius);
+    function drawHealingHeart(h){
+      ctx.save();
+      ctx.translate(h.x, h.y);
+      ctx.rotate(Math.sin(h.t)*0.15);
+      ctx.font = `bold ${h.size}px system-ui, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(h.emoji, 0, 0);
+      ctx.restore();
     }
 
-    // ===== Loop =====
+    // Hit
+    function hitFeather(f, px, py){
+      const dx = px - f.x, dy = py - f.y;
+      const r = f.size * 0.7 + 14;
+      return dx*dx + dy*dy <= r*r;
+    }
+
+    function hitHeart(h, px, py){
+      const dx = px - h.x, dy = py - h.y;
+      const r = h.size * 0.75;
+      return dx*dx + dy*dy <= r*r;
+    }
+
+    function heal(){
+      if(lives >= 3) return;
+      lives++;
+      const idx = lives - 1;
+      const h = heartEls[idx];
+      h.classList.remove('pop');
+      h.style.opacity = '1';
+      h.style.transform = '';
+    }
+
+    // Loop
     function loop(ts){
       if(!running) return;
-
       if(!lastTime) lastTime = ts;
-      const dt = Math.min(0.032, (ts - lastTime) / 1000);
+      const dt = Math.min(0.033, (ts-lastTime)/1000);
       lastTime = ts;
 
       const stage = getStage();
+
+      // spawn feathers
       if(ts - lastSpawn >= stage.spawnEveryMs){
         lastSpawn = ts;
         spawnFeather();
-        if(stage.name >= 3 && Math.random() < 0.25) spawnFeather();
-        if(stage.name >= 4 && Math.random() < 0.35) spawnFeather();
+        if(stage.name >= 3 && Math.random()<0.28) spawnFeather();
+        if(stage.name >= 4 && Math.random()<0.38) spawnFeather();
       }
 
+      // update feathers
       for(const f of feathers){
         if(f.dead) continue;
-
         f.t += dt * f.wobble;
         f.rot += f.rotSpeed * dt;
         f.y += f.vy * dt;
-        f.x += (Math.sin(f.t) * 22 + f.drift) * dt * 0.35;
+        f.x += (Math.sin(f.t)*22 + f.drift) * dt * 0.35;
         f.x = Math.max(8, Math.min(W-8, f.x));
 
         if(f.y - f.size/2 > H + 10){
           f.dead = true;
           lives--;
-          const heartIndex = lives;
-          if(heartEls[heartIndex]){
-            heartEls[heartIndex].classList.add('pop');
-          }
+          if(lives >= 0) heartEls[lives].classList.add('pop');
           if(lives <= 0){
-            endGame(false);
+            showEnd(false);
             return;
           }
         }
       }
+      feathers = feathers.filter(f=>!f.dead);
 
-      feathers = feathers.filter(f => !f.dead);
+      // healing hearts (only infinite)
+      if(inInfinite){
+        for(const h of healingHearts){
+          if(h.dead) continue;
+          h.t += dt * h.wobble;
+          h.y += h.vy * dt;
+          h.x += (Math.sin(h.t)*25 + h.drift) * dt * 0.45;
+          h.x = Math.max(10, Math.min(W-10, h.x));
 
-      // REAL win condition = 100
-      if(caught >= REAL_GOAL){
-        endGame(true);
+          if(h.y - h.size/2 > H + 20) h.dead = true;
+        }
+        healingHearts = healingHearts.filter(h=>!h.dead);
+      }
+
+      // win normal mode
+      if(!inInfinite && caught >= REAL_GOAL){
+        showEnd(true);
         return;
       }
 
       drawBackground();
-      for(const f of feathers) drawFeather(f);
+      feathers.forEach(drawFeather);
+      if(inInfinite) healingHearts.forEach(drawHealingHeart);
 
       requestAnimationFrame(loop);
     }
 
-    // ===== Click/Tap =====
-    function getPointerPos(e){
-      const rect = canvas.getBoundingClientRect();
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      return { x: clientX - rect.left, y: clientY - rect.top };
+    // Input
+    function getPos(e){
+      const r = canvas.getBoundingClientRect();
+      const x = (e.touches?e.touches[0].clientX:e.clientX) - r.left;
+      const y = (e.touches?e.touches[0].clientY:e.clientY) - r.top;
+      return {x,y};
     }
 
-    function tryPop(x, y){
+    function tryCatch(x,y){
       if(!running) return;
 
-      for(let i = feathers.length - 1; i >= 0; i--){
+      // feathers first (priority)
+      for(let i=feathers.length-1; i>=0; i--){
         const f = feathers[i];
         if(f.dead) continue;
-        if(hitFeather(f, x, y)){
+        if(hitFeather(f,x,y)){
           f.dead = true;
           caught++;
-          setHUD();
+          updateHUD();
 
-          // === TROLL MOMENT ===
           if(caught === FAKE_GOAL && !trolled){
             trolled = true;
             hintEl.textContent = '50? Nono 100!! 😈';
-            totalEl.textContent = REAL_GOAL;
+            goalEl.textContent = `/${REAL_GOAL}`;
           }
-          break;
+
+          // healing heart every 20 in infinite
+          if(inInfinite && lives < 3 && caught % 20 === 0){
+            spawnHealingHeart();
+          }
+
+          return;
+        }
+      }
+
+      // then healing hearts
+      if(inInfinite){
+        for(let i=healingHearts.length-1; i>=0; i--){
+          const h = healingHearts[i];
+          if(h.dead) continue;
+          if(hitHeart(h,x,y)){
+            h.dead = true;
+            heal();
+            return;
+          }
         }
       }
     }
 
-    canvas.addEventListener('click', (e) => {
-      const p = getPointerPos(e);
-      tryPop(p.x, p.y);
-    });
+    canvas.addEventListener('click', e=>{ tryCatch(...Object.values(getPos(e))); });
+    canvas.addEventListener('touchstart', e=>{ tryCatch(...Object.values(getPos(e))); }, {passive:true});
 
-    canvas.addEventListener('touchstart', (e) => {
-      const p = getPointerPos(e);
-      tryPop(p.x, p.y);
-    }, { passive:true });
-
-    // ===== Buttons =====
-    startBtn.addEventListener('click', async () => {
-      try{
-        await loadImages();
-      }catch(err){
-        alert('No se pudieron cargar las imágenes. Asegúrate que top.png, middle.png, bottom.png estén en la misma carpeta.');
+    // Buttons
+    startBtn.addEventListener('click', async ()=>{
+      try{ await loadImages(); }catch(e){
+        alert('Faltan imágenes (top.png, middle.png, bottom.png)');
         return;
       }
-
       intro.style.display = 'none';
-      reset();
+      inInfinite = false;
+      resetGame();
       running = true;
       requestAnimationFrame(loop);
     });
 
-    retryBtn.addEventListener('click', () => {
-      reset();
+    retryBtn.addEventListener('click', ()=>{
+      endOverlay.style.display = 'none';
+      inInfinite = true;
+      resetGame();
       running = true;
       requestAnimationFrame(loop);
     });
 
-    // ===== Init =====
+    // Init
     window.addEventListener('resize', resize);
     resize();
-    setHUD();
+    updateHUD();
   </script>
 </body>
 </html>
