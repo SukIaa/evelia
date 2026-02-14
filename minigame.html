@@ -187,6 +187,13 @@
       background: var(--peacock-green-hover);
     }
 
+    #retryBtn{
+      background: var(--peacock-green);
+    }
+    #retryBtn:hover{
+      background: var(--peacock-green-hover);
+    }
+
     #backBtn{
       background: var(--peacock-blue);
     }
@@ -223,7 +230,9 @@
     <div class="hud">
       <div class="box">
         <span class="label">Atrapadas</span>
-        <span class="value"><span id="caught">0</span>/<span id="total">50</span></span>
+        <span class="value">
+          <span id="caught">0</span><span id="caughtMessage"></span>/<span id="total">50</span>
+        </span>
         <span class="pill" id="stagePill">Dificultad: 1</span>
       </div>
 
@@ -267,14 +276,15 @@
       <p id="endText" class="muted">—</p>
       <div class="btnrow">
         <button id="retryBtn">Intentar de nuevo</button>
-        <a class="btn" id="continueBtn" href="./cambiar-plan.html" style="display:none;">Cambiar el plan</a>
+        <a class="btn" id="continueBtn" href="./index.html" style="display:none;">Regresar al principio</a>
       </div>
     </div>
   </div>
 
   <script>
     // ===== Config =====
-    const TOTAL_TO_CATCH = 50;
+    const TOTAL_TO_CATCH = 100;
+    const REAL_GOAL = 100;
 
     // Difficulty thresholds: after 10, 25, 40 caught
     const STAGES = [
@@ -306,6 +316,7 @@
 
     const caughtEl = document.getElementById('caught');
     const totalEl = document.getElementById('total');
+    const caughtMessageEl = document.getElementById('caughtMessage');
     const stagePill = document.getElementById('stagePill');
 
     const heartEls = [
@@ -325,6 +336,7 @@
     let feathers = [];
     let caught = 0;
     let lives = 3;
+    let displayedGoal = TOTAL_TO_CATCH;
 
     // ✅ Loaded images
     const featherImgs = [];
@@ -356,6 +368,17 @@
 
     function setHUD(){
       caughtEl.textContent = caught;
+
+      if (caught >= 50) {
+        if (displayedGoal === TOTAL_TO_CATCH) {
+          displayedGoal = REAL_GOAL;
+          totalEl.textContent = REAL_GOAL;
+          caughtMessageEl.innerHTML = '? Nono 100!! <span style="font-size:1.1em">😈</span>';
+        }
+      } else {
+        caughtMessageEl.textContent = '';
+      }
+
       stagePill.textContent = `Dificultad: ${getStage().name}`;
     }
 
@@ -363,6 +386,7 @@
       feathers = [];
       caught = 0;
       lives = 3;
+      displayedGoal = TOTAL_TO_CATCH;
 
       heartEls.forEach(h => {
         h.classList.remove('pop');
@@ -372,6 +396,9 @@
       heartEls[0].textContent = '💛';
       heartEls[1].textContent = '💚';
       heartEls[2].textContent = '🩵';
+
+      caughtMessageEl.textContent = '';
+      totalEl.textContent = TOTAL_TO_CATCH;
 
       setHUD();
       continueBtn.style.display = 'none';
@@ -386,11 +413,11 @@
       endOverlay.style.display = 'flex';
 
       if(win){
-        endTitle.textContent = 'Ganaste 😌';
-        endText.textContent = 'Okay… lo lograste. Ahora sí puedes cambiar el plan :)';
+        endTitle.textContent = 'Ganaste?!??? 😲';
+        endText.textContent = 'No creí que fuera posible';
         continueBtn.style.display = 'inline-flex';
       }else{
-        endTitle.textContent = 'Perdiste 😭';
+        endTitle.textContent = 'Perdiste jeje';
         endText.textContent = 'Se te escaparon 3… inténtalo otra vez!';
         continueBtn.style.display = 'none';
       }
@@ -421,22 +448,15 @@
       feathers.push({
         x: rand(10, W - 10),
         y: -30,
-
-        size, // height in px
+        size,
         img,
-
-        // ✅ preserve original ratio
         ratio: img.naturalWidth / img.naturalHeight,
-
         vy: rand(stage.speedMin, stage.speedMax),
         drift: rand(-40, 40),
         wobble: rand(0.8, 1.4),
         t: rand(0, Math.PI * 2),
-
-        // ✅ random turning
         rot: rand(-0.6, 0.6),
         rotSpeed: rand(-1.2, 1.2),
-
         dead: false
       });
     }
@@ -444,8 +464,6 @@
     // ===== Drawing =====
     function drawBackground(){
       ctx.clearRect(0,0,W,H);
-
-      // keep your subtle gradient
       const g = ctx.createLinearGradient(0, 0, 0, H);
       g.addColorStop(0, '#232323');
       g.addColorStop(1, '#1f1f1f');
@@ -456,27 +474,18 @@
     function drawFeather(f){
       ctx.save();
       ctx.translate(f.x, f.y);
-
-      // ✅ wobble + random spin
       const wob = Math.sin(f.t) * 0.18;
       ctx.rotate(f.rot + wob);
-
       ctx.globalAlpha = 0.95;
-
-      // ✅ keep aspect ratio (size is height)
       const h = f.size;
       const w = h * f.ratio;
       ctx.drawImage(f.img, -w/2, -h/2, w, h);
-
       ctx.restore();
     }
 
-    // ✅ More generous hitbox (circle)
     function hitFeather(f, px, py){
       const dx = px - f.x;
       const dy = py - f.y;
-
-      // based on feather height
       const radius = (f.size * 0.70) + 14;
       return (dx*dx + dy*dy) <= (radius * radius);
     }
@@ -489,7 +498,6 @@
       const dt = Math.min(0.032, (ts - lastTime) / 1000);
       lastTime = ts;
 
-      // Spawn
       const stage = getStage();
       if(ts - lastSpawn >= stage.spawnEveryMs){
         lastSpawn = ts;
@@ -498,27 +506,22 @@
         if(stage.name >= 4 && Math.random() < 0.35) spawnFeather();
       }
 
-      // Update feathers
       for(const f of feathers){
         if(f.dead) continue;
 
         f.t += dt * f.wobble;
-        f.rot += f.rotSpeed * dt;   // ✅ random turning
-
+        f.rot += f.rotSpeed * dt;
         f.y += f.vy * dt;
         f.x += (Math.sin(f.t) * 22 + f.drift) * dt * 0.35;
         f.x = Math.max(8, Math.min(W-8, f.x));
 
-        // missed (reaches bottom)
         if(f.y - f.size/2 > H + 10){
           f.dead = true;
           lives--;
-
-          const heartIndex = lives; // after decrement: 2 pop third, 1 pop second, 0 pop first
+          const heartIndex = lives;
           if(heartEls[heartIndex]){
             heartEls[heartIndex].classList.add('pop');
           }
-
           if(lives <= 0){
             endGame(false);
             return;
@@ -526,16 +529,15 @@
         }
       }
 
-      // Cleanup
       feathers = feathers.filter(f => !f.dead);
 
-      // Win
+      // Note: game still ends at 50 (as per original logic)
+      // The 100 is just a visual troll :)
       if(caught >= TOTAL_TO_CATCH){
         endGame(true);
         return;
       }
 
-      // Draw
       drawBackground();
       for(const f of feathers) drawFeather(f);
 
@@ -552,12 +554,9 @@
 
     function tryPop(x, y){
       if(!running) return;
-
-      // check from topmost
       for(let i = feathers.length - 1; i >= 0; i--){
         const f = feathers[i];
         if(f.dead) continue;
-
         if(hitFeather(f, x, y)){
           f.dead = true;
           caught++;
@@ -582,7 +581,7 @@
       try{
         await loadImages();
       }catch(err){
-        alert('No se pudieron cargar las imágenes. Asegúrate que top.png, middle.png, bottom.png estén en la misma carpeta que este HTML.');
+        alert('No se pudieron cargar las imágenes. Asegúrate que top.png, middle.png, bottom.png estén en la misma carpeta.');
         return;
       }
 
