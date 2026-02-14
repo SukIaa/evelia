@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mini-juego</title>
+
+  <style>
+    :root{
+      --bg:#232323;
+      --fg:#f7f7f7;
+      --muted:#cfcfcf;
+      --card:#2b2b2b;
+      --border:rgba(255,255,255,0.10);
+      --peacock-green: #00c896;
+      --peacock-green-hover: #00e0a8;
+      --peacock-blue: #0099cc;
+      --peacock-blue-hover: #00b3e6;
+    }
+
+    html, body{
+      height:100%;
+      margin:0;
+      background:var(--bg);
+      color:var(--fg);
+      font-family:'Segoe UI', system-ui, -apple-system, Arial, sans-serif;
+      overflow:hidden;
+    }
+
+    /* ===== Layout ===== */
+    .wrap{
+      height:100%;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .hud{
+      position:fixed;
+      left:0; right:0; top:0;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:14px 18px;
+      pointer-events:none;
+      z-index:50;
+    }
+    .hud .box{
+      pointer-events:none;
+      display:flex;
+      gap:12px;
+      align-items:center;
+      padding:10px 12px;
+      background:rgba(0,0,0,0.18);
+      border:1px solid var(--border);
+      border-radius:14px;
+      backdrop-filter: blur(6px);
+    }
+    .label{
+      font-size:0.95rem;
+      color:var(--muted);
+      letter-spacing:0.2px;
+    }
+    .value{
+      font-size:1.05rem;
+      color:var(--fg);
+      font-weight:600;
+    }
+
+    #hearts{
+      font-size:1.15rem;
+      letter-spacing:2px;
+      transform: translateY(-1px);
+      display:flex;
+      gap:6px;
+    }
+    .heart{
+      display:inline-block;
+      transform-origin:center;
+      filter: drop-shadow(0 0 0 rgba(0,0,0,0));
+    }
+    .heart.pop{
+      animation: pop 420ms ease forwards;
+    }
+    @keyframes pop{
+      0%{ transform:scale(1); opacity:1; }
+      40%{ transform:scale(1.35) rotate(-10deg); opacity:1; }
+      100%{ transform:scale(0.2) rotate(18deg); opacity:0; }
+    }
+
+    /* ===== Game Area ===== */
+    #game{
+      position:relative;
+      height:100%;
+      width:100%;
+    }
+
+    canvas{
+      display:block;
+      width:100%;
+      height:100%;
+    }
+
+    /* ===== Hint ===== */
+    .hint{
+      position:fixed;
+      bottom:22px;
+      left:50%;
+      transform:translateX(-50%);
+      font-size:0.95rem;
+      color:rgba(255,255,255,0.55);
+      z-index:40;
+      user-select:none;
+      pointer-events:none;
+    }
+
+    /* ===== Overlays ===== */
+    .overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.55);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      z-index:100;
+    }
+    .card{
+      width:min(720px, 100%);
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:22px;
+      box-shadow:0 18px 60px rgba(0,0,0,0.45);
+    }
+    h1{
+      margin:0 0 10px;
+      font-size:1.6rem;
+      font-weight:700;
+    }
+    p{
+      margin:8px 0;
+      font-size:1.05rem;
+      line-height:1.5;
+      color:var(--fg);
+    }
+    .muted{
+      color:var(--muted);
+    }
+    .divider{
+      height:1px;
+      background:var(--border);
+      margin:14px 0;
+    }
+    .btnrow{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:16px;
+      justify-content: center;
+    }
+
+    /* ===== Buttons ===== */
+    button, a.btn{
+      appearance:none;
+      border:none;
+      color:white;
+      padding:12px 24px;
+      border-radius:999px;
+      cursor:pointer;
+      font-weight:700;
+      font-size:1.05rem;
+      text-decoration:none;
+      transition: all 0.18s ease;
+      min-width:140px;
+      text-align:center;
+    }
+
+    button:hover, a.btn:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+    }
+
+    #startBtn{
+      background: var(--peacock-green);
+    }
+    #startBtn:hover{
+      background: var(--peacock-green-hover);
+    }
+
+    #backBtn{
+      background: var(--peacock-blue);
+    }
+    #backBtn:hover{
+      background: var(--peacock-blue-hover);
+    }
+
+    .pill{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(0,0,0,0.18);
+      color:var(--muted);
+      font-size:0.92rem;
+      margin-top:10px;
+    }
+
+    /* Mobile tweaks */
+    @media (max-width:520px){
+      h1{ font-size:1.35rem; }
+      p{ font-size:1.0rem; }
+      .hud{ padding:12px 12px; }
+      .hud .box{ padding:9px 10px; border-radius:12px; }
+      button, a.btn{ padding:11px 20px; font-size:0.98rem; min-width:120px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="hud">
+      <div class="box">
+        <span class="label">Atrapadas</span>
+        <span class="value"><span id="caught">0</span>/<span id="total">50</span></span>
+        <span class="pill" id="stagePill">Dificultad: 1</span>
+      </div>
+
+      <div class="box">
+       <span id="hearts" aria-label="vidas">
+          <span class="heart" id="h1">💛</span>
+          <span class="heart" id="h2">💚</span>
+          <span class="heart" id="h3">🩵</span>
+        </span>
+      </div>
+    </div>
+
+    <div id="game">
+      <canvas id="c"></canvas>
+      <div class="hint">Evelia es guapa</div>
+    </div>
+  </div>
+
+  <!-- Intro Overlay -->
+  <div class="overlay" id="intro">
+    <div class="card">
+      <h1>Quieres cambiar el plan? Dale... Pero primero tienes que ganar este juego.</h1>
+      <div class="divider"></div>
+      <p class="muted"><strong>Reglas:</strong></p>
+      <p>Tienes que atrapar todas las plumas que caen... tienes 3 vidas, si se te escapan 3... <strong>PIERDES!</strong></p>
+      <p>Si logras atrapar todas... ganas y puedes cambiar el plan :)</p>
+
+      <div class="btnrow">
+        <button id="startBtn">Empezar</button>
+        <a class="btn" id="backBtn" href="./index.html">Volver</a>
+      </div>
+
+      <div class="pill">Toca para atrapar las plumas</div>
+    </div>
+  </div>
+
+  <!-- End Overlay -->
+  <div class="overlay" id="end" style="display:none;">
+    <div class="card">
+      <h1 id="endTitle">—</h1>
+      <p id="endText" class="muted">—</p>
+      <div class="btnrow">
+        <button id="retryBtn">Intentar de nuevo</button>
+        <a class="btn" id="continueBtn" href="./cambiar-plan.html" style="display:none;">Cambiar el plan</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== Config =====
+    const TOTAL_TO_CATCH = 50;
+
+    // Difficulty thresholds: after 10, 25, 40 caught
+    const STAGES = [
+      { name: 1, minCaught: 0,  spawnEveryMs: 700, speedMin: 120, speedMax: 190 },
+      { name: 2, minCaught: 10, spawnEveryMs: 520, speedMin: 160, speedMax: 240 },
+      { name: 3, minCaught: 25, spawnEveryMs: 400, speedMin: 200, speedMax: 300 },
+      { name: 4, minCaught: 40, spawnEveryMs: 310, speedMin: 260, speedMax: 380 },
+    ];
+
+    // ✅ Feather PNGs (put these files next to this html)
+    const FEATHER_IMAGES = ['top.png', 'middle.png', 'bottom.png'];
+
+    // ✅ Cap sizes (size = height; width preserves ratio)
+    const FEATHER_MIN = 22;
+    const FEATHER_MAX = 34;
+
+    // ===== DOM =====
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d');
+
+    const intro = document.getElementById('intro');
+    const endOverlay = document.getElementById('end');
+    const endTitle = document.getElementById('endTitle');
+    const endText = document.getElementById('endText');
+    const continueBtn = document.getElementById('continueBtn');
+
+    const startBtn = document.getElementById('startBtn');
+    const retryBtn = document.getElementById('retryBtn');
+
+    const caughtEl = document.getElementById('caught');
+    const totalEl = document.getElementById('total');
+    const stagePill = document.getElementById('stagePill');
+
+    const heartEls = [
+      document.getElementById('h1'),
+      document.getElementById('h2'),
+      document.getElementById('h3')
+    ];
+
+    totalEl.textContent = TOTAL_TO_CATCH;
+
+    // ===== State =====
+    let W = 0, H = 0, DPR = 1;
+    let running = false;
+    let lastTime = 0;
+    let lastSpawn = 0;
+
+    let feathers = [];
+    let caught = 0;
+    let lives = 3;
+
+    // ✅ Loaded images
+    const featherImgs = [];
+    let imagesReady = false;
+
+    // ===== Helpers =====
+    function resize(){
+      DPR = Math.min(window.devicePixelRatio || 1, 2);
+      W = Math.floor(window.innerWidth);
+      H = Math.floor(window.innerHeight);
+
+      canvas.width = Math.floor(W * DPR);
+      canvas.height = Math.floor(H * DPR);
+      canvas.style.width = W + 'px';
+      canvas.style.height = H + 'px';
+
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    }
+
+    function rand(min, max){ return Math.random() * (max - min) + min; }
+
+    function getStage(){
+      let s = STAGES[0];
+      for(const st of STAGES){
+        if(caught >= st.minCaught) s = st;
+      }
+      return s;
+    }
+
+    function setHUD(){
+      caughtEl.textContent = caught;
+      stagePill.textContent = `Dificultad: ${getStage().name}`;
+    }
+
+    function reset(){
+      feathers = [];
+      caught = 0;
+      lives = 3;
+
+      heartEls.forEach(h => {
+        h.classList.remove('pop');
+        h.style.opacity = '1';
+        h.style.transform = '';
+      });
+      heartEls[0].textContent = '💛';
+      heartEls[1].textContent = '💚';
+      heartEls[2].textContent = '🩵';
+
+      setHUD();
+      continueBtn.style.display = 'none';
+      endOverlay.style.display = 'none';
+
+      lastTime = 0;
+      lastSpawn = 0;
+    }
+
+    function endGame(win){
+      running = false;
+      endOverlay.style.display = 'flex';
+
+      if(win){
+        endTitle.textContent = 'Ganaste 😌';
+        endText.textContent = 'Okay… lo lograste. Ahora sí puedes cambiar el plan :)';
+        continueBtn.style.display = 'inline-flex';
+      }else{
+        endTitle.textContent = 'Perdiste 😭';
+        endText.textContent = 'Se te escaparon 3… inténtalo otra vez!';
+        continueBtn.style.display = 'none';
+      }
+    }
+
+    function loadImages(){
+      if(imagesReady) return Promise.resolve();
+
+      const promises = FEATHER_IMAGES.map(src => new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error('No se pudo cargar: ' + src));
+        img.src = src;
+      }));
+
+      return Promise.all(promises).then(imgs => {
+        featherImgs.push(...imgs);
+        imagesReady = true;
+      });
+    }
+
+    // ===== Feather objects =====
+    function spawnFeather(){
+      const stage = getStage();
+      const size = rand(FEATHER_MIN, FEATHER_MAX);
+      const img = featherImgs[Math.floor(Math.random() * featherImgs.length)];
+
+      feathers.push({
+        x: rand(10, W - 10),
+        y: -30,
+
+        size, // height in px
+        img,
+
+        // ✅ preserve original ratio
+        ratio: img.naturalWidth / img.naturalHeight,
+
+        vy: rand(stage.speedMin, stage.speedMax),
+        drift: rand(-40, 40),
+        wobble: rand(0.8, 1.4),
+        t: rand(0, Math.PI * 2),
+
+        // ✅ random turning
+        rot: rand(-0.6, 0.6),
+        rotSpeed: rand(-1.2, 1.2),
+
+        dead: false
+      });
+    }
+
+    // ===== Drawing =====
+    function drawBackground(){
+      ctx.clearRect(0,0,W,H);
+
+      // keep your subtle gradient
+      const g = ctx.createLinearGradient(0, 0, 0, H);
+      g.addColorStop(0, '#232323');
+      g.addColorStop(1, '#1f1f1f');
+      ctx.fillStyle = g;
+      ctx.fillRect(0,0,W,H);
+    }
+
+    function drawFeather(f){
+      ctx.save();
+      ctx.translate(f.x, f.y);
+
+      // ✅ wobble + random spin
+      const wob = Math.sin(f.t) * 0.18;
+      ctx.rotate(f.rot + wob);
+
+      ctx.globalAlpha = 0.95;
+
+      // ✅ keep aspect ratio (size is height)
+      const h = f.size;
+      const w = h * f.ratio;
+      ctx.drawImage(f.img, -w/2, -h/2, w, h);
+
+      ctx.restore();
+    }
+
+    // ✅ More generous hitbox (circle)
+    function hitFeather(f, px, py){
+      const dx = px - f.x;
+      const dy = py - f.y;
+
+      // based on feather height
+      const radius = (f.size * 0.70) + 14;
+      return (dx*dx + dy*dy) <= (radius * radius);
+    }
+
+    // ===== Loop =====
+    function loop(ts){
+      if(!running) return;
+
+      if(!lastTime) lastTime = ts;
+      const dt = Math.min(0.032, (ts - lastTime) / 1000);
+      lastTime = ts;
+
+      // Spawn
+      const stage = getStage();
+      if(ts - lastSpawn >= stage.spawnEveryMs){
+        lastSpawn = ts;
+        spawnFeather();
+        if(stage.name >= 3 && Math.random() < 0.25) spawnFeather();
+        if(stage.name >= 4 && Math.random() < 0.35) spawnFeather();
+      }
+
+      // Update feathers
+      for(const f of feathers){
+        if(f.dead) continue;
+
+        f.t += dt * f.wobble;
+        f.rot += f.rotSpeed * dt;   // ✅ random turning
+
+        f.y += f.vy * dt;
+        f.x += (Math.sin(f.t) * 22 + f.drift) * dt * 0.35;
+        f.x = Math.max(8, Math.min(W-8, f.x));
+
+        // missed (reaches bottom)
+        if(f.y - f.size/2 > H + 10){
+          f.dead = true;
+          lives--;
+
+          const heartIndex = lives; // after decrement: 2 pop third, 1 pop second, 0 pop first
+          if(heartEls[heartIndex]){
+            heartEls[heartIndex].classList.add('pop');
+          }
+
+          if(lives <= 0){
+            endGame(false);
+            return;
+          }
+        }
+      }
+
+      // Cleanup
+      feathers = feathers.filter(f => !f.dead);
+
+      // Win
+      if(caught >= TOTAL_TO_CATCH){
+        endGame(true);
+        return;
+      }
+
+      // Draw
+      drawBackground();
+      for(const f of feathers) drawFeather(f);
+
+      requestAnimationFrame(loop);
+    }
+
+    // ===== Click/Tap to pop =====
+    function getPointerPos(e){
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return { x: clientX - rect.left, y: clientY - rect.top };
+    }
+
+    function tryPop(x, y){
+      if(!running) return;
+
+      // check from topmost
+      for(let i = feathers.length - 1; i >= 0; i--){
+        const f = feathers[i];
+        if(f.dead) continue;
+
+        if(hitFeather(f, x, y)){
+          f.dead = true;
+          caught++;
+          setHUD();
+          break;
+        }
+      }
+    }
+
+    canvas.addEventListener('click', (e) => {
+      const p = getPointerPos(e);
+      tryPop(p.x, p.y);
+    });
+
+    canvas.addEventListener('touchstart', (e) => {
+      const p = getPointerPos(e);
+      tryPop(p.x, p.y);
+    }, { passive:true });
+
+    // ===== Buttons =====
+    startBtn.addEventListener('click', async () => {
+      try{
+        await loadImages();
+      }catch(err){
+        alert('No se pudieron cargar las imágenes. Asegúrate que top.png, middle.png, bottom.png estén en la misma carpeta que este HTML.');
+        return;
+      }
+
+      intro.style.display = 'none';
+      reset();
+      running = true;
+      requestAnimationFrame(loop);
+    });
+
+    retryBtn.addEventListener('click', () => {
+      reset();
+      running = true;
+      requestAnimationFrame(loop);
+    });
+
+    // ===== Init =====
+    window.addEventListener('resize', resize);
+    resize();
+    setHUD();
+  </script>
+</body>
+</html>

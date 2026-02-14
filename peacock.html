@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Valentine</title>
+
+<style>
+  :root{
+    --bg:#232323;
+    --stageW: clamp(14rem, 30vw, 22rem);
+    --fanScale: 0.22;
+    --cardsScale: 1.20;
+    --stackScale: 0.70;
+    --mobileScale: 1;
+    --angleStepDeg: 17;
+    --rowsPerSide: 4;
+    --rowLift: 0.95;
+    --rowSpread: 1.10;
+    --cardOffset: 4.2;
+    --cardTilt: 14;
+  }
+
+  @media (max-width: 520px){
+    :root{
+      --mobileScale: 0.7;
+      --stageW: clamp(12rem, 72vw, 18rem);
+    }
+  }
+
+  html, body{
+    margin:0;
+    width:100%;
+    height:100%;
+    background:var(--bg);
+    overflow:hidden;
+    font-family:'Segoe UI', system-ui, -apple-system, Arial, sans-serif;
+    user-select:none;
+  }
+
+  .center{
+    position:fixed;
+    inset:0;
+    display:grid;
+    place-items:center;
+  }
+
+  /* ===== Title ===== */
+  .titleWrap{
+    position:absolute;
+    top:3%;
+    left:50%;
+    transform:translateX(-50%);
+    text-align:center;
+    width:min(90vw, 800px);
+    pointer-events:none;
+    padding-top:1.4rem;
+  }
+
+  .mainTitle{
+    font-size:clamp(1.6rem, 3vw, 2.4rem);
+    color:#fff;
+    margin:0;
+    letter-spacing:.5px;
+    text-shadow:0 6px 18px rgba(0,0,0,.6);
+  }
+
+  .subTitle{
+    font-size:clamp(1rem, 2.2vw, 1.6rem);
+    color:#85d46e;
+    margin:0;
+    letter-spacing:.5px;
+    text-shadow:0 6px 18px rgba(0,0,0,.6);
+  }
+
+  .stage{
+    width: var(--stageW);
+    aspect-ratio: 22 / 32;
+    position:relative;
+    font-size: calc(var(--stageW) / 22);
+    transform: scale(var(--mobileScale));
+    transform-origin: 50% 50%;
+  }
+
+  /* ===== BELOW UI ===== */
+  .belowUI{
+    width:min(92vw, 820px);
+    margin-top: 3.2rem;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap: 14px;
+    text-align:center;
+    transform: scale(var(--mobileScale));
+    transform-origin: 50% 0%;
+  }
+
+  /* ===== Stack ===== */
+  .stack{
+    position:absolute;
+    left:50%;
+    bottom:-1.8em;
+    transform:translateX(-50%) scale(var(--stackScale));
+    transform-origin:50% 100%;
+    width: 8em;
+    height: 12em;
+    cursor:pointer;
+  }
+
+  .stack .top{ z-index: 1; }
+  .stack .middle{ z-index: 2; }
+  .stack .bottom{ z-index: 3; }
+
+  .stack img{
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+    width: 6em;
+    height:auto;
+    opacity:0;
+    transition: opacity .42s ease;
+  }
+
+  .stack .bottom{ bottom:0; opacity:1; }
+  .stack .middle{ bottom:10em; }
+  .stack .top{ bottom:18em; }
+
+  .stack.ready .middle{ opacity:1; }
+  .stack.ready2 .top{ opacity:1; }
+
+  .stack.pulse .bottom{
+    animation: tinyPulse 1200ms ease-in-out infinite;
+  }
+
+  @keyframes tinyPulse{
+    0%,100%{ transform:translateX(-50%) scale(1); }
+    50%{ transform:translateX(-50%) scale(1.03); }
+  }
+
+  .stack.fadeOut{
+    pointer-events:none;
+  }
+
+  /* ===== Rows (fan) ===== */
+  .rows{
+    position:absolute;
+    left:50%;
+    bottom:-1.8em;
+    transform:translateX(-50%) scale(var(--fanScale));
+    transform-origin: 50% 100%;
+    width: 22em;
+    height: 12em;
+  }
+
+  .row{
+    position:absolute;
+    left:50%;
+    bottom:0;
+    width: 20em;
+    transform-origin:50% 100%;
+    transform:translateX(-50%) rotate(0deg);
+    opacity:0;
+    transition: transform 1.1s cubic-bezier(.2,.9,.2,1), opacity .5s ease;
+  }
+
+  .row img{ width:100%; height:auto; display:block; }
+  .row.spawn{ opacity:1; }
+
+  /* ===== Cards ===== */
+  .cardsWrap{
+    position:absolute;
+    left:50%;
+    bottom:-3em;
+    transform:translateX(-50%) scale(var(--cardsScale));
+    transform-origin: 50% 100%;
+    width: 14em;
+    height: 9em;
+    opacity:0;
+    pointer-events:none;
+    transition: opacity .6s ease;
+  }
+
+  .cardsWrap.show{
+    opacity:1;
+    pointer-events:auto;
+  }
+
+  .card{
+    position:absolute;
+    left:50%;
+    bottom:0;
+    width: 5.5em;
+    height: 8em;
+    perspective: 40em;
+    cursor:pointer;
+    filter: drop-shadow(0 1.4em 2.5em rgba(0,0,0,.55));
+  }
+
+  .card:nth-child(1){
+    transform:translateX(calc(-50% - (var(--cardOffset) * 1.2em))) rotate(calc(-1deg * var(--cardTilt)));
+  }
+
+  .card:nth-child(2){
+    transform:translateX(-50%);
+  }
+
+  .card:nth-child(3){
+    transform:translateX(calc(-50% + (var(--cardOffset) * 1.2em))) rotate(calc(1deg * var(--cardTilt)));
+  }
+
+  .cardInner{
+    width:100%;
+    height:100%;
+    transform-style:preserve-3d;
+    transition: transform .6s ease;
+  }
+
+  .card.flipped .cardInner{
+    transform:rotateY(180deg);
+  }
+
+  .face{
+    position:absolute;
+    inset:0;
+    backface-visibility:hidden;
+    border-radius:.5em;
+    overflow:hidden;
+  }
+
+  .front img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+  .back{
+    transform:rotateY(180deg);
+    background:#ffffff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:1em;
+  }
+
+  .backContent{
+    width:100%;
+    text-align:center;
+    font-weight:600;
+    font-size:.85em;
+    line-height:1.35;
+  }
+
+  .backContent p{ margin:.55em 0; }
+  .backContent p:first-child{ margin-top:0; }
+  .backContent p:last-child{ margin-bottom:0; }
+
+  .card:nth-child(1) .back{ color:#ffaa18; }
+  .card:nth-child(2) .back{ color:#68e449; }
+  .card:nth-child(3) .back{ color:#35a8ef; }
+
+  /* ===== Bottom Subtext ===== */
+  .bottomSubtext{
+    position:static;
+    width:100%;
+    text-align:center;
+    font-size:clamp(1rem, 1.6vw, 1.2rem);
+    color:rgba(255,255,255,.85);
+    text-shadow:0 6px 18px rgba(0,0,0,.6);
+    opacity:0;
+    pointer-events:none;
+    transition: opacity .7s ease, transform .7s ease;
+    transform: translateY(-6px);
+  }
+
+  .bottomSubtext.show{
+    opacity:1;
+    transform: translateY(0);
+  }
+
+  /* ===== Question + Buttons ===== */
+  .questionWrap{
+    position:static;
+    width:100%;
+    text-align:center;
+    opacity:0;
+    pointer-events:none;
+    transition: opacity .6s ease, transform .6s ease;
+    transform: translateY(-6px);
+  }
+
+  .questionWrap.show{
+    opacity:1;
+    pointer-events:auto;
+    transform: translateY(0);
+  }
+
+  .questionText{
+    color:#fff;
+    font-size:clamp(1.35rem, 2.6vw, 2.05rem);
+    font-weight:800;
+    letter-spacing:.2px;
+    text-shadow:0 6px 18px rgba(0,0,0,.6);
+    margin-bottom:.9em;
+  }
+
+  .questionBtns{
+    display:flex;
+    gap:.9em;
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+
+  .qBtn{
+    border:none;
+    outline:none;
+    cursor:pointer;
+    padding:.85em 2.2em;
+    border-radius:999px;
+    font-size:clamp(1rem, 1.8vw, 1.2rem);
+    font-weight:800;
+    letter-spacing:.2px;
+    box-shadow:0 10px 26px rgba(0,0,0,.35);
+    transition: transform .15s ease, filter .15s ease;
+  }
+
+  .qBtn:active{ transform:translateY(1px) scale(.99); }
+  .qBtn:hover{ filter:brightness(1.05); }
+
+  .qBtn.yes{ background:#00c896; color:#fff; }
+  .qBtn.no { background:#0099cc; color:#fff; }
+
+  /* ===== HEART RAIN ===== */
+  .heart{
+    position:fixed;
+    top:-60px;
+    pointer-events:none;
+    animation:fall linear forwards;
+    z-index:9999;
+    opacity:.95;
+    filter:drop-shadow(0 0 10px rgba(255,105,180,.5));
+  }
+  @keyframes fall{
+    to{ transform:translateY(120vh) rotate(360deg); opacity:.25; }
+  }
+
+  /* ===== Popup ===== */
+  .popupOverlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.55);
+    display:none;
+    place-items:center;
+    z-index:10001;
+    padding:18px;
+  }
+
+  .popupOverlay.show{ display:grid; }
+
+  .popup{
+    width:min(760px, 92vw);
+    background:#2a2a2a;
+    border-radius:22px;
+    box-shadow:0 24px 80px rgba(0,0,0,.75);
+    border:1px solid rgba(255,255,255,.08);
+    padding:22px 22px 18px;
+    animation: popIn .22s ease-out;
+  }
+
+  @keyframes popIn{
+    from{ transform:translateY(12px) scale(.98); opacity:0; }
+    to  { transform:translateY(0) scale(1); opacity:1; }
+  }
+
+  .popupMsg{
+    color:#fff;
+    font-size:clamp(1.05rem, 2vw, 1.3rem);
+    line-height:1.35;
+    text-shadow:0 6px 18px rgba(0,0,0,.4);
+    margin:0 0 16px;
+    font-weight:700;
+  }
+
+  .popupActions{
+    display:flex;
+    justify-content:center;
+  }
+
+  .popupBtn{
+    border:none;
+    cursor:pointer;
+    padding:14px 30px;
+    border-radius:999px;
+    font-size:1.05rem;
+    font-weight:800;
+    background:#66c953;
+    color:#0e1a0e;
+    box-shadow:0 10px 26px rgba(0,0,0,.35);
+    transition: transform .12s ease, filter .12s ease;
+  }
+
+  .popupBtn:active{ transform:scale(.98); }
+  .popupBtn:hover{ filter:brightness(1.04); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .heart { animation: none !important; }
+    .popup{ animation:none !important; }
+  }
+</style>
+</head>
+
+<body>
+<div class="center">
+
+  <div class="titleWrap">
+    <h1 class="mainTitle">Feliz San Valentin Guapaa</h1>
+    <h1 class="mainTitle">💛🦚🩵</h1>
+    <h1 class="subTitle">Disfruta de tu carnaval pava</h1>
+  </div>
+
+  <div class="stage">
+
+    <div class="stack pulse" id="stack">
+      <img class="bottom" src="bottom.png" alt="">
+      <img class="middle" src="middle.png" alt="">
+      <img class="top" src="top.png" alt="">
+    </div>
+
+    <div class="rows" id="rows"></div>
+
+    <div class="cardsWrap" id="cardsWrap">
+      <div class="card" id="card1"><div class="cardInner">
+        <div class="face front"><img src="card.png" alt=""></div>
+        <div class="face back">
+          <div class="backContent">
+            <p><strong>Primero,</strong></p>
+            <p>Tantan.</p>
+          </div>
+        </div>
+      </div></div>
+
+      <div class="card" id="card2"><div class="cardInner">
+        <div class="face front"><img src="card.png" alt=""></div>
+        <div class="face back">
+          <div class="backContent">
+            <p><strong>Segundo</strong></p>
+            <p>Hammam.</p>
+          </div>
+        </div>
+      </div></div>
+
+      <div class="card" id="card3"><div class="cardInner">
+        <div class="face front"><img src="card.png" alt=""></div>
+        <div class="face back">
+          <div class="backContent">
+            <p><strong>Tercero</strong></p>
+            <p>Vino</p>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+  </div> <!-- end .stage -->
+
+  <div class="belowUI" id="belowUI">
+    <div class="bottomSubtext" id="bottomSubtext">
+      Que te parece este plan para nuestra cita de san valentin?
+    </div>
+
+    <div class="questionWrap" id="questionWrap">
+      <div class="questionText" id="questionText">Te parece perfecto el plan?</div>
+      <div class="questionBtns">
+        <button class="qBtn yes" id="btnYes">Sí !!!!!</button>
+        <button class="qBtn no"  id="btnNo">Noo !!!!</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="popupOverlay" id="popupOverlay">
+  <div class="popup" role="dialog" aria-modal="true" aria-label="Mensaje">
+    <p class="popupMsg" id="popupMsg">
+      Ahi nos vemos hermosaa &lt;3, disfruta del resto de tu viaje, te espero aqui con brazos abiertos
+    </p>
+    <div class="popupActions">
+      <button class="popupBtn" id="popupClose">Yaa 💛</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const CONFIG = {
+    angleStepDeg: 17,
+    rowsPerSide: 4,
+    rowLift: 0.95,
+    rowSpread: 1.10
+  };
+
+  const stack = document.getElementById("stack");
+  const rowsWrap = document.getElementById("rows");
+  const cardsWrap = document.getElementById("cardsWrap");
+  const bottomSubtext = document.getElementById("bottomSubtext");
+
+  const card1 = document.getElementById("card1");
+  const card2 = document.getElementById("card2");
+  const card3 = document.getElementById("card3");
+
+  const questionWrap = document.getElementById("questionWrap");
+  const questionText = document.getElementById("questionText");
+  const btnYes = document.getElementById("btnYes");
+  const btnNo  = document.getElementById("btnNo");
+
+  const popupOverlay = document.getElementById("popupOverlay");
+  const popupClose = document.getElementById("popupClose");
+
+  let started = false;
+
+  stack.addEventListener("click", async () => {
+    if (started) return;
+    started = true;
+
+    stack.classList.remove("pulse");
+
+    stack.classList.add("ready");
+    await wait(500);
+    stack.classList.add("ready2");
+    await wait(700);
+
+    startRows();
+    stack.classList.add("fadeOut");
+  });
+
+  function wait(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+  function startRows(){
+    rowsWrap.classList.add("show");
+
+    const rows = [];
+    rows.push(makeRow(0, 0));
+
+    for(let i=1;i<=CONFIG.rowsPerSide;i++){
+      rows.push(makeRow(-i, i));
+      rows.push(makeRow(+i, i));
+    }
+
+    rows.forEach((row,i)=>{
+      setTimeout(()=>row.classList.add("spawn"), i*60);
+    });
+
+    setTimeout(()=> rows.forEach(applyFinal), 700);
+
+    setTimeout(()=>{
+      cardsWrap.classList.add("show");
+      enableCards();
+      bottomSubtext.classList.add("show");
+      questionWrap.classList.add("show");
+      updateCardZ();
+    }, 1500);
+  }
+
+  function makeRow(sideIndex, absIndex){
+    const row = document.createElement("div");
+    row.className = "row";
+    row.dataset.side = sideIndex;
+    row.dataset.abs = absIndex;
+
+    const img = document.createElement("img");
+    img.src = "row.png";
+    img.alt = "";
+    row.appendChild(img);
+
+    rowsWrap.appendChild(row);
+    return row;
+  }
+
+  function applyFinal(row){
+    const side = Number(row.dataset.side);
+    const abs  = Number(row.dataset.abs);
+
+    const angle = side === 0 ? 0 : Math.sign(side) * abs * CONFIG.angleStepDeg;
+    const x = side === 0 ? 0 : Math.sign(side) * abs * CONFIG.rowSpread;
+    const y = abs * CONFIG.rowLift;
+
+    row.style.opacity = "1";
+    row.style.transform =
+      `translateX(-50%) rotate(${angle}deg) translateX(${x}em) translateY(${-y}em)`;
+  }
+
+  function enableCards(){
+    document.querySelectorAll(".card").forEach(card=>{
+      card.addEventListener("click", ()=>{
+        card.classList.toggle("flipped");
+        updateCardZ();
+      });
+    });
+  }
+
+  function updateCardZ(){
+    const centerFlipped = card2.classList.contains("flipped");
+
+    card1.style.zIndex = "1";
+    card3.style.zIndex = "1";
+    card2.style.zIndex = "2";
+
+    if (card1.classList.contains("flipped")) card1.style.zIndex = centerFlipped ? "3" : "4";
+    if (card3.classList.contains("flipped")) card3.style.zIndex = centerFlipped ? "3" : "4";
+
+    if (centerFlipped) card2.style.zIndex = "5";
+  }
+
+  let heartRainRunning = false;
+
+  function startHeartRain() {
+    if (heartRainRunning) { burstHearts(50); return; }
+    heartRainRunning = true;
+    burstHearts(110);
+    const interval = setInterval(() => burstHearts(22), 500);
+    setTimeout(() => { clearInterval(interval); heartRainRunning = false; }, 8000);
+  }
+
+  function startHeartRainFor(ms) {
+    burstHearts(90);
+    const interval = setInterval(() => burstHearts(18), 420);
+    setTimeout(() => clearInterval(interval), ms);
+  }
+
+  function burstHearts(count) {
+    const hearts = ["❤️", "💖", "💕", "💗", "💘"];
+    for (let i = 0; i < count; i++) {
+      const heart = document.createElement("div");
+      heart.className = "heart";
+      heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+
+      const size = Math.random() * 30 + 20;
+      heart.style.fontSize = size + "px";
+      heart.style.left = Math.random() * 100 + "vw";
+
+      const duration = Math.random() * 3 + 3.5;
+      const delay = Math.random() * 0.8;
+      heart.style.animationDuration = duration + "s";
+      heart.style.animationDelay = delay + "s";
+
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), (duration + delay) * 1000);
+    }
+  }
+
+  function showPopup(){
+    popupOverlay.classList.add("show");
+  }
+
+  function hidePopup(){
+    popupOverlay.classList.remove("show");
+  }
+
+  popupClose.addEventListener("click", hidePopup);
+  popupOverlay.addEventListener("click", (e)=>{
+    if (e.target === popupOverlay) hidePopup();
+  });
+
+  let questionState = 1;
+
+  btnYes.addEventListener("click", () => {
+    if (questionState === 1) {
+      console.log("Answer Q1:", "Sí !!!!!");
+      startHeartRainFor(4500);
+      showPopup();
+    } else {
+      console.log("Answer Q2:", "Sí");
+      setTimeout(() => {
+        window.location.href = "minigame.html";
+      }, 1000);  // 1.8 seconds delay — feels playful and romantic
+    }
+  });
+
+  btnNo.addEventListener("click", () => {
+    if (questionState === 1) {
+      console.log("Answer Q1:", "Noo !!!!");
+      questionState = 2;
+      questionText.textContent = "No???? Quieres cambiar algo del plan?";
+      btnYes.textContent = "Sí";
+      btnNo.textContent  = "No";
+    } else {
+      console.log("Answer Q2:", "No");
+      startHeartRainFor(4500);
+      showPopup();
+    }
+  });
+</script>
+</body>
+</html>
