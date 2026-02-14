@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Hyva Joulua Guapa</title>
+
+  <style>
+    html, body {
+      background-color: #232323;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      padding-top: 120px;
+      padding-bottom: 144px;
+      color: #f7f7f7;
+      margin: 0;
+      overflow-x: hidden;
+    }
+
+    h1 { font-size: 3em; margin-bottom: 0.6em; }
+    p  { font-size: 1.55em; margin: 0.35em 0; color: #ffffff; }
+
+    /* ===== CONSTANT SNOW ===== */
+    .snowflake{
+      position:fixed; top:-12px; pointer-events:none; z-index:9998; opacity:.9;
+      animation-name:snowFall; animation-timing-function:linear; animation-iteration-count:1;
+      will-change:transform,opacity; filter:drop-shadow(0 0 6px rgba(255,255,255,.12));
+    }
+    @keyframes snowFall{
+      0%{transform:translateY(-12px) translateX(0);opacity:0}
+      8%{opacity:.9}
+      100%{transform:translateY(112vh) translateX(var(--drift));opacity:.15}
+    }
+
+    /* ===== TOP TREE (BACK HOME) ===== */
+    #topTreeLink{display:none;margin-bottom:26px;position:relative;z-index:2;}
+    #topTreeLink img{
+      width:110px;max-width:30vw;cursor:pointer;
+      transition:transform .2s ease, filter .2s ease;
+      filter:drop-shadow(0 0 10px rgba(102,201,83,.45));
+    }
+    #topTreeLink img:hover{transform:scale(1.07);filter:drop-shadow(0 0 14px rgba(102,201,83,.75));}
+    #topTreeLink img:active{transform:scale(.95);}
+
+    /* ===== PASSWORD GATE ===== */
+    #gate{display:block;animation:fadeIn .6s ease-out;position:relative;z-index:2;}
+    input{
+      margin-top:24px;padding:18px 24px;font-size:1.35em;border-radius:999px;border:none;outline:none;
+      width:320px;max-width:85vw;text-align:center;
+    }
+    button{
+      margin-top:20px;padding:18px 40px;font-size:1.35em;border:none;border-radius:999px;cursor:pointer;
+      background-color:#66c953;color:#0e1a0e;font-weight:700;
+      transition:transform .12s ease-out, filter .12s ease-out;
+    }
+    button:active{transform:scale(.96);}
+    #error{margin-top:18px;color:#ff6b6b;font-weight:bold;font-size:1.2em;min-height:1.4em;}
+    #specialMsg{margin-top:26px;display:none;animation:fadeIn .6s ease-out;}
+    #specialMsg p{font-size:1.55em;margin:.45em 0;color:#fff;}
+
+    /* ===== UNLOCKED CONTENT (ONLY FINAL GIFT) ===== */
+    #content{display:none;animation:fadeIn .8s ease-out;position:relative;z-index:2;}
+
+    /* ===== FINAL SCREEN ===== */
+    #finaleSection{
+      display:none;
+      margin-top:42px;
+      padding:0 18px;
+      animation:fadeIn .7s ease-out;
+      position:relative;
+    }
+    #finaleText{
+      font-size:1.75em;
+      line-height:1.35;
+      max-width:900px;
+      margin:0 auto;
+      opacity:.98;
+      transition:opacity .22s ease, transform .22s ease, filter .22s ease;
+    }
+
+    #giftBtnWrap{
+      margin-top:26px;
+      position:relative;
+      z-index:2;
+      transition:opacity .22s ease, transform .22s ease, filter .22s ease;
+    }
+
+    #giftBtn{
+      width:170px;max-width:50vw;cursor:pointer;user-select:none;
+      transition:transform .14s ease, filter .14s ease;
+      filter:drop-shadow(0 0 18px rgba(255,68,68,.22));
+      transform-origin: 50% 70%;
+    }
+    #giftBtn:hover{transform:scale(1.06);}
+    #giftBtn:active{transform:scale(.96);}
+
+    /* ===== GIFT RATTLE (occasional) ===== */
+    #giftBtn.rattle{ animation: rattle .55s ease-in-out; }
+    @keyframes rattle{
+      0%   { transform: rotate(0deg) scale(1); }
+      12%  { transform: rotate(-6deg) scale(1.02); }
+      24%  { transform: rotate(6deg)  scale(1.02); }
+      36%  { transform: rotate(-5deg) scale(1.02); }
+      48%  { transform: rotate(5deg)  scale(1.02); }
+      60%  { transform: rotate(-3deg) scale(1.01); }
+      72%  { transform: rotate(3deg)  scale(1.01); }
+      100% { transform: rotate(0deg) scale(1); }
+    }
+
+    /* ===== DRAMATIC GIFT REVEAL (INLINE, NO POPUP) ===== */
+    #giftReveal{
+      display:none;
+      margin-top:18px;
+      position:relative;
+      width:100%;
+      padding:0 18px 10px;
+    }
+
+    /* explosion layer behind the image */
+    #heartExplosion{
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform:translate(-50%,-50%);
+      width:min(760px, 96vw);
+      height:420px;
+      pointer-events:none;
+      z-index:1;
+      overflow:visible;
+    }
+
+    .boom-heart{
+      position:absolute;
+      left:50%;
+      top:55%;
+      transform:translate(-50%,-50%) scale(.5);
+      opacity:0;
+      font-size:28px;
+      filter:drop-shadow(0 0 12px rgba(255,105,180,.35));
+      animation:boom var(--dur) ease-out forwards;
+      will-change:transform,opacity;
+    }
+
+    @keyframes boom{
+      0%   { opacity:0; transform:translate(-50%,-50%) translate(0,0) scale(.5) rotate(-10deg); }
+      15%  { opacity:1; }
+      70%  { opacity:1; }
+      100% { opacity:0; transform:translate(-50%,-50%) translate(var(--dx), var(--dy)) scale(1.35) rotate(var(--rot)); }
+    }
+
+    /* the image itself */
+    #giftContentInline{
+      width:min(720px, 92vw);
+      height:auto;
+      border-radius:18px;
+      box-shadow:0 22px 70px rgba(0,0,0,.72);
+      position:relative;
+      z-index:2;
+      opacity:0;
+      transform:scale(.85) translateY(12px);
+    }
+
+    #giftContentInline.reveal{
+      animation:giftRevealPop .85s cubic-bezier(.2,.95,.2,1) forwards;
+    }
+
+    @keyframes giftRevealPop{
+      0%   { opacity:0; transform:scale(.82) translateY(18px); }
+      55%  { opacity:1; transform:scale(1.06) translateY(0); }
+      72%  { opacity:1; transform:scale(.99) translateY(0); }
+      88%  { opacity:1; transform:scale(1.02) translateY(0); }
+      100% { opacity:1; transform:scale(1) translateY(0); }
+    }
+
+    /* caption under the final image */
+    .caption{
+      margin-top:28px;
+      font-size:1.55em;
+      line-height:1.35;
+      padding:0 18px;
+      opacity:.98;
+      min-height:1.4em;
+      white-space: pre-line; /* ✅ \n shows as new lines */
+    }
+
+    /* ===== HEART RAIN ===== */
+    .heart{
+      position:fixed;top:-60px;pointer-events:none;animation:fall linear forwards;z-index:9999;opacity:.95;
+      filter:drop-shadow(0 0 10px rgba(255,105,180,.5));
+    }
+    @keyframes fall{to{ transform:translateY(120vh) rotate(360deg); opacity:.25; }}
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .snowflake, .heart, .boom-heart, #giftContentInline.reveal, #giftBtn.rattle {
+        animation: none !important;
+        transition: none !important;
+      }
+      #giftContentInline{opacity:1;transform:none;}
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- PASSWORD GATE -->
+  <div id="gate">
+    <h1>✨🎄 Entrada secreta 🎄✨</h1>
+    <p>Introduce la contraseña</p>
+
+    <input id="password" type="text" placeholder="Password" autocomplete="off" />
+    <br>
+    <button onclick="unlock()">Entrar</button>
+
+    <div id="error"></div>
+
+    <div id="specialMsg">
+      <p id="line1"></p>
+      <p id="line2"></p>
+      <p id="line3"></p>
+    </div>
+  </div>
+
+  <!-- UNLOCKED CONTENT -->
+  <div id="content">
+
+    <div id="topTreeLink">
+      <a href="index.html" aria-label="Back to main page">
+        <img src="christmas-tree.png" alt="Back to main page">
+      </a>
+    </div>
+
+    <h1>Feliz navidad Evelia 🇵🇪</h1>
+    <p>❤️🎄🎁❤️</p>
+
+    <h1>Hyvää joulua 🇫🇮</h1>
+    <p>❤️🎄🎁❤️</p>
+
+    <!-- FINAL SCREEN ONLY -->
+    <div id="finaleSection">
+      <div id="finaleText">
+        Regalame un recuerdo más contigo
+      </div>
+
+      <div id="giftBtnWrap">
+        <img id="giftBtn" src="days/gift-button.png" alt="Open gift button">
+      </div>
+
+      <!-- DRAMATIC INLINE REVEAL -->
+      <div id="giftReveal">
+        <div id="heartExplosion"></div>
+        <!-- keep your final image -->
+        <img id="giftContentInline" src="days/princesa.png" alt="Mi Princesa Evelia">
+        <div class="caption" id="giftCaption"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PASSWORD_NORMAL = "99%";
+
+    // ✅ NEW: per-session attempt counter (first try shows the "Segura?" prompt)
+    const PW_ATTEMPT_KEY = "pw_attempts_v1";
+    function getPwAttempts() {
+      const n = parseInt(sessionStorage.getItem(PW_ATTEMPT_KEY) || "0", 10);
+      return Number.isFinite(n) ? n : 0;
+    }
+    function setPwAttempts(n) {
+      sessionStorage.setItem(PW_ATTEMPT_KEY, String(n));
+    }
+
+    // ✅ final gift caption text (supports \n)
+    const GIFT_CAPTION_PART1 = `
+
+    Y pensar que hace tan solo 7 meses no entendías que me refería a tí,
+    cuando dije que ví a una chica guapisíma comiendo ceviche conmigo,
+    y ahora intento dedicarte algún poema que pueda poner en palabras
+    lo que siento por tí...
+
+    Pero no hay palabras que puedan jamás replicar lo que siento cuando te veo.
+    Pero éste es mi mejor intento.
+    Creo... Te he escrito tantos poemas, y solo has visto 2
+
+    -------
+
+    Evelia,
+
+    Debajo de los parpados del alma, 
+    de este loco enamorado... 
+    en tinta verde, 
+    dejaste tus ojos tatuados. 
+
+    Para que pueda verte, 
+    aún en el sueño más profundo, 
+    a tí, 
+    la chica que más adoro en este mundo. 
+
+    Soy náufrago en el mar de tu mirada esmeralda, 
+    y solo el dulce aroma de coco y vainilla, 
+    guiarían a este loco de vuelta
+    a la orilla de tu piel. 
+
+    Me siento todos los días frente al mar, 
+    cómo si el oleaje y la brisa,
+    podrían traerme de vuelta el paisaje perfecto,
+    de tu sonrisa,
+
+    Observando el amanecer,
+    Porque entre los hilos de sol,
+    Que atraviesan mis pupilas,
+    Nuevamente puedo verte.
+
+    ------
+
+    Y todavía no he olvidado,
+    El calor de tenerte a mi lado,
+    De cómo apoyabas tu cabeza en el cine,
+    Y yo rogándole al tiempo que jamás termine, 
+
+    Tus abrazos eran la caricia más pura,
+    Y tus besos me robaban la cordura,
+    Por eso cada noche, te pedía más de uno,
+    Y ahora me quedé con ninguno. 
+
+    Compartimos un vino aquella tarde,
+    bajo un árbol deseando besarte,
+    cómo quisiera hoy tenerte en mis brazos
+    y susurrarte: 
+    "Mi amor nunca voy a soltarte." 
+
+    Tu cariño fue más dulce
+    que el verano más perfecto,
+    porque ese sol, ese cielo,
+    ese verano,
+    ya lo viví contigo. 
+
+    — René`;
+
+    const GIFT_CAPTION_PART2 = `
+
+    --------
+
+    No es que no haya intentado soltarte, 
+    Más de una vez te deje flotar 
+    a merced del tiempo, 
+
+    Pero como la marea del mar, 
+    y la brisa del viento 
+
+    Tu recuerdo siempre a vuelto...
+    Entre cada aliento, 
+    de las palabras que quedaron por decir, 
+    de cada latido que quedaron sin latir... 
+
+    Es así, 
+    que sin buscarte, 
+    vuelvo a recordarte
+
+    `;
+
+    let heartRainRunning = false;
+    let giftRattleTimer = null;
+    let giftRevealed = false;
+
+    // ✅ NEW: timer for delayed caption reveal
+    let captionRevealTimer = null;
+
+    /* ===== CONSTANT SNOW ===== */
+    const MAX_SNOWFLAKES = 70;
+    const snowState = { count: 0 };
+
+    function spawnSnowflake() {
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      if (snowState.count > MAX_SNOWFLAKES) return;
+
+      const flake = document.createElement("div");
+      flake.className = "snowflake";
+      flake.textContent = "❄";
+
+      const size = Math.random() * 14 + 10;
+      flake.style.fontSize = size + "px";
+      flake.style.left = Math.random() * 100 + "vw";
+
+      const duration = Math.random() * 6 + 6;
+      const drift = (Math.random() * 70 - 35) + "px";
+      flake.style.setProperty("--drift", drift);
+      flake.style.animationDuration = duration + "s";
+      flake.style.opacity = (Math.random() * 0.5 + 0.35).toFixed(2);
+
+      document.body.appendChild(flake);
+      snowState.count++;
+
+      setTimeout(() => {
+        flake.remove();
+        snowState.count--;
+      }, duration * 1000 + 200);
+    }
+
+    setInterval(spawnSnowflake, 180);
+    for (let i = 0; i < 18; i++) setTimeout(spawnSnowflake, i * 120);
+
+    /* ===== PASSWORD PARSING: triggers >= 100% easter egg ===== */
+    function parsePercentInput(str) {
+      const cleaned = (str || "").trim().replace(",", ".");
+      const match = cleaned.match(/-?\d+(\.\d+)?/);
+      if (!match) return null;
+      return parseFloat(match[0]);
+    }
+
+    function runEasterEgg() {
+      startHeartRain();
+      showSpecialMsgSequence();
+      password.value = "";
+    }
+
+    // === password logging settings ===
+    const LOG_RAW_PASSWORD_INPUT = true; // logs exact input to your sheet
+    const MAX_LOG_CHARS = 120;
+
+    function classifyPasswordInput(raw) {
+      const s = (raw || "").trim();
+      const lower = s.toLowerCase();
+
+      if (!s) return "empty";
+      if (/^\d+\s*%$/.test(lower)) return "numeric_percent";
+      if (/^-?\d+([.,]\d+)?\s*%?$/.test(lower)) return "numeric_numberish";
+      if (/^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(lower)) return "date_like";
+      if (/^[a-záéíóúñ]+$/i.test(lower)) return "word";
+      if (/[a-z]/i.test(lower) && /\d/.test(lower)) return "alphanumeric";
+      return "other";
+    }
+
+    function safeLog(eventName, extra = {}) {
+      // LogEvent is defined by the Make logger block (below). If it isn't loaded, do nothing.
+      try { window.LogEvent && window.LogEvent(eventName, extra); } catch {}
+    }
+
+    function unlockSuccess() {
+      gate.style.display = "none";
+      content.style.display = "block";
+      topTreeLink.style.display = "block";
+      showFinale();
+    }
+
+    /* ===== GATE =====
+       NEW RULE:
+       - First attempt always shows: "Segura? Cuanto % eres mía Evelia?"
+       - Second attempt+: takes whatever, runs easter eggs first, then unlocks (pass-through)
+    */
+
+    function unlock() {
+      const inputRaw = password.value.trim();
+      const inputLower = inputRaw.toLowerCase();
+
+      // ✅ log attempt (keep as you had it)
+      safeLog("password_attempt", {
+        input_type: classifyPasswordInput(inputRaw),
+        input_length: inputRaw.length,
+        input_raw: LOG_RAW_PASSWORD_INPUT ? inputRaw.slice(0, MAX_LOG_CHARS) : null
+      });
+
+      // ✅ ALWAYS reset UI
+      error.textContent = "";
+      hideSpecialMsg();
+
+      // ✅ FIRST TRY: ALWAYS intercept, no matter what they typed (0, 99%, anything)
+      const attempts = getPwAttempts();
+      if (attempts === 0) {
+        setPwAttempts(1);
+        safeLog("password_result", { result: "first_try_prompt" });
+        error.textContent =
+          "Segura? Cuanto % eres mía Evelia? (Oops, no estaba funcionando antes, ahora sí deberia funcionar bien)";
+        return;
+      }
+
+      // ===== WORD EASTER EGGS (trigger first) =====
+      if (inputLower === "monton") {
+        safeLog("password_result", { result: "keyword_easter_egg", keyword: "monton" });
+        error.textContent = "No mi amor, a mí me gustas un montón, pero es un porcentaje % lo que te pido.";
+        return;
+      }
+      if (inputLower === "mucho") {
+        safeLog("password_result", { result: "keyword_easter_egg", keyword: "mucho" });
+        error.textContent = "No mi amor, mucho es lo que te extraño, es un porcentaje % lo que te pido.";
+        return;
+      }
+      if (inputLower === "toda") {
+        safeLog("password_result", { result: "keyword_easter_egg", keyword: "toda" });
+        error.textContent = "No mi amor, cuando te tenga en frente te voy a hacer toda mía, ahora es un porcentaje % lo que te pido.";
+        return;
+      }
+      if (inputLower === "evelia") {
+        safeLog("password_result", { result: "keyword_easter_egg", keyword: "evelia" });
+        error.textContent = "La dueña de mi corazón";
+        return;
+      }
+      if (inputLower === "11/06/25") {
+        safeLog("password_result", { result: "keyword_easter_egg", keyword: "11/06/25" });
+        error.textContent = "El día que llegaste a mi vida";
+        return;
+      }
+
+    // ✅ OPTIONAL (only if you still want >= 100% to trigger the heart-rain easter egg)
+    // Put it HERE (after first try), so it can never bypass the first-try prompt.
+
+    // ===== PASS-THROUGH DEFAULT =====
+    if (inputRaw === PASSWORD_NORMAL) {
+      safeLog("password_result", { result: "correct" });
+    } else {
+      safeLog("password_result", { result: "pass_through" });
+    }
+
+    unlockSuccess();
+  }
+
+
+
+    password.addEventListener("keydown", e => {
+      if (e.key === "Enter") unlock();
+    });
+
+    /* ===== FINAL SCREEN ===== */
+    function startGiftRattle() {
+      stopGiftRattle();
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+      function scheduleNext() {
+        if (giftRevealed) return;
+
+        const delay = 1600 + Math.random() * 2600; // 1.6s–4.2s
+        giftRattleTimer = setTimeout(() => {
+          if (giftRevealed) return;
+          giftBtn.classList.remove("rattle");
+          void giftBtn.offsetWidth;
+          giftBtn.classList.add("rattle");
+          scheduleNext();
+        }, delay);
+      }
+
+      scheduleNext();
+    }
+
+    function stopGiftRattle() {
+      if (giftRattleTimer) {
+        clearTimeout(giftRattleTimer);
+        giftRattleTimer = null;
+      }
+      if (typeof giftBtn !== "undefined" && giftBtn) {
+        giftBtn.classList.remove("rattle");
+      }
+    }
+
+    function showFinale() {
+      finaleSection.style.display = "block";
+
+      giftReveal.style.display = "none";
+      giftContentInline.classList.remove("reveal");
+      heartExplosion.innerHTML = "";
+      finaleText.style.display = "block";
+      giftBtnWrap.style.display = "block";
+
+      giftCaption.textContent = "";
+      giftCaption.style.display = "none";
+
+      giftRevealed = false;
+
+      // ✅ reset delayed caption reveal timer
+      if (captionRevealTimer) {
+        clearTimeout(captionRevealTimer);
+        captionRevealTimer = null;
+      }
+
+      startGiftRattle();
+    }
+
+    function preloadGiftAssets() {
+      new Image().src = "days/gift-button.png";
+      new Image().src = "days/princesa.png";
+    }
+    preloadGiftAssets();
+
+    function heartExplosionBurst(total = 44) {
+      heartExplosion.innerHTML = "";
+      const emojis = ["❤️","💖","💕","💗","💘"];
+
+      for (let i = 0; i < total; i++) {
+        const h = document.createElement("div");
+        h.className = "boom-heart";
+        h.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+
+        const angle = Math.random() * Math.PI * 2;
+        const radius = 130 + Math.random() * 240;
+        const dx = Math.cos(angle) * radius;
+        const dy = Math.sin(angle) * radius * 0.7;
+
+        h.style.setProperty("--dx", dx.toFixed(0) + "px");
+        h.style.setProperty("--dy", dy.toFixed(0) + "px");
+        h.style.setProperty("--rot", (Math.random() * 160 - 80).toFixed(0) + "deg");
+
+        const delay = Math.random() * 0.25;
+        h.style.animationDelay = delay.toFixed(2) + "s";
+        h.style.fontSize = (22 + Math.random() * 28).toFixed(0) + "px";
+
+        const dur = 4.0 + Math.random() * 1.2; // 4.0–5.2 seconds
+        h.style.setProperty("--dur", dur.toFixed(2) + "s");
+
+        heartExplosion.appendChild(h);
+        setTimeout(() => h.remove(), (dur + delay) * 1000 + 80);
+      }
+    }
+
+    function revealGiftDramatic() {
+      giftRevealed = true;
+      stopGiftRattle();
+
+      finaleText.style.display = "none";
+      giftBtnWrap.style.display = "none";
+
+      giftReveal.style.display = "block";
+
+      // ✅ show PART 1 immediately
+      giftCaption.textContent = GIFT_CAPTION_PART1;
+      giftCaption.style.display = "block";
+
+      // ✅ reveal PART 2 after 70 seconds (your comment said 10, but your timer was 70000)
+      if (captionRevealTimer) clearTimeout(captionRevealTimer);
+      captionRevealTimer = setTimeout(() => {
+        giftCaption.textContent += GIFT_CAPTION_PART2;
+      }, 70000);
+
+      //heartExplosionBurst(52);
+      giftContentInline.classList.remove("reveal");
+      void giftContentInline.offsetWidth;
+      giftContentInline.classList.add("reveal");
+
+      startHeartRainFor(4500);
+
+      safeLog("gift_reveal");
+
+      setTimeout(() => {
+        giftReveal.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 120);
+    }
+
+    giftBtn.addEventListener("click", revealGiftDramatic);
+
+    function hideSpecialMsg() {
+      specialMsg.style.display = "none";
+      line1.textContent = "";
+      line2.textContent = "";
+      line3.textContent = "";
+    }
+
+    /* ===== HEART RAIN (shared) ===== */
+    function startHeartRain() {
+      if (heartRainRunning) { burstHearts(50); return; }
+      heartRainRunning = true;
+      burstHearts(110);
+      const interval = setInterval(() => burstHearts(22), 500);
+      setTimeout(() => { clearInterval(interval); heartRainRunning = false; }, 8000);
+    }
+
+    function startHeartRainFor(ms) {
+      burstHearts(90);
+      const interval = setInterval(() => burstHearts(18), 420);
+      setTimeout(() => clearInterval(interval), ms);
+    }
+
+    function burstHearts(count) {
+      const hearts = ["❤️", "💖", "💕", "💗", "💘"];
+      for (let i = 0; i < count; i++) {
+        const heart = document.createElement("div");
+        heart.className = "heart";
+        heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+
+        const size = Math.random() * 30 + 20;
+        heart.style.fontSize = size + "px";
+        heart.style.left = Math.random() * 100 + "vw";
+
+        const duration = Math.random() * 3 + 3.5;
+        const delay = Math.random() * 0.8;
+        heart.style.animationDuration = duration + "s";
+        heart.style.animationDelay = delay + "s";
+
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), (duration + delay) * 1000);
+      }
+    }
+  </script>
+
+  <!-- ✅ Make.com logger + page view -->
+  <script>
+  (() => {
+    const WEBHOOK_URL = "https://hook.eu1.make.com/q8i5ihktky0suxmhgyir7i4225dxc4dm";
+
+    const safe = (fn, fallback = null) => { try { return fn(); } catch { return fallback; } };
+
+    const getVisitorId = () => {
+      const key = "visit_vid_v1";
+      let vid = safe(() => localStorage.getItem(key));
+      if (!vid) {
+        vid = (crypto?.randomUUID?.() || (Date.now() + "-" + Math.random().toString(16).slice(2)));
+        safe(() => localStorage.setItem(key, vid));
+      }
+      return vid;
+    };
+
+    const getSessionId = () => {
+      const key = "visit_sid_v1";
+      let sid = safe(() => sessionStorage.getItem(key));
+      if (!sid) {
+        sid = (crypto?.randomUUID?.() || (Date.now() + "-" + Math.random().toString(16).slice(2)));
+        safe(() => sessionStorage.setItem(key, sid));
+      }
+      return sid;
+    };
+
+    const baseContext = () => {
+      const nav = navigator;
+      const scr = screen;
+      const tz = safe(() => Intl.DateTimeFormat().resolvedOptions().timeZone);
+      const conn = nav.connection || nav.mozConnection || nav.webkitConnection;
+      const queryParams = safe(() => Object.fromEntries(new URLSearchParams(location.search)), {});
+
+      return {
+        ts_iso: new Date().toISOString(),
+        ts_ms: Date.now(),
+
+        url: location.href,
+        origin: location.origin,
+        path: location.pathname,
+        title: document.title,
+        referrer: document.referrer || null,
+        query: queryParams,
+
+        visitor_id: getVisitorId(),
+        session_id: getSessionId(),
+
+        user_agent: nav.userAgent,
+        language: nav.language || null,
+        languages: safe(() => nav.languages, null),
+        timezone: tz || null,
+        platform: nav.platform || null,
+        cookie_enabled: nav.cookieEnabled ?? null,
+        do_not_track: nav.doNotTrack ?? null,
+
+        screen_w: scr?.width ?? null,
+        screen_h: scr?.height ?? null,
+        screen_avail_w: scr?.availWidth ?? null,
+        screen_avail_h: scr?.availHeight ?? null,
+        pixel_ratio: window.devicePixelRatio ?? null,
+        viewport_w: window.innerWidth ?? null,
+        viewport_h: window.innerHeight ?? null,
+
+        device_memory_gb: nav.deviceMemory ?? null,
+        cpu_cores: nav.hardwareConcurrency ?? null,
+
+        connection_type: conn?.effectiveType ?? null,
+        connection_rtt: conn?.rtt ?? null,
+        connection_downlink: conn?.downlink ?? null,
+        connection_save_data: conn?.saveData ?? null,
+
+        prefers_dark: safe(() => window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches, null),
+        reduced_motion: safe(() => window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches, null),
+      };
+    };
+
+    const send = async (payload) => {
+      const body = JSON.stringify(payload);
+
+      if (navigator.sendBeacon) {
+        const ok = navigator.sendBeacon(WEBHOOK_URL, new Blob([body], { type: "text/plain" }));
+        if (ok) return;
+      }
+
+      await fetch(WEBHOOK_URL, {
+        method: "POST",
+        mode: "no-cors",
+        credentials: "omit",
+        body,
+        keepalive: true
+      });
+    };
+
+    window.LogEvent = (eventName, extra = {}) => {
+      const payload = {
+        event: eventName,
+        ...baseContext(),
+        ...extra
+      };
+      send(payload).catch(() => {});
+    };
+
+    // ✅ page view on christmas page
+    window.LogEvent("page_view_christmas");
+  })();
+  </script>
+
+</body>
+</html>

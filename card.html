@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Card</title>
+
+  <style>
+    
+    html, body {
+      background-color: #232323;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      padding-top: 90px;
+      padding-bottom: 120px;
+      color: #f7f7f7;
+      margin: 0;
+      width: 100%;
+      overflow-x: hidden;
+    }
+
+    .no-follow-note{
+      margin-top: 10px;
+      font-size: 0.92em;
+      color: rgba(255,255,255,0.70);
+      padding: 0 10px;
+      line-height: 1.45;
+    }
+
+    p {
+      font-size: 1.3em;
+      color: #ffffff;
+      margin: 0.25em 0;
+    }
+
+    #topCardImg{
+      width: 140px;
+      max-width: 55vw;
+      height: auto;
+      display: block;
+      margin: 0 auto 14px;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .card-wrap {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    #poemText {
+      margin-top: 20px;
+      white-space: pre-line;
+      font-size: 1.12em;
+      line-height: 1.65;
+      color: #f0f0f0;
+      text-align: center;
+    }
+
+    .gallery-title {
+      margin-top: 45px;
+      margin-bottom: 12px;
+      font-size: 1.25em;
+      font-weight: 600;
+      color: #ffffff;
+      padding: 0 20px;
+
+      white-space: pre-line; /* ✅ THIS FIXES ENTERS */
+    }
+
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    @media (min-width: 720px) {
+      .gallery-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .gallery-item {
+      cursor: pointer;
+      border: 2px solid rgba(255,255,255,0.14);
+      background: rgba(0,0,0,0.10);
+
+      overflow: hidden;         /* keeps crop clean */
+    }
+
+
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    @media (max-width: 420px) {
+      .gallery-item img { height: 170px; }
+    }
+
+    #imgOverlay {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.85);
+      z-index: 999999;
+      padding: 14px;
+    }
+
+    #imgOverlay.open { display: flex; }
+
+    #overlayImg {
+      max-width: 96vw;
+      max-height: 86vh;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.7);
+    }
+
+    .question-wrap {
+      margin-top: 55px;
+      padding: 0 20px;
+    }
+
+    .question {
+      font-size: 1.6em;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    .btn-row {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 15px 30px;
+      font-size: 1.1em;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      color: white;
+      transition: transform 0.15s ease-out;
+      min-width: 140px;
+    }
+
+    button:active {
+      transform: scale(0.96) translateY(1px);
+    }
+
+    .yes-btn { background-color: #c95b53; }
+    .no-btn  { background-color: #606060; }
+
+    .answer-wrap {
+      display: none;
+      max-width: 820px;
+      margin: 30px auto 0;
+      padding: 0 20px;
+    }
+
+    .answer-wrap.show { display: block; }
+
+    .answer-text {
+      white-space: pre-line;
+      font-size: 1.12em;
+      line-height: 1.65;
+      color: #f0f0f0;
+      margin-bottom: 22px;
+      text-align: center;
+    }
+
+    .answer-img {
+      width: 100%;
+      max-width: 820px;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.7);
+    }
+
+    /* ✅ No answer button styling (same style as your other buttons) */
+    .no-follow-btn{
+      margin-top: 12px;
+      background-color: #c95b53; /* ✅ CHANGED COLOR HERE */
+      min-width: 160px;
+    }
+
+        /* ===== MOBILE TYPOGRAPHY FIX ===== */
+    @media (max-width: 600px) {
+
+      .gallery-title {
+        font-size: 1rem;     /* was huge */
+        line-height: 1.45;
+        padding: 0 12px;
+        
+      }
+
+      .question-wrap {
+        font-size: 0.7rem;
+        line-height: 1.4;
+        margin-top: 2rem;
+        margin-bottom: 4rem;
+      }
+
+    }
+
+    /* ================================
+       ✅ TePáTi modal
+       ================================ */
+    .plan-modal-overlay{
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.72);
+      z-index: 9999999;
+      padding: 14px;
+    }
+    .plan-modal-overlay.open{ display: flex; }
+
+    .plan-modal{
+      background: #2a2a2a;
+      color: #fff;
+      width: 92%;
+      max-width: 380px;
+      border-radius: 16px;
+      padding: 20px 18px 18px;
+      box-shadow: 0 0 28px rgba(255,255,255,0.14);
+      text-align: left;
+    }
+
+    .plan-modal h3{
+      margin: 0 0 14px;
+      text-align: center;
+      font-size: 1.15em;
+      letter-spacing: 0.2px;
+    }
+
+    .plan-modal label{
+      display: block;
+      font-size: 0.95em;
+      margin-top: 10px;
+    }
+
+    .plan-modal input[type="date"],
+    .plan-modal input[type="time"]{
+      width: 100%;
+      margin-top: 6px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      background: rgba(255,255,255,0.95);
+      color: #111;
+      font-size: 1em;
+      box-sizing: border-box;
+    }
+
+    .plan-options{
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+    }
+
+    .plan-options .opt{
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 8px 0;
+      font-size: 1.0em;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .plan-options input[type="radio"]{
+      transform: scale(1.1);
+      cursor: pointer;
+    }
+
+    .plan-modal-actions{
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .plan-modal-actions button{
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-size: 1em;
+      min-width: 0;
+    }
+
+    .plan-cancel{
+      background: #606060;
+      color: #fff;
+    }
+
+    .plan-confirm{
+      background: #c95b53;
+      color: #fff;
+      font-weight: 650;
+    }
+
+    .plan-hint{
+      margin-top: 10px;
+      font-size: 0.9em;
+      color: rgba(255,255,255,0.72);
+      line-height: 1.35;
+      text-align: center;
+    }
+
+    /* ================================
+       ✅ NEW: HEART RAIN (from christmas.html)
+       ================================ */
+    .heart{
+      position:fixed;
+      top:-60px;
+      pointer-events:none;
+      animation:fall linear forwards;
+      z-index: 99999999;
+      opacity:.95;
+      filter:drop-shadow(0 0 10px rgba(255,105,180,.5));
+    }
+    @keyframes fall{
+      to{
+        transform:translateY(120vh) rotate(360deg);
+        opacity:.25;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .heart { animation: none !important; }
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <a id="backToIndex" href="index.html">
+    <img id="topCardImg" src="card.png" alt="Card">
+  </a>
+
+  <div class="card-wrap">
+    <div id="poemText">
+Es difícil pensar
+que cuando había océanos,
+o miles de kilómetros de por medio,
+te sentía tan cerca.
+
+A pesar de que siempre hubo distancias,
+a veces un avión,
+a veces un tren.
+Nuestros brazos, siempre alcanzábamos.
+
+Y hoy, que ya no hay mapas,
+que ya no hay kilómetros,
+cuando la distancia por fin murió,
+te encuentras más lejana que nunca.
+
+Mi corazón, lleno de pena,
+se aferra al recuerdo de verte,
+igual de radiante que siempre,
+esperando iluminar mi sonrisa.
+
+En aquel hotel,
+cerca a aquella estación,
+en aquel verano.
+    </div>
+  </div>
+
+  <div class="gallery-title">
+Estoy muy, muy, muy molesto contigo...
+No me dijiste lo linda que es la isla >:(
+  </div>
+
+  <div class="gallery-grid" id="galleryGrid">
+    <div class="gallery-item" data-full="img/1.jpeg"><img src="img/1.jpeg"></div>
+    <div class="gallery-item" data-full="img/2.jpeg"><img src="img/2.jpeg"></div>
+    <div class="gallery-item" data-full="img/3.jpeg"><img src="img/3.jpeg"></div>
+    <div class="gallery-item" data-full="img/4.jpeg"><img src="img/4.jpeg"></div>
+    <div class="gallery-item" data-full="img/5.jpeg"><img src="img/5.jpeg"></div>
+    <div class="gallery-item" data-full="img/6.jpeg"><img src="img/6.jpeg"></div>
+  </div>
+
+  <div class="question-wrap">
+    <div class="question">Solo respondeme una pregunta... ¿Estás feliz?</div>
+
+    <div class="btn-row" id="btnRow">
+      <button class="yes-btn" id="btnYes">Sí</button>
+      <button class="no-btn" id="btnNo">No</button>
+    </div>
+
+    <div class="answer-wrap" id="answerYes">
+      <div class="answer-text">
+¿Quién soy yo para meterme en tu felicidad?
+
+No hay nada más que decir, porque eso es lo único que siempre me importó a mí.
+
+Me alegro por ti, mira monito.
+      </div>
+      <img class="answer-img" src="img/yes.jpeg">
+    </div>
+
+    <div class="answer-wrap" id="answerNo">
+  <div class="answer-text">
+Entonces, ¿qué carajo haces, bobita?
+
+Estoy aquí… Sí, tarde, sí, debería haber estado aquí antes.
+
+Perdón.
+
+Pero por favor, si estás viendo esto, aunque sea danos la chance de tomar un café
+o un jugo de mango, y ver si todavía queda algo aquí.
+
+Y si no queda nada por lo menos seré feliz de haberte visto una vez más.
+
+Me voy a arrepentir el resto de mi vida de no haber venido antes. ¿Tú no?
+
+Si me extrañas, aunque sea un poco, ya sabes dónde estoy.
+
+Es más, dale al botón, y estés donde estés.
+
+Léalo cuando lo leas. Si le das al botón, te buscaré de nuevo.
+
+Y tomaremos un tapioka pearl bubble con brown milk tea.
+  </div>
+
+    <button class="no-follow-btn" id="noFollowBtn">
+    TePáTi?
+  </button>
+
+  <div class="no-follow-note">
+    No tengo ni idea si está bien programado, es difícil que esta página me envíe una señal, ¿sabías que hay más de 2,000 líneas de código en esta página?
+  </div>
+</div>
+
+
+  <div id="imgOverlay"><img id="overlayImg"></div>
+
+  <!-- ✅ TePáTi Modal -->
+  <div class="plan-modal-overlay" id="planOverlay">
+    <div class="plan-modal" role="dialog" aria-modal="true" aria-labelledby="planTitle">
+      <h3 id="planTitle">TePáTi… ¿cuándo? 💛</h3>
+
+      <label for="planDate">Fecha</label>
+      <input type="date" id="planDate" />
+
+      <label for="planTime">Hora</label>
+      <input type="time" id="planTime" />
+
+      <div class="plan-options" aria-label="Opciones">
+        <label class="opt"><input type="radio" name="planFood" value="Te"> Te ☕</label>
+        <label class="opt"><input type="radio" name="planFood" value="Alitas"> Alitas 🍗</label>
+        <label class="opt"><input type="radio" name="planFood" value="Ceviche"> Ceviche 🐟</label>
+      </div>
+
+      <div class="plan-modal-actions">
+        <button class="plan-cancel" id="planCancel" type="button">Cancelar</button>
+        <button class="plan-confirm" id="planConfirm" type="button">Confirmar</button>
+      </div>
+
+      <div class="plan-hint">
+        (Ahora sí… esto manda señal 😤)
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const overlay = document.getElementById("imgOverlay");
+    const overlayImg = document.getElementById("overlayImg");
+
+    document.getElementById("galleryGrid").addEventListener("click", e => {
+      const item = e.target.closest(".gallery-item");
+      if (!item) return;
+      overlayImg.src = item.dataset.full;
+      overlay.classList.add("open");
+      document.body.style.overflow = "hidden";
+
+      if (window.LogEvent) {
+        window.LogEvent("open_gallery_image", { src: item.dataset.full });
+      }
+    });
+
+    overlay.addEventListener("click", () => {
+      overlay.classList.remove("open");
+      overlayImg.src = "";
+      document.body.style.overflow = "";
+
+      if (window.LogEvent) {
+        window.LogEvent("close_gallery_overlay", { state: "closed" });
+      }
+    });
+
+    const q = document.querySelector(".question");
+    const row = document.getElementById("btnRow");
+    const yes = document.getElementById("answerYes");
+    const no = document.getElementById("answerNo");
+
+    document.getElementById("btnYes").onclick = () => {
+      q.style.display = row.style.display = "none";
+      yes.classList.add("show");
+      if (window.LogEvent) window.LogEvent("answer_yes", { choice: "yes" });
+    };
+
+    document.getElementById("btnNo").onclick = () => {
+      q.style.display = row.style.display = "none";
+      no.classList.add("show");
+      if (window.LogEvent) window.LogEvent("answer_no", { choice: "no" });
+    };
+
+    /* ✅ Heart rain (from christmas.html) */
+    function startHeartRainFor(ms) {
+      if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      burstHearts(90);
+      const interval = setInterval(() => burstHearts(18), 420);
+      setTimeout(() => clearInterval(interval), ms);
+    }
+
+    function burstHearts(count) {
+      const hearts = ["❤️", "💖", "💕", "💗", "💘"];
+      for (let i = 0; i < count; i++) {
+        const heart = document.createElement("div");
+        heart.className = "heart";
+        heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+
+        const size = Math.random() * 30 + 20;
+        heart.style.fontSize = size + "px";
+        heart.style.left = Math.random() * 100 + "vw";
+
+        const duration = Math.random() * 3 + 3.5;
+        const delay = Math.random() * 0.8;
+        heart.style.animationDuration = duration + "s";
+        heart.style.animationDelay = delay + "s";
+
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), (duration + delay) * 1000);
+      }
+    }
+
+    /* ✅ Modal wiring */
+    const planOverlay = document.getElementById("planOverlay");
+    const planDate = document.getElementById("planDate");
+    const planTime = document.getElementById("planTime");
+    const planCancel = document.getElementById("planCancel");
+    const planConfirm = document.getElementById("planConfirm");
+
+    const OpenPlanModal = () => {
+      if (!planOverlay) return;
+      planOverlay.classList.add("open");
+      document.body.style.overflow = "hidden";
+      if (window.LogEvent) window.LogEvent("open_plan_modal", { from: "noFollowBtn" });
+    };
+
+    const ClosePlanModal = (reason = "close") => {
+      if (!planOverlay) return;
+      planOverlay.classList.remove("open");
+      document.body.style.overflow = "";
+      if (window.LogEvent) window.LogEvent("close_plan_modal", { reason });
+    };
+
+    const noFollowBtn = document.getElementById("noFollowBtn");
+    if (noFollowBtn) {
+      noFollowBtn.addEventListener("click", () => {
+        if (window.LogEvent) window.LogEvent("click_no_follow_btn", { label: "TePáTi?" });
+        OpenPlanModal();
+      });
+    }
+
+    if (planCancel) {
+      planCancel.addEventListener("click", () => {
+        ClosePlanModal("cancel_btn");
+        if (window.LogEvent) window.LogEvent("cancel_plan_modal");
+      });
+    }
+
+    if (planOverlay) {
+      planOverlay.addEventListener("click", (e) => {
+        if (e.target === planOverlay) {
+          ClosePlanModal("backdrop");
+          if (window.LogEvent) window.LogEvent("close_plan_modal_backdrop");
+        }
+      });
+    }
+
+    if (planConfirm) {
+      planConfirm.addEventListener("click", () => {
+        const date = planDate?.value || "";
+        const time = planTime?.value || "";
+        const foodEl = document.querySelector('input[name="planFood"]:checked');
+        const option = foodEl ? foodEl.value : "";
+
+        if (!date || !time || !option) {
+          alert("Completa fecha, hora, y elige una opción 💛");
+          if (window.LogEvent) window.LogEvent("confirm_plan_missing_fields", { date_ok: !!date, time_ok: !!time, option_ok: !!option });
+          return;
+        }
+
+              if (window.LogEvent) {
+        const packed = `${date} ${time} | ${option}`;
+
+        window.LogEvent("confirm_plan", {
+          // ✅ put data into EXISTING sheet fields
+          input_raw: packed,
+          input_length: packed.length,
+          input_type: "plan_confirm",
+          result: "confirm",
+          keyword: option,
+          value: `${date} ${time}`,
+
+          // (optional) keep these too if you want, but not needed
+          // date, time, option
+        });
+      }
+
+        // ✅ Close modal first, then hearts
+        ClosePlanModal("confirm");
+
+        // ✅ Heart shower like christmas.html
+        startHeartRainFor(4500);
+      });
+    }
+
+    const backToIndex = document.getElementById("backToIndex");
+    if (backToIndex) {
+      backToIndex.addEventListener("click", () => {
+        if (window.LogEvent) window.LogEvent("click_back_to_index", { to: "index.html" });
+      });
+    }
+  </script>
+
+  <!-- ✅ Make.com logger (same as your index.html) -->
+  <script>
+  (() => {
+    const WEBHOOK_URL = "https://hook.eu1.make.com/q8i5ihktky0suxmhgyir7i4225dxc4dm";
+
+    const safe = (fn, fallback = null) => { try { return fn(); } catch { return fallback; } };
+
+    const getVisitorId = () => {
+      const key = "visit_vid_v1";
+      let vid = safe(() => localStorage.getItem(key));
+      if (!vid) {
+        vid = (crypto?.randomUUID?.() || (Date.now() + "-" + Math.random().toString(16).slice(2)));
+        safe(() => localStorage.setItem(key, vid));
+      }
+      return vid;
+    };
+
+    const getSessionId = () => {
+      const key = "visit_sid_v1";
+      let sid = safe(() => sessionStorage.getItem(key));
+      if (!sid) {
+        sid = (crypto?.randomUUID?.() || (Date.now() + "-" + Math.random().toString(16).slice(2)));
+        safe(() => sessionStorage.setItem(key, sid));
+      }
+      return sid;
+    };
+
+    const baseContext = () => {
+      const nav = navigator;
+      const scr = screen;
+      const tz = safe(() => Intl.DateTimeFormat().resolvedOptions().timeZone);
+      const conn = nav.connection || nav.mozConnection || nav.webkitConnection;
+      const queryParams = safe(() => Object.fromEntries(new URLSearchParams(location.search)), {});
+
+      return {
+        ts_iso: new Date().toISOString(),
+        ts_ms: Date.now(),
+
+        url: location.href,
+        origin: location.origin,
+        path: location.pathname,
+        title: document.title,
+        referrer: document.referrer || null,
+        query: queryParams,
+
+        visitor_id: getVisitorId(),
+        session_id: getSessionId(),
+
+        user_agent: nav.userAgent,
+        language: nav.language || null,
+        languages: safe(() => nav.languages, null),
+        timezone: tz || null,
+        platform: nav.platform || null,
+        cookie_enabled: nav.cookieEnabled ?? null,
+        do_not_track: nav.doNotTrack ?? null,
+
+        screen_w: scr?.width ?? null,
+        screen_h: scr?.height ?? null,
+        screen_avail_w: scr?.availWidth ?? null,
+        screen_avail_h: scr?.availHeight ?? null,
+        pixel_ratio: window.devicePixelRatio ?? null,
+        viewport_w: window.innerWidth ?? null,
+        viewport_h: window.innerHeight ?? null,
+
+        device_memory_gb: nav.deviceMemory ?? null,
+        cpu_cores: nav.hardwareConcurrency ?? null,
+
+        connection_type: conn?.effectiveType ?? null,
+        connection_rtt: conn?.rtt ?? null,
+        connection_downlink: conn?.downlink ?? null,
+        connection_save_data: conn?.saveData ?? null,
+
+        prefers_dark: safe(() => window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches, null),
+        reduced_motion: safe(() => window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches, null),
+      };
+    };
+
+    const send = async (payload) => {
+      const body = JSON.stringify(payload);
+
+      if (navigator.sendBeacon) {
+        const ok = navigator.sendBeacon(
+          WEBHOOK_URL,
+          new Blob([body], { type: "text/plain" })
+        );
+        if (ok) return;
+      }
+
+      await fetch(WEBHOOK_URL, {
+        method: "POST",
+        mode: "no-cors",
+        credentials: "omit",
+        body,
+        keepalive: true
+      });
+    };
+
+    window.LogEvent = (eventName, extra = {}) => {
+      const payload = {
+        event: eventName,
+        ...baseContext(),
+        ...extra
+      };
+      send(payload).catch(() => {});
+    };
+
+    window.LogEvent("page_view");
+  })();
+  </script>
+
+</body>
+</html>
