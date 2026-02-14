@@ -91,29 +91,22 @@
       transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,0,0,0.35);
     }
 
-    button:disabled, a.btn:disabled{
-      background: #444 !important;
-      cursor: not-allowed;
-      opacity: 0.6;
-      transform: none;
-      box-shadow: none;
-      pointer-events: none;
-    }
-
     #startBtn, #retryBtn{ background: var(--peacock-green); }
-    #startBtn:hover:not(:disabled), #retryBtn:hover:not(:disabled){ background: var(--peacock-green-hover); }
+    #startBtn:hover, #retryBtn:hover{ background: var(--peacock-green-hover); }
     #backBtn{ background: var(--peacock-blue); }
-    #backBtn:hover:not(:disabled){ background: var(--peacock-blue-hover); }
+    #backBtn:hover{ background: var(--peacock-blue-hover); }
+
+    #retryBtn:disabled{
+      background: #444;
+      cursor: not-allowed;
+      opacity: 0.7;
+      transform: none;
+    }
 
     .pill{
       display:inline-flex; gap:8px; align-items:center; padding:8px 10px;
       border-radius:999px; border:1px solid var(--border);
       background:rgba(0,0,0,0.18); color:var(--muted); font-size:0.92rem; margin-top:10px;
-    }
-
-    #countdown{
-      font-size: 1.4rem; color: var(--muted); margin: 12px 0;
-      text-align: center;
     }
 
     @media (max-width:520px){
@@ -124,7 +117,6 @@
       button, a.btn{ padding:11px 20px; font-size:0.98rem; min-width:120px; }
     }
 
-    /* Power-up flash text */
     #powerupText{
       position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);
       font-size: 3rem; font-weight: bold; color: #00e0a8; opacity: 0;
@@ -165,7 +157,7 @@
     </div>
   </div>
 
-  <!-- Intro -->
+  <!-- Intro Overlay (reglas originales restauradas) -->
   <div class="overlay" id="intro">
     <div class="card">
       <h1>Quieres cambiar el plan? Dale... Pero primero tienes que ganar este juego.</h1>
@@ -183,14 +175,13 @@
     </div>
   </div>
 
-  <!-- End overlay -->
+  <!-- End Overlay -->
   <div class="overlay" id="end" style="display:none;">
     <div class="card">
       <h1 id="endTitle">—</h1>
       <p id="endText" class="muted">—</p>
-      <div id="countdown"></div>
       <div class="btnrow">
-        <button id="retryBtn" disabled>Intentar de nuevo</button>
+        <button id="retryBtn" disabled>Espera...</button>
         <a class="btn" id="continueBtn" href="./index.html" style="display:none;">Regresar al principio</a>
       </div>
     </div>
@@ -201,7 +192,6 @@
     const FAKE_GOAL = 50;
     const REAL_GOAL = 100;
     const HEART_EMOJIS = ['💛','💚','🩵'];
-    const RETRY_DELAY = 2000; // 3 segundos de espera
 
     const STAGES = [
       { name:1, minCaught:0,   spawnEveryMs:700, speedMin:120, speedMax:190 },
@@ -224,7 +214,6 @@
     const canvas = document.getElementById('c');
     const ctx = canvas.getContext('2d');
     const powerupText = document.getElementById('powerupText');
-    const countdownEl = document.getElementById('countdown');
 
     const intro = document.getElementById('intro');
     const endOverlay = document.getElementById('end');
@@ -299,11 +288,11 @@
           localStorage.setItem('featherHighscore', highscore);
         }
       } else {
-        hudLabel.textContent = 'Plumas:';
+        hudLabel.textContent = 'Plumas';
         goalEl.textContent = '/' + (trolled ? REAL_GOAL : FAKE_GOAL);
       }
 
-      stagePill.textContent = `Nivel: ${getStage().name}`;
+      stagePill.textContent = `Dificultad: ${getStage().name}`;
     }
 
     function resetGame(){
@@ -334,23 +323,11 @@
       lastTime = lastSpawn = 0;
     }
 
-    function startRetryCountdown(){
-      retryBtn.disabled = true;
-      let timeLeft = RETRY_DELAY / 1000;
-
-      const interval = setInterval(() => {
-        timeLeft--;
-        countdownEl.textContent = `Reintento disponible en ${Math.ceil(timeLeft)}…`;
-
-        if(timeLeft <= 0){
-          clearInterval(interval);
-          countdownEl.textContent = '';
-          retryBtn.disabled = false;
-        }
-      }, 1000);
-
-      // Mostrar el primer segundo inmediatamente
-      countdownEl.textContent = `Reintento disponible en ${timeLeft}…`;
+    function enableRetryButton(){
+      retryBtn.disabled = false;
+      retryBtn.textContent = inInfinite 
+        ? 'Intentar modo infinito de nuevo' 
+        : 'Intentar de nuevo';
     }
 
     function showEnd(win){
@@ -362,20 +339,21 @@
         endText.textContent = 'No pensé que era posible... Se suponía que no';
         continueBtn.style.display = 'inline-flex';
         retryBtn.textContent = 'MODO INFINITO';
-        retryBtn.disabled = false; // No delay al ganar
-        countdownEl.textContent = '';
+        retryBtn.disabled = false;
       } else {
         endTitle.textContent = 'Perdiste jeje';
         endText.innerHTML = `Lograste capturar:<br><strong>${caught}</strong> plumas<br>`;
 
-        if(inInfinite){
-          retryBtn.textContent = 'Intentar modo infinito de nuevo';
-        } else {
-          retryBtn.textContent = 'Intentar de nuevo';
-        }
+        retryBtn.disabled = true;
+        retryBtn.textContent = 'Espera...';
 
-        continueBtn.style.display = 'none';
-        startRetryCountdown(); // ← Aquí está el delay
+        if(inInfinite){
+          continueBtn.style.display = 'none';
+          setTimeout(enableRetryButton, 2000);
+        } else {
+          continueBtn.style.display = 'none';
+          setTimeout(enableRetryButton, 2000);
+        }
       }
     }
 
@@ -394,12 +372,321 @@
       });
     }
 
-    // Resto del código (spawnFeather, spawnHealingHeart, draw functions, loop, input, etc.) 
-    // queda exactamente igual que en tu versión anterior.
-    // Solo copio aquí las partes modificadas para no repetir todo.
-    // Pega el resto del <script> que ya tenías después de esta función showEnd().
+    function spawnFeather(){
+      const stage = getStage();
+      const size = rand(FEATHER_MIN, FEATHER_MAX);
+      const img = featherImgs[Math.floor(Math.random()*featherImgs.length)];
 
-    // Botones (modificado)
+      const f = {
+        x: rand(10, W-10),
+        y: -30,
+        size, img,
+        ratio: img.naturalWidth / img.naturalHeight,
+        vy: rand(stage.speedMin, stage.speedMax),
+        drift: rand(-40,40),
+        wobble: rand(0.8,1.4),
+        t: rand(0, Math.PI*2),
+        rot: rand(-0.6,0.6),
+        rotSpeed: rand(-1.2,1.2),
+        dead: false,
+        type: null
+      };
+
+      if(inInfinite){
+        const r = Math.random();
+        if(r < SLOW_CHANCE) f.type = 'slow';
+        else if(r < SLOW_CHANCE + MAGNET_CHANCE) f.type = 'magnet';
+      }
+
+      feathers.push(f);
+    }
+
+    function spawnHealingHeart(){
+      if(lives >= 3) return;
+      const missingIdx = lives;
+      healingHearts.push({
+        x: rand(20, W-20),
+        y: -50,
+        emoji: HEART_EMOJIS[missingIdx],
+        vy: rand(480, 620),
+        size: 38,
+        drift: rand(-45,45),
+        wobble: rand(1.8, 2.8),
+        t: rand(0, Math.PI*2),
+        dead: false
+      });
+    }
+
+    function spawnParticles(x, y, color = '#00e0a8', count = 20){
+      for(let i=0; i<count; i++){
+        particles.push({
+          x, y,
+          vx: rand(-80,80),
+          vy: rand(-120, -40),
+          life: rand(30,60),
+          maxLife: rand(40,80),
+          color
+        });
+      }
+    }
+
+    function showPowerup(msg, color = '#00e0a8'){
+      powerupText.textContent = msg;
+      powerupText.style.color = color;
+      powerupText.classList.add('active');
+      setTimeout(()=> powerupText.classList.remove('active'), 1800);
+    }
+
+    function drawBackground(){
+      ctx.clearRect(0,0,W,H);
+      const g = ctx.createLinearGradient(0,0,0,H);
+      g.addColorStop(0,'#232323');
+      g.addColorStop(1,'#1f1f1f');
+      ctx.fillStyle = g;
+      ctx.fillRect(0,0,W,H);
+    }
+
+    function drawFeather(f){
+      ctx.save();
+      ctx.translate(f.x, f.y);
+      ctx.rotate(f.rot + Math.sin(f.t)*0.18);
+      ctx.globalAlpha = 0.95;
+      const h = f.size, w = h * f.ratio;
+      ctx.drawImage(f.img, -w/2, -h/2, w, h);
+
+      if(f.type){
+        ctx.globalAlpha = 0.4 + Math.sin(Date.now()*0.01)*0.2;
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = f.type==='slow' ? '#0099cc' : '#ffcc00';
+        ctx.fillStyle = f.type==='slow' ? '#0099cc' : '#ffcc00';
+        ctx.fillRect(-w/2-10, -h/2-10, w+20, h+20);
+      }
+      ctx.restore();
+    }
+
+    function drawHealingHeart(h){
+      ctx.save();
+      ctx.translate(h.x, h.y);
+      ctx.rotate(Math.sin(h.t)*0.15);
+      ctx.font = `bold ${h.size}px system-ui, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(h.emoji, 0, 0);
+      ctx.restore();
+    }
+
+    function drawParticles(){
+      for(let i=particles.length-1; i>=0; i--){
+        const p = particles[i];
+        const alpha = p.life / p.maxLife;
+        ctx.globalAlpha = alpha * 0.8;
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x-3, p.y-3, 6, 6);
+        p.x += p.vx * 0.016;
+        p.y += p.vy * 0.016;
+        p.vy += 120 * 0.016;
+        p.life--;
+        if(p.life <= 0) particles.splice(i,1);
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    function hitFeather(f, px, py){
+      const dx = px - f.x, dy = py - f.y;
+      const r = f.size * 0.7 + 14;
+      return dx*dx + dy*dy <= r*r;
+    }
+
+    function hitHeart(h, px, py){
+      const dx = px - h.x, dy = py - h.y;
+      const r = h.size * 0.75;
+      return dx*dx + dy*dy <= r*r;
+    }
+
+    function heal(){
+      if(lives >= 3) return;
+      lives++;
+      const idx = lives - 1;
+      const h = heartEls[idx];
+      h.classList.remove('pop');
+      h.style.opacity = '1';
+      h.style.transform = '';
+    }
+
+    function loop(ts){
+      if(!running) return;
+      if(!lastTime) lastTime = ts;
+      const dt = Math.min(0.033, (ts-lastTime)/1000);
+      lastTime = ts;
+
+      const stage = getStage();
+
+      if(ts - lastSpawn >= stage.spawnEveryMs){
+        lastSpawn = ts;
+        spawnFeather();
+        if(stage.name >= 3 && Math.random()<0.28) spawnFeather();
+        if(stage.name >= 4 && Math.random()<0.38) spawnFeather();
+      }
+
+      if(slowTimer > 0) slowTimer -= dt*1000;
+      if(magnetTimer > 0) magnetTimer -= dt*1000;
+
+      for(const f of feathers){
+        if(f.dead) continue;
+        f.t += dt * f.wobble;
+        f.rot += f.rotSpeed * dt;
+
+        let effectiveVy = f.vy;
+        if(slowTimer > 0) effectiveVy *= 0.5;
+
+        f.y += effectiveVy * dt;
+        f.x += (Math.sin(f.t)*22 + f.drift) * dt * 0.35;
+        f.x = Math.max(8, Math.min(W-8, f.x));
+
+        if(f.y - f.size/2 > H + 10){
+          f.dead = true;
+          lives--;
+          if(lives >= 0) heartEls[lives].classList.add('pop');
+          if(lives <= 0){
+            showEnd(false);
+            return;
+          }
+        }
+      }
+      feathers = feathers.filter(f=>!f.dead);
+
+      if(inInfinite && magnetTimer > 0 && isHolding){
+        feathers.forEach(f=>{
+          if(f.dead) return;
+          const dx = holdX - f.x;
+          const dy = holdY - f.y;
+          const dist = Math.sqrt(dx*dx + dy*dy);
+          if(dist < 300){
+            f.x += dx * 0.008;
+            f.y += dy * 0.008;
+          }
+        });
+      }
+
+      if(inInfinite){
+        for(const h of healingHearts){
+          if(h.dead) continue;
+          h.t += dt * h.wobble;
+          h.y += h.vy * dt;
+          h.x += (Math.sin(h.t)*25 + h.drift) * dt * 0.45;
+          h.x = Math.max(10, Math.min(W-10, h.x));
+          if(h.y - h.size/2 > H + 20) h.dead = true;
+        }
+        healingHearts = healingHearts.filter(h=>!h.dead);
+      }
+
+      if(!inInfinite && caught >= REAL_GOAL){
+        showEnd(true);
+        return;
+      }
+
+      drawBackground();
+      drawParticles();
+      feathers.forEach(drawFeather);
+      if(inInfinite) healingHearts.forEach(drawHealingHeart);
+
+      requestAnimationFrame(loop);
+    }
+
+    function getPos(e){
+      const r = canvas.getBoundingClientRect();
+      const x = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
+      const y = (e.touches ? e.touches[0].clientY : e.clientY) - r.top;
+      return {x, y};
+    }
+
+    function tryCatch(x, y, isDown = false){
+      if(!running) return;
+
+      holdX = x; holdY = y;
+      if(isDown) isHolding = true;
+
+      for(let i=feathers.length-1; i>=0; i--){
+        const f = feathers[i];
+        if(f.dead) continue;
+        if(hitFeather(f, x, y)){
+          f.dead = true;
+          caught++;
+          updateHUD();
+
+          if(caught === FAKE_GOAL && !trolled){
+            trolled = true;
+            hintEl.textContent = '50? Nono 100!! 😈';
+            goalEl.textContent = `/${REAL_GOAL}`;
+          }
+
+          if(inInfinite && f.type){
+            if(f.type === 'slow'){
+              slowTimer = SLOW_DURATION;
+              showPowerup('SLOW-MO!', '#0099cc');
+              spawnParticles(f.x, f.y, '#0099cc', 30);
+            } else if(f.type === 'magnet'){
+              magnetTimer = MAGNET_DURATION;
+              showPowerup('MAGNET!', '#ffcc00');
+              spawnParticles(f.x, f.y, '#ffcc00', 40);
+            }
+          }
+
+          if(inInfinite && lives < 3 && caught % 20 === 0){
+            spawnHealingHeart();
+          }
+
+          return;
+        }
+      }
+
+      if(inInfinite){
+        for(let i=healingHearts.length-1; i>=0; i--){
+          const h = healingHearts[i];
+          if(h.dead) continue;
+          if(hitHeart(h, x, y)){
+            h.dead = true;
+            heal();
+            return;
+          }
+        }
+      }
+    }
+
+    canvas.addEventListener('mousedown', e=>{
+      const p = getPos(e);
+      tryCatch(p.x, p.y, true);
+    });
+
+    canvas.addEventListener('touchstart', e=>{
+      e.preventDefault();
+      const p = getPos(e);
+      tryCatch(p.x, p.y, true);
+    }, {passive:false});
+
+    canvas.addEventListener('mousemove', e=>{
+      if(isHolding){
+        const p = getPos(e);
+        holdX = p.x; holdY = p.y;
+      }
+    });
+
+    canvas.addEventListener('touchmove', e=>{
+      if(isHolding){
+        e.preventDefault();
+        const p = getPos(e);
+        holdX = p.x; holdY = p.y;
+      }
+    }, {passive:false});
+
+    window.addEventListener('mouseup', ()=> isHolding = false);
+    window.addEventListener('touchend', ()=> isHolding = false);
+
+    canvas.addEventListener('click', e=>{
+      const p = getPos(e);
+      tryCatch(p.x, p.y);
+    });
+
     startBtn.addEventListener('click', async ()=>{
       try{ await loadImages(); }catch(e){
         alert('Faltan imágenes (top.png, middle.png, bottom.png)');
@@ -413,7 +700,6 @@
     });
 
     retryBtn.addEventListener('click', ()=>{
-      if(retryBtn.disabled) return; // seguridad extra
       endOverlay.style.display = 'none';
 
       if(inInfinite){
@@ -427,7 +713,6 @@
       requestAnimationFrame(loop);
     });
 
-    // Init
     window.addEventListener('resize', resize);
     resize();
     updateHUD();
