@@ -109,6 +109,20 @@
       .hud .box{ padding:9px 10px; border-radius:12px; }
       button, a.btn{ padding:11px 20px; font-size:0.98rem; min-width:120px; }
     }
+
+    /* Power-up flash text */
+    #powerupText{
+      position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);
+      font-size: 3rem; font-weight: bold; color: #00e0a8; opacity: 0;
+      pointer-events: none; z-index: 60; text-shadow: 0 0 20px #00c896;
+      transition: opacity 0.6s ease;
+    }
+    #powerupText.active{ opacity: 1; animation: flash 1.2s ease-out; }
+    @keyframes flash{
+      0%,100%{ opacity:0; transform: translate(-50%, -50%) scale(0.8); }
+      20%{ opacity:1; transform: translate(-50%, -50%) scale(1.2); }
+      80%{ opacity:1; transform: translate(-50%, -50%) scale(1); }
+    }
   </style>
 </head>
 
@@ -133,6 +147,7 @@
     <div id="game">
       <canvas id="c"></canvas>
       <div class="hint" id="hintText">Evelia es guapa</div>
+      <div id="powerupText"></div>
     </div>
   </div>
 
@@ -176,16 +191,23 @@
       { name:1, minCaught:0,   spawnEveryMs:700, speedMin:120, speedMax:190 },
       { name:2, minCaught:10,  spawnEveryMs:520, speedMin:160, speedMax:240 },
       { name:3, minCaught:25,  spawnEveryMs:400, speedMin:200, speedMax:300 },
-      { name:4, minCaught:40,  spawnEveryMs:350, speedMin:220, speedMax:330 },
+      { name:4, minCaught:40,  spawnEveryMs:310, speedMin:260, speedMax:380 },
     ];
 
     const FEATHER_IMAGES = ['top.png','middle.png','bottom.png'];
     const FEATHER_MIN = 22;
     const FEATHER_MAX = 34;
 
+    // Power-ups (solo en infinito)
+    const SLOW_CHANCE = 0.02;     // 2%
+    const MAGNET_CHANCE = 0.01;   // 1%
+    const SLOW_DURATION = 8000;   // 8 segundos
+    const MAGNET_DURATION = 6000; // 6 segundos
+
     // DOM
     const canvas = document.getElementById('c');
     const ctx = canvas.getContext('2d');
+    const powerupText = document.getElementById('powerupText');
 
     const intro = document.getElementById('intro');
     const endOverlay = document.getElementById('end');
@@ -206,7 +228,7 @@
       document.getElementById('h3')
     ];
 
-    // State
+    // Estado
     let W=0, H=0, DPR=1;
     let running = false;
     let lastTime = 0;
@@ -214,11 +236,17 @@
 
     let feathers = [];
     let healingHearts = [];
+    let particles = [];
     let caught = 0;
     let lives = 3;
     let trolled = false;
     let inInfinite = false;
-    let highscore = 0;
+    let highscore = localStorage.getItem('featherHighscore') || 0;
+
+    let slowTimer = 0;
+    let magnetTimer = 0;
+    let isHolding = false;
+    let holdX = 0, holdY = 0;
 
     const featherImgs = [];
     let imagesReady = false;
@@ -249,21 +277,28 @@
       if(inInfinite){
         hudLabel.textContent = 'Highscore';
         goalEl.textContent = '';
-        highscore = Math.max(highscore, caught);
+        if(caught > highscore){
+          highscore = caught;
+          localStorage.setItem('featherHighscore', highscore);
+        }
       } else {
         hudLabel.textContent = 'Plumas';
         goalEl.textContent = '/' + (trolled ? REAL_GOAL : FAKE_GOAL);
       }
 
-      stagePill.textContent = `Nivel: ${getStage().name}`;
+      stagePill.textContent = `Dificultad: ${getStage().name}`;
     }
 
     function resetGame(){
       feathers = [];
       healingHearts = [];
+      particles = [];
       caught = 0;
       lives = 3;
       trolled = false;
+      slowTimer = 0;
+      magnetTimer = 0;
+      isHolding = false;
 
       heartEls.forEach((h,i) => {
         h.classList.remove('pop');
@@ -273,6 +308,7 @@
       });
 
       hintEl.textContent = 'Evelia es guapa';
+      powerupText.classList.remove('active');
       updateHUD();
 
       continueBtn.style.display = 'none';
@@ -286,15 +322,25 @@
       endOverlay.style.display = 'flex';
 
       if(win){
+        // Ganó modo normal → ofrece infinito
         endTitle.textContent = 'Ganaste 😲';
         endText.textContent = 'No pensé que era posible... Se suponía que no';
         continueBtn.style.display = 'inline-flex';
         retryBtn.textContent = 'MODO INFINITO';
       } else {
+        // Perdió (ya sea normal o infinito)
         endTitle.textContent = 'Perdiste jeje';
-        endText.innerHTML = `Lograste capturar:<br><strong>${caught}</strong> plumas`;
-        continueBtn.style.display = 'none';
-        retryBtn.textContent = 'Intentar de nuevo modo infinito';
+        endText.innerHTML = `Lograste capturar:<br><strong>${caught}</strong> plumas<br>Highscore: ${highscore}`;
+        
+        if(inInfinite){
+          // Perdió en infinito → solo intentar infinito otra vez
+          continueBtn.style.display = 'none';
+          retryBtn.textContent = 'Intentar modo infinito de nuevo';
+        } else {
+          // Perdió en modo normal → solo intentar normal otra vez
+          continueBtn.style.display = 'none';
+          retryBtn.textContent = 'Intentar de nuevo';
+        }
       }
     }
 
@@ -313,13 +359,13 @@
       });
     }
 
-    // Spawners
+    // Spawn pluma
     function spawnFeather(){
       const stage = getStage();
       const size = rand(FEATHER_MIN, FEATHER_MAX);
       const img = featherImgs[Math.floor(Math.random()*featherImgs.length)];
 
-      feathers.push({
+      const f = {
         x: rand(10, W-10),
         y: -30,
         size, img,
@@ -330,18 +376,27 @@
         t: rand(0, Math.PI*2),
         rot: rand(-0.6,0.6),
         rotSpeed: rand(-1.2,1.2),
-        dead: false
-      });
+        dead: false,
+        type: null
+      };
+
+      if(inInfinite){
+        const r = Math.random();
+        if(r < SLOW_CHANCE) f.type = 'slow';
+        else if(r < SLOW_CHANCE + MAGNET_CHANCE) f.type = 'magnet';
+      }
+
+      feathers.push(f);
     }
 
     function spawnHealingHeart(){
       if(lives >= 3) return;
-      const missingIdx = lives;           // 2→cyan, 1→green, 0→yellow
+      const missingIdx = lives;
       healingHearts.push({
         x: rand(20, W-20),
         y: -50,
         emoji: HEART_EMOJIS[missingIdx],
-        vy: rand(480, 620),               // fast!
+        vy: rand(480, 620),
         size: 38,
         drift: rand(-45,45),
         wobble: rand(1.8, 2.8),
@@ -350,7 +405,28 @@
       });
     }
 
-    // Draw
+    // Partículas para power-ups
+    function spawnParticles(x, y, color = '#00e0a8', count = 20){
+      for(let i=0; i<count; i++){
+        particles.push({
+          x, y,
+          vx: rand(-80,80),
+          vy: rand(-120, -40),
+          life: rand(30,60),
+          maxLife: rand(40,80),
+          color
+        });
+      }
+    }
+
+    function showPowerup(msg, color = '#00e0a8'){
+      powerupText.textContent = msg;
+      powerupText.style.color = color;
+      powerupText.classList.add('active');
+      setTimeout(()=> powerupText.classList.remove('active'), 1800);
+    }
+
+    // Dibujo
     function drawBackground(){
       ctx.clearRect(0,0,W,H);
       const g = ctx.createLinearGradient(0,0,0,H);
@@ -367,6 +443,14 @@
       ctx.globalAlpha = 0.95;
       const h = f.size, w = h * f.ratio;
       ctx.drawImage(f.img, -w/2, -h/2, w, h);
+
+      if(f.type){
+        ctx.globalAlpha = 0.4 + Math.sin(Date.now()*0.01)*0.2;
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = f.type==='slow' ? '#0099cc' : '#ffcc00';
+        ctx.fillStyle = f.type==='slow' ? '#0099cc' : '#ffcc00';
+        ctx.fillRect(-w/2-10, -h/2-10, w+20, h+20);
+      }
       ctx.restore();
     }
 
@@ -381,7 +465,23 @@
       ctx.restore();
     }
 
-    // Hit
+    function drawParticles(){
+      for(let i=particles.length-1; i>=0; i--){
+        const p = particles[i];
+        const alpha = p.life / p.maxLife;
+        ctx.globalAlpha = alpha * 0.8;
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x-3, p.y-3, 6, 6);
+        p.x += p.vx * 0.016;
+        p.y += p.vy * 0.016;
+        p.vy += 120 * 0.016;
+        p.life--;
+        if(p.life <= 0) particles.splice(i,1);
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    // Colisiones
     function hitFeather(f, px, py){
       const dx = px - f.x, dy = py - f.y;
       const r = f.size * 0.7 + 14;
@@ -404,7 +504,7 @@
       h.style.transform = '';
     }
 
-    // Loop
+    // Loop principal
     function loop(ts){
       if(!running) return;
       if(!lastTime) lastTime = ts;
@@ -413,7 +513,7 @@
 
       const stage = getStage();
 
-      // spawn feathers
+      // Spawn plumas
       if(ts - lastSpawn >= stage.spawnEveryMs){
         lastSpawn = ts;
         spawnFeather();
@@ -421,12 +521,20 @@
         if(stage.name >= 4 && Math.random()<0.38) spawnFeather();
       }
 
-      // update feathers
+      // Temporizadores power-ups
+      if(slowTimer > 0) slowTimer -= dt*1000;
+      if(magnetTimer > 0) magnetTimer -= dt*1000;
+
+      // Actualizar plumas
       for(const f of feathers){
         if(f.dead) continue;
         f.t += dt * f.wobble;
         f.rot += f.rotSpeed * dt;
-        f.y += f.vy * dt;
+
+        let effectiveVy = f.vy;
+        if(slowTimer > 0) effectiveVy *= 0.5;
+
+        f.y += effectiveVy * dt;
         f.x += (Math.sin(f.t)*22 + f.drift) * dt * 0.35;
         f.x = Math.max(8, Math.min(W-8, f.x));
 
@@ -442,7 +550,21 @@
       }
       feathers = feathers.filter(f=>!f.dead);
 
-      // healing hearts (only infinite)
+      // Magnet (solo mientras se mantiene presionado)
+      if(inInfinite && magnetTimer > 0 && isHolding){
+        feathers.forEach(f=>{
+          if(f.dead) return;
+          const dx = holdX - f.x;
+          const dy = holdY - f.y;
+          const dist = Math.sqrt(dx*dx + dy*dy);
+          if(dist < 300){
+            f.x += dx * 0.008;
+            f.y += dy * 0.008;
+          }
+        });
+      }
+
+      // Corazones de vida
       if(inInfinite){
         for(const h of healingHearts){
           if(h.dead) continue;
@@ -450,19 +572,19 @@
           h.y += h.vy * dt;
           h.x += (Math.sin(h.t)*25 + h.drift) * dt * 0.45;
           h.x = Math.max(10, Math.min(W-10, h.x));
-
           if(h.y - h.size/2 > H + 20) h.dead = true;
         }
         healingHearts = healingHearts.filter(h=>!h.dead);
       }
 
-      // win normal mode
+      // Victoria en modo normal
       if(!inInfinite && caught >= REAL_GOAL){
         showEnd(true);
         return;
       }
 
       drawBackground();
+      drawParticles();
       feathers.forEach(drawFeather);
       if(inInfinite) healingHearts.forEach(drawHealingHeart);
 
@@ -472,19 +594,22 @@
     // Input
     function getPos(e){
       const r = canvas.getBoundingClientRect();
-      const x = (e.touches?e.touches[0].clientX:e.clientX) - r.left;
-      const y = (e.touches?e.touches[0].clientY:e.clientY) - r.top;
-      return {x,y};
+      const x = (e.touches ? e.touches[0].clientX : e.clientX) - r.left;
+      const y = (e.touches ? e.touches[0].clientY : e.clientY) - r.top;
+      return {x, y};
     }
 
-    function tryCatch(x,y){
+    function tryCatch(x, y, isDown = false){
       if(!running) return;
 
-      // feathers first (priority)
+      holdX = x; holdY = y;
+      if(isDown) isHolding = true;
+
+      // Plumas primero
       for(let i=feathers.length-1; i>=0; i--){
         const f = feathers[i];
         if(f.dead) continue;
-        if(hitFeather(f,x,y)){
+        if(hitFeather(f, x, y)){
           f.dead = true;
           caught++;
           updateHUD();
@@ -495,7 +620,20 @@
             goalEl.textContent = `/${REAL_GOAL}`;
           }
 
-          // healing heart every 20 in infinite
+          // Activar power-up si lo tiene
+          if(inInfinite && f.type){
+            if(f.type === 'slow'){
+              slowTimer = SLOW_DURATION;
+              showPowerup('SLOW-MO!', '#0099cc');
+              spawnParticles(f.x, f.y, '#0099cc', 30);
+            } else if(f.type === 'magnet'){
+              magnetTimer = MAGNET_DURATION;
+              showPowerup('MAGNET!', '#ffcc00');
+              spawnParticles(f.x, f.y, '#ffcc00', 40);
+            }
+          }
+
+          // Corazón cada 20 en infinito
           if(inInfinite && lives < 3 && caught % 20 === 0){
             spawnHealingHeart();
           }
@@ -504,12 +642,12 @@
         }
       }
 
-      // then healing hearts
+      // Corazones de vida
       if(inInfinite){
         for(let i=healingHearts.length-1; i>=0; i--){
           const h = healingHearts[i];
           if(h.dead) continue;
-          if(hitHeart(h,x,y)){
+          if(hitHeart(h, x, y)){
             h.dead = true;
             heal();
             return;
@@ -518,10 +656,42 @@
       }
     }
 
-    canvas.addEventListener('click', e=>{ tryCatch(...Object.values(getPos(e))); });
-    canvas.addEventListener('touchstart', e=>{ tryCatch(...Object.values(getPos(e))); }, {passive:true});
+    // Eventos de input
+    canvas.addEventListener('mousedown', e=>{
+      const p = getPos(e);
+      tryCatch(p.x, p.y, true);
+    });
 
-    // Buttons
+    canvas.addEventListener('touchstart', e=>{
+      e.preventDefault();
+      const p = getPos(e);
+      tryCatch(p.x, p.y, true);
+    }, {passive:false});
+
+    canvas.addEventListener('mousemove', e=>{
+      if(isHolding){
+        const p = getPos(e);
+        holdX = p.x; holdY = p.y;
+      }
+    });
+
+    canvas.addEventListener('touchmove', e=>{
+      if(isHolding){
+        e.preventDefault();
+        const p = getPos(e);
+        holdX = p.x; holdY = p.y;
+      }
+    }, {passive:false});
+
+    window.addEventListener('mouseup', ()=> isHolding = false);
+    window.addEventListener('touchend', ()=> isHolding = false);
+
+    canvas.addEventListener('click', e=>{
+      const p = getPos(e);
+      tryCatch(p.x, p.y);
+    });
+
+    // Botones
     startBtn.addEventListener('click', async ()=>{
       try{ await loadImages(); }catch(e){
         alert('Faltan imágenes (top.png, middle.png, bottom.png)');
@@ -536,7 +706,15 @@
 
     retryBtn.addEventListener('click', ()=>{
       endOverlay.style.display = 'none';
-      inInfinite = true;
+
+      if(inInfinite){
+        // Reinicia infinito
+        inInfinite = true;
+      } else {
+        // Reinicia normal
+        inInfinite = false;
+      }
+
       resetGame();
       running = true;
       requestAnimationFrame(loop);
