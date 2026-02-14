@@ -111,6 +111,7 @@
       z-index:40;
       user-select:none;
       pointer-events:none;
+      transition: all 0.4s ease;
     }
 
     /* ===== Overlays ===== */
@@ -230,9 +231,7 @@
     <div class="hud">
       <div class="box">
         <span class="label">Atrapadas</span>
-        <span class="value">
-          <span id="caught">0</span><span id="caughtMessage"></span>/<span id="total">50</span>
-        </span>
+        <span class="value"><span id="caught">0</span>/<span id="total">50</span></span>
         <span class="pill" id="stagePill">Dificultad: 1</span>
       </div>
 
@@ -247,7 +246,7 @@
 
     <div id="game">
       <canvas id="c"></canvas>
-      <div class="hint">Evelia es guapa</div>
+      <div class="hint" id="hintText">Evelia es guapa</div>
     </div>
   </div>
 
@@ -283,10 +282,10 @@
 
   <script>
     // ===== Config =====
-    const TOTAL_TO_CATCH = 100;
+    const FAKE_GOAL = 50;
     const REAL_GOAL = 100;
 
-    // Difficulty thresholds: after 10, 25, 40 caught
+    // Difficulty thresholds (still works fine up to 100+)
     const STAGES = [
       { name: 1, minCaught: 0,  spawnEveryMs: 700, speedMin: 120, speedMax: 190 },
       { name: 2, minCaught: 10, spawnEveryMs: 520, speedMin: 160, speedMax: 240 },
@@ -294,10 +293,7 @@
       { name: 4, minCaught: 40, spawnEveryMs: 310, speedMin: 260, speedMax: 380 },
     ];
 
-    // ✅ Feather PNGs (put these files next to this html)
     const FEATHER_IMAGES = ['top.png', 'middle.png', 'bottom.png'];
-
-    // ✅ Cap sizes (size = height; width preserves ratio)
     const FEATHER_MIN = 22;
     const FEATHER_MAX = 34;
 
@@ -316,16 +312,14 @@
 
     const caughtEl = document.getElementById('caught');
     const totalEl = document.getElementById('total');
-    const caughtMessageEl = document.getElementById('caughtMessage');
     const stagePill = document.getElementById('stagePill');
+    const hintEl = document.getElementById('hintText');
 
     const heartEls = [
       document.getElementById('h1'),
       document.getElementById('h2'),
       document.getElementById('h3')
     ];
-
-    totalEl.textContent = TOTAL_TO_CATCH;
 
     // ===== State =====
     let W = 0, H = 0, DPR = 1;
@@ -336,9 +330,8 @@
     let feathers = [];
     let caught = 0;
     let lives = 3;
-    let displayedGoal = TOTAL_TO_CATCH;
+    let trolled = false;
 
-    // ✅ Loaded images
     const featherImgs = [];
     let imagesReady = false;
 
@@ -347,12 +340,10 @@
       DPR = Math.min(window.devicePixelRatio || 1, 2);
       W = Math.floor(window.innerWidth);
       H = Math.floor(window.innerHeight);
-
       canvas.width = Math.floor(W * DPR);
       canvas.height = Math.floor(H * DPR);
       canvas.style.width = W + 'px';
       canvas.style.height = H + 'px';
-
       ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     }
 
@@ -368,17 +359,6 @@
 
     function setHUD(){
       caughtEl.textContent = caught;
-
-      if (caught >= 50) {
-        if (displayedGoal === TOTAL_TO_CATCH) {
-          displayedGoal = REAL_GOAL;
-          totalEl.textContent = REAL_GOAL;
-          caughtMessageEl.innerHTML = '? Nono 100!! <span style="font-size:1.1em">😈</span>';
-        }
-      } else {
-        caughtMessageEl.textContent = '';
-      }
-
       stagePill.textContent = `Dificultad: ${getStage().name}`;
     }
 
@@ -386,7 +366,7 @@
       feathers = [];
       caught = 0;
       lives = 3;
-      displayedGoal = TOTAL_TO_CATCH;
+      trolled = false;
 
       heartEls.forEach(h => {
         h.classList.remove('pop');
@@ -397,8 +377,8 @@
       heartEls[1].textContent = '💚';
       heartEls[2].textContent = '🩵';
 
-      caughtMessageEl.textContent = '';
-      totalEl.textContent = TOTAL_TO_CATCH;
+      hintEl.textContent = 'Evelia es guapa';
+      totalEl.textContent = FAKE_GOAL;
 
       setHUD();
       continueBtn.style.display = 'none';
@@ -413,11 +393,11 @@
       endOverlay.style.display = 'flex';
 
       if(win){
-        endTitle.textContent = 'Ganaste?!??? 😲';
-        endText.textContent = 'No creí que fuera posible';
+        endTitle.textContent = 'Ganaste 😌';
+        endText.textContent = 'Okay… lo lograste. 100 plumas… qué locura! 😈';
         continueBtn.style.display = 'inline-flex';
       }else{
-        endTitle.textContent = 'Perdiste jeje';
+        endTitle.textContent = 'Perdiste 😭';
         endText.textContent = 'Se te escaparon 3… inténtalo otra vez!';
         continueBtn.style.display = 'none';
       }
@@ -425,14 +405,12 @@
 
     function loadImages(){
       if(imagesReady) return Promise.resolve();
-
       const promises = FEATHER_IMAGES.map(src => new Promise((resolve, reject) => {
         const img = new Image();
         img.onload = () => resolve(img);
         img.onerror = () => reject(new Error('No se pudo cargar: ' + src));
         img.src = src;
       }));
-
       return Promise.all(promises).then(imgs => {
         featherImgs.push(...imgs);
         imagesReady = true;
@@ -531,9 +509,8 @@
 
       feathers = feathers.filter(f => !f.dead);
 
-      // Note: game still ends at 50 (as per original logic)
-      // The 100 is just a visual troll :)
-      if(caught >= TOTAL_TO_CATCH){
+      // REAL win condition = 100
+      if(caught >= REAL_GOAL){
         endGame(true);
         return;
       }
@@ -544,7 +521,7 @@
       requestAnimationFrame(loop);
     }
 
-    // ===== Click/Tap to pop =====
+    // ===== Click/Tap =====
     function getPointerPos(e){
       const rect = canvas.getBoundingClientRect();
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -554,6 +531,7 @@
 
     function tryPop(x, y){
       if(!running) return;
+
       for(let i = feathers.length - 1; i >= 0; i--){
         const f = feathers[i];
         if(f.dead) continue;
@@ -561,6 +539,13 @@
           f.dead = true;
           caught++;
           setHUD();
+
+          // === TROLL MOMENT ===
+          if(caught === FAKE_GOAL && !trolled){
+            trolled = true;
+            hintEl.textContent = '50? Nono 100!! 😈';
+            totalEl.textContent = REAL_GOAL;
+          }
           break;
         }
       }
